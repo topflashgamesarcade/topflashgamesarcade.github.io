@@ -6,22 +6,19 @@
     <title>Top Flash Games Arcade v1.1 - Premium Launcher</title>
     <link rel="icon" type="image/png" href="images/app_icon.png">
     <meta name="google-site-verification" content="0t0js8oTNMjVdSzTTTdI6d3pWkxPcC8R5GhN1ZEiBwI" />
-    
-    <!-- Standard Meta Description for Google Search Results -->
-    <meta name="description" content="Top Flash Games Arcade v1.1 ဆော့ဖ်ဝဲလ်ကို ဤနေရာတွင် ဒေါင်းလုဒ်ရယူနိုင်ပါသည်။ Play classic 90s and 2000s nostalgic Flash games offline on Windows PC safely without active browser plugins. Developed by CyberVerse." />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://topflashgamesarcade.github.io/">
     <meta property="og:title" content="Top Flash Games Arcade v1.1">
-    <meta property="og:description" content=" Top Flash Games Arcade v1.1 ဆော့ဖ်ဝဲလ်ကို ဤနေရာတွင် ဒေါင်းလုဒ်ရယူနိုင်ပါသည်။">
+    <meta property="og:description" content=" Top Flash Games Arcade v1.1 ဆော့ဖ်ဝဲလ်ကို ဤနေရာတွင် ဒေါင်းလုဒ်ရယူနိုင်ပါသည်။ Play classic 90s and 2000s nostalgic Flash games offline on Windows PC safely.">
     <meta property="og:image" content="https://topflashgamesarcade.github.io/images/dashboard.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Top Flash Games Arcade v1.1">
     <meta name="twitter:description" content="Top Flash Games Arcade v1.1 ဆော့ဖ်ဝဲလ်ကို ဤနေရာတွင် ဒေါင်းလုဒ်ရယူနိုင်ပါသည်။">
     <meta name="twitter:image" content="https://topflashgamesarcade.github.io/images/dashboard.png">
     
-    <!-- Google Structured Data (JSON-LD Schema) for Software/Game Application -->
+    <!-- Google Structured Data (JSON-LD Schema) supporting multi-currency -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -42,15 +39,18 @@
       },
       "downloadUrl": "https://dn710200.ca.archive.org/0/items/flashgames-setup/TopFlashGames_Setup_v1.1.zip",
       "description": "A premium, modern, and lightweight Flash games launcher designed to preserve the nostalgia of 90s and 2000s web gaming offline on Windows PC.",
-      "offers": {
-        "@type": "Offer",
-        "price": "1500.00",
-        "priceCurrency": "MMK",
-        "priceSpecification": {
-          "@type": "UnitPriceSpecification",
-          "priceType": "https://schema.org/OneTimePayments"
+      "offers": [
+        {
+          "@type": "Offer",
+          "price": "1500.00",
+          "priceCurrency": "MMK"
+        },
+        {
+          "@type": "Offer",
+          "price": "0.50",
+          "priceCurrency": "USDT"
         }
-      }
+      ]
     }
     </script>
     
@@ -447,10 +447,10 @@
             background: var(--bg-card);
             border: 2px solid var(--primary-neon);
             box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
-            max-width: 380px; /* Reduced from 420px for high density sleekness */
+            max-width: 380px; /* Highly compact */
             width: 100%;
             border-radius: 12px;
-            padding: 20px; /* Reduced from 25px */
+            padding: 20px;
             position: relative;
             text-align: center;
             transform: scale(0.9);
@@ -463,9 +463,9 @@
 
         .pricing-title {
             font-family: var(--font-heading);
-            font-size: 1.25rem; /* Down from 1.4rem */
+            font-size: 1.25rem;
             color: #fff;
-            margin-bottom: 6px; /* Down from 8px */
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -478,19 +478,62 @@
         }
 
         .pricing-subtitle {
-            font-size: 0.8rem; /* Down from 0.85rem */
+            font-size: 0.8rem;
             color: var(--text-muted);
-            margin-bottom: 12px; /* Down from 18px */
+            margin-bottom: 12px;
+        }
+
+        /* Cyberpunk Tab Switcher */
+        .pricing-tabs {
+            display: flex;
+            background: rgba(10, 14, 23, 0.6);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 6px;
+            padding: 3px;
+            margin-bottom: 15px;
+        }
+
+        .pricing-tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            font-family: var(--font-heading);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .pricing-tab-btn.active {
+            background: var(--primary-neon);
+            color: #0a0e17;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        }
+
+        /* Tab Content Panel switcher */
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
         }
 
         .price-badge {
             background: rgba(255, 0, 127, 0.08);
             border: 1px solid rgba(255, 0, 127, 0.5);
-            padding: 10px; /* Down from 12px */
+            padding: 10px;
             border-radius: 8px;
             font-family: var(--font-heading);
             color: #fff;
-            margin-bottom: 15px; /* Down from 20px */
+            margin-bottom: 15px;
             box-shadow: 0 0 10px rgba(255, 0, 127, 0.05);
         }
 
@@ -503,7 +546,7 @@
         }
 
         .price-badge h2 {
-            font-size: 1.6rem; /* Down from 1.8rem */
+            font-size: 1.6rem;
             color: var(--secondary-neon);
             font-weight: 800;
             line-height: 1.2;
@@ -512,12 +555,12 @@
         .pricing-features-list {
             text-align: left;
             list-style: none;
-            margin-bottom: 15px; /* Down from 20px */
+            margin-bottom: 15px;
         }
 
         .pricing-features-list li {
-            font-size: 0.8rem; /* Down from 0.85rem */
-            margin-bottom: 8px; /* Down from 10px */
+            font-size: 0.8rem;
+            margin-bottom: 8px;
             display: flex;
             align-items: flex-start;
             gap: 8px;
@@ -537,7 +580,7 @@
             gap: 8px;
             background: linear-gradient(45deg, var(--primary-neon), var(--accent-purple));
             color: white;
-            padding: 10px 14px; /* Down from 12px */
+            padding: 10px 14px;
             border-radius: 6px;
             font-family: var(--font-heading);
             font-size: 0.9rem;
@@ -554,8 +597,8 @@
         }
 
         .pricing-note {
-            margin-top: 10px; /* Down from 15px */
-            font-size: 0.75rem; /* Down from 0.8rem */
+            margin-top: 10px;
+            font-size: 0.75rem;
             color: var(--text-muted);
             line-height: 1.4;
         }
@@ -953,27 +996,66 @@
             </div>
             <p class="pricing-subtitle">Activate full lifetime access to retro nostalgic arcade</p>
             
-            <div class="price-badge">
-                <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px;">One-Time Lifetime Activation</p>
-                <h2>1,500 MMK</h2>
-                <p style="font-size: 0.85rem; color: var(--primary-neon); margin-top: 3px; font-weight: 600;">Lifetime License Key</p>
+            <!-- Sleek Tab Switcher -->
+            <div class="pricing-tabs">
+                <button class="pricing-tab-btn active" onclick="switchPricingTab('mmk-tab', this)">
+                    🇲🇲 Myanmar (MMK)
+                </button>
+                <button class="pricing-tab-btn" onclick="switchPricingTab('usdt-tab', this)">
+                    🌐 Global (USDT)
+                </button>
             </div>
 
-            <ul class="pricing-features-list">
-                <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>၇ ရက် အခမဲ့ စမ်းသပ်ခြင်း:</strong> ဆော့ဖ်ဝဲကို အခမဲ့ ဒေါင်းလုဒ်ဆွဲပြီး စမ်းသပ်ကစားနိုင်။</span></li>
-                <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>License Key ဖြင့် အသက်သွင်းခြင်း:</strong> ဝယ်ယူထားသော Key ကိုထည့်ရုံဖြင့် တစ်သက်တာ Update များ ရယူနိုင်။</span></li>
-                <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>Dark/Light Theme & Local:</strong> Theme များနှင့် အလွယ်တကူ မြန်မာဘာသာသုံးနိုင်။</span></li>
-                <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>စိတ်ချလုံခြုံမှု:</strong> Parental Control ပါဝင်ပြီး Offline ဘေးကင်းစွာ ကစားနိုင်။</span></li>
-            </ul>
+            <!-- Tab 1: Myanmar MMK -->
+            <div id="mmk-tab" class="tab-panel active">
+                <div class="price-badge">
+                    <p>One-Time Lifetime Activation</p>
+                    <h2>1,500 MMK</h2>
+                    <p style="font-size: 0.85rem; color: var(--primary-neon); margin-top: 3px; font-weight: 600;">Lifetime License Key</p>
+                </div>
 
-            <a href="https://t.me/myokyawthu_info" target="_blank" class="pricing-action-btn">
-                <i class="fa-brands fa-telegram"></i> Telegram မှ ဆက်သွယ်ဝယ်ယူရန်
-            </a>
-            
-            <p class="pricing-note mm-text">
-                <i class="fa-solid fa-mobile-screen-button"></i> Kpay / WavePay တို့ဖြင့် ဝယ်ယူနိုင်ပါသည်။<br>
-                ဖုန်းဖြင့် ဆက်သွယ်ရန်: <a href="tel:09799497334" style="color: var(--primary-neon); text-decoration: none;">09799497334</a>
-            </p>
+                <ul class="pricing-features-list">
+                    <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>၇ ရက် အခမဲ့ စမ်းသပ်ခြင်း:</strong> ဆော့ဖ်ဝဲကို အခမဲ့ ဒေါင်းလုဒ်ဆွဲပြီး စမ်းသပ်ကစားနိုင်။</span></li>
+                    <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>License Key အသက်သွင်းခြင်း:</strong> ဝယ်ယူထားသော Key ကိုထည့်ရုံဖြင့် တစ်သက်တာ သုံးနိုင်။</span></li>
+                    <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>Dark/Light & Local:</strong> Theme များနှင့် အလွယ်တကူ မြန်မာဘာသာသုံးနိုင်။</span></li>
+                    <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>စိတ်ချလုံခြုံမှု:</strong> Parental Control ပါဝင်ပြီး Offline ဘေးကင်းစွာ ကစားနိုင်။</span></li>
+                </ul>
+
+                <a href="https://t.me/myokyawthu_info" target="_blank" class="pricing-action-btn">
+                    <i class="fa-brands fa-telegram"></i> Telegram မှ ဆက်သွယ်ဝယ်ယူရန်
+                </a>
+                
+                <p class="pricing-note mm-text">
+                    <i class="fa-solid fa-mobile-screen-button"></i> Kpay / WavePay တို့ဖြင့် ဝယ်ယူနိုင်ပါသည်။<br>
+                    ဖုန်းဖြင့် ဆက်သွယ်ရန်: <a href="tel:09799497334" style="color: var(--primary-neon); text-decoration: none;">09799497334</a>
+                </p>
+            </div>
+
+            <!-- Tab 2: Global Crypto (USDT) -->
+            <div id="usdt-tab" class="tab-panel">
+                <div class="price-badge">
+                    <p>Binance Pay (Zero Transfer Fee)</p>
+                    <h2>0.50 USDT</h2>
+                    <p style="font-size: 0.85rem; color: var(--primary-neon); margin-top: 3px; font-weight: 600;">One-Time License Key</p>
+                </div>
+
+                <ul class="pricing-features-list">
+                    <li><i class="fa-solid fa-circle-check"></i> <span><strong>7-Day Free Trial:</strong> Download and test before buying.</span></li>
+                    <li><i class="fa-solid fa-circle-check"></i> <span><strong>Zero Gas Fee Option:</strong> Highly recommend paying with Binance Pay ID.</span></li>
+                    <li><i class="fa-solid fa-circle-check"></i> <span><strong>Global Support:</strong> Pay safely using USDT from anywhere in the world.</span></li>
+                    <li><i class="fa-solid fa-circle-check"></i> <span><strong>Lifetime Key:</strong> Genuine, direct lifetime updates with no subscription.</span></li>
+                </ul>
+
+                <a href="https://t.me/myokyawthu_info" target="_blank" class="pricing-action-btn">
+                    <i class="fa-brands fa-telegram"></i> Contact Developer on Telegram
+                </a>
+                
+                <p class="pricing-note" style="font-size: 0.75rem;">
+                    <i class="fa-solid fa-wallet"></i> <strong>Binance Pay ID:</strong> <span style="color: var(--primary-neon); font-family: monospace;">[382836291]</span><br>
+                    After transfer, send screenshot to get your License Key!
+                </p>
+            </div>
+
         </div>
     </div>
 
@@ -1040,6 +1122,21 @@
             const pricingModal = document.getElementById('pricing-modal');
             pricingModal.classList.remove('active');
             document.body.style.overflow = 'auto';
+        }
+
+        // Tab Switching Logic
+        function switchPricingTab(tabId, btnElement) {
+            // Hide all tab panels
+            const panels = document.querySelectorAll('.tab-panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+
+            // Deactivate all tab buttons
+            const buttons = document.querySelectorAll('.pricing-tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show active panel & active button
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
         }
 
         // Close all modals on Escape key
