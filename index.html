@@ -141,6 +141,14 @@
             margin: 0 auto 40px;
         }
 
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
         .download-btn {
             display: inline-flex;
             align-items: center;
@@ -164,6 +172,31 @@
         .download-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 0 30px rgba(255, 0, 127, 0.7);
+        }
+
+        .pricing-trigger-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: transparent;
+            color: var(--primary-neon);
+            border: 2px solid var(--primary-neon);
+            padding: 15px 35px;
+            border-radius: 5px;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-trigger-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(0, 240, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
         }
 
         .file-info {
@@ -311,7 +344,8 @@
             color: var(--text-muted);
         }
 
-        .lightbox {
+        /* Modals: Lightbox & Pricing */
+        .lightbox, .pricing-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -327,7 +361,7 @@
             backdrop-filter: blur(8px);
         }
 
-        .lightbox.active {
+        .lightbox.active, .pricing-modal.active {
             display: flex;
         }
 
@@ -349,7 +383,7 @@
             object-fit: contain;
         }
 
-        .lightbox-close {
+        .lightbox-close, .modal-close {
             position: absolute;
             top: 25px;
             right: 35px;
@@ -360,7 +394,7 @@
             z-index: 10001;
         }
 
-        .lightbox-close:hover {
+        .lightbox-close:hover, .modal-close:hover {
             color: var(--secondary-neon);
         }
 
@@ -370,6 +404,124 @@
             font-size: 1.2rem;
             font-family: var(--font-heading);
             text-align: center;
+        }
+
+        /* Compact Pricing Card inside Modal */
+        .pricing-container {
+            background: var(--bg-card);
+            border: 2px solid var(--primary-neon);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
+            max-width: 380px; /* Reduced from 420px for high density sleekness */
+            width: 100%;
+            border-radius: 12px;
+            padding: 20px; /* Reduced from 25px */
+            position: relative;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .pricing-modal.active .pricing-container {
+            transform: scale(1);
+        }
+
+        .pricing-title {
+            font-family: var(--font-heading);
+            font-size: 1.25rem; /* Down from 1.4rem */
+            color: #fff;
+            margin-bottom: 6px; /* Down from 8px */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .pricing-title i {
+            color: var(--secondary-neon);
+            text-shadow: 0 0 10px var(--secondary-neon);
+        }
+
+        .pricing-subtitle {
+            font-size: 0.8rem; /* Down from 0.85rem */
+            color: var(--text-muted);
+            margin-bottom: 12px; /* Down from 18px */
+        }
+
+        .price-badge {
+            background: rgba(255, 0, 127, 0.08);
+            border: 1px solid rgba(255, 0, 127, 0.5);
+            padding: 10px; /* Down from 12px */
+            border-radius: 8px;
+            font-family: var(--font-heading);
+            color: #fff;
+            margin-bottom: 15px; /* Down from 20px */
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.05);
+        }
+
+        .price-badge p {
+            font-size: 0.65rem !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+
+        .price-badge h2 {
+            font-size: 1.6rem; /* Down from 1.8rem */
+            color: var(--secondary-neon);
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .pricing-features-list {
+            text-align: left;
+            list-style: none;
+            margin-bottom: 15px; /* Down from 20px */
+        }
+
+        .pricing-features-list li {
+            font-size: 0.8rem; /* Down from 0.85rem */
+            margin-bottom: 8px; /* Down from 10px */
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .pricing-features-list li i {
+            color: var(--primary-neon);
+            margin-top: 3px;
+            font-size: 0.85rem;
+        }
+
+        .pricing-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(45deg, var(--primary-neon), var(--accent-purple));
+            color: white;
+            padding: 10px 14px; /* Down from 12px */
+            border-radius: 6px;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .pricing-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+
+        .pricing-note {
+            margin-top: 10px; /* Down from 15px */
+            font-size: 0.75rem; /* Down from 0.8rem */
+            color: var(--text-muted);
+            line-height: 1.4;
         }
 
         /* Features Grid */
@@ -563,9 +715,14 @@
             <h1>Top Flash Games <br><span>Arcade v1.1</span></h1>
             <p>A premium, modern, and lightweight Flash games launcher designed to preserve the nostalgia of 90s and 2000s web gaming. Play offline on Windows PC safely.</p>
             
-            <a href="https://dn710200.ca.archive.org/0/items/flashgames-setup/TopFlashGames_Setup_v1.1.zip" class="download-btn"> <!-- Add your download link here -->
-                <i class="fa-solid fa-download"></i> Download Setup
-            </a>
+            <div class="hero-buttons">
+                <a href="https://dn710200.ca.archive.org/0/items/flashgames-setup/TopFlashGames_Setup_v1.1.zip" class="download-btn">
+                    <i class="fa-solid fa-download"></i> Download Setup
+                </a>
+                <button class="pricing-trigger-btn" onclick="openPricingModal()">
+                    <i class="fa-solid fa-tags"></i> View Pricing
+                </button>
+            </div>
             <span class="file-info"><i class="fa-regular fa-hard-drive"></i> Size: 797.9 MB | <i class="fa-brands fa-windows"></i> Win 10/11 (64-bit)</span>
         </section>
 
@@ -712,7 +869,12 @@
                     <li><span>Version</span> <span>1.1.0 (Build 20260612)</span></li>
                     <li><span>Language / Framework</span> <span>Python (PySide6)</span></li>
                     <li><span>Requirement</span> <span>Offline (No Internet Required)</span></li>
-                    <li><span>License</span> <span style="color: var(--secondary-neon);">Premium (7-day trial)</span></li>
+                    <li>
+                        <span>License</span> 
+                        <span style="color: var(--primary-neon); cursor: pointer; border-bottom: 1px dashed;" onclick="openPricingModal()">
+                            Premium (7-day trial)
+                        </span>
+                    </li>
                 </ul>
             </div>
 
@@ -743,6 +905,39 @@
             <span class="tag">parental control</span>
             <span class="tag">dark mode</span>
             <span class="tag">pyside6</span>
+        </div>
+    </div>
+
+    <!-- Pricing / Purchase Modal Component -->
+    <div id="pricing-modal" class="pricing-modal" onclick="closePricingModal()">
+        <span class="modal-close" onclick="closePricingModal()">&times;</span>
+        <div class="pricing-container" onclick="event.stopPropagation()">
+            <div class="pricing-title">
+                <i class="fa-solid fa-gem"></i> Premium License
+            </div>
+            <p class="pricing-subtitle">Activate full lifetime access to retro nostalgic arcade</p>
+            
+            <div class="price-badge">
+                <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 5px;">One-Time Lifetime Activation</p>
+                <h2>1,500 MMK</h2>
+                <p style="font-size: 0.85rem; color: var(--primary-neon); margin-top: 3px; font-weight: 600;">Lifetime License Key</p>
+            </div>
+
+            <ul class="pricing-features-list">
+                <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>၇ ရက် အခမဲ့ စမ်းသပ်ခြင်း:</strong> ဆော့ဖ်ဝဲကို အခမဲ့ ဒေါင်းလုဒ်ဆွဲပြီး စမ်းသပ်ကစားနိုင်။</span></li>
+                <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>License Key ဖြင့် အသက်သွင်းခြင်း:</strong> ဝယ်ယူထားသော Key ကိုထည့်ရုံဖြင့် တစ်သက်တာ Update များ ရယူနိုင်။</span></li>
+                <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>Dark/Light Theme & Local:</strong> Theme များနှင့် အလွယ်တကူ မြန်မာဘာသာသုံးနိုင်။</span></li>
+                <li><i class="fa-solid fa-circle-check"></i> <span class="mm-text"><strong>စိတ်ချလုံခြုံမှု:</strong> Parental Control ပါဝင်ပြီး Offline ဘေးကင်းစွာ ကစားနိုင်။</span></li>
+            </ul>
+
+            <a href="https://t.me/myokyawthu_info" target="_blank" class="pricing-action-btn">
+                <i class="fa-brands fa-telegram"></i> Telegram မှ ဆက်သွယ်ဝယ်ယူရန်
+            </a>
+            
+            <p class="pricing-note mm-text">
+                <i class="fa-solid fa-mobile-screen-button"></i> Kpay / WavePay တို့ဖြင့် ဝယ်ယူနိုင်ပါသည်။<br>
+                ဖုန်းဖြင့် ဆက်သွယ်ရန်: <a href="tel:09799497334" style="color: var(--primary-neon); text-decoration: none;">09799497334</a>
+            </p>
         </div>
     </div>
 
@@ -798,9 +993,24 @@
             document.body.style.overflow = 'auto';
         }
 
+        // Pricing Modal Functions
+        function openPricingModal() {
+            const pricingModal = document.getElementById('pricing-modal');
+            pricingModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePricingModal() {
+            const pricingModal = document.getElementById('pricing-modal');
+            pricingModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close all modals on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeLightbox();
+                closePricingModal();
             }
         });
     </script>
