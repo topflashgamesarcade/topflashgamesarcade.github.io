@@ -789,6 +789,225 @@
             </div>
         </nav>
 
+        <!-- ====== Windows 11 File Explorer ပုံစံ Toast ====== -->
+<div id="toastNotification" style="
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #1c1c1c;
+    border: 1px solid #3d3d3d;
+    border-radius: 8px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+    pointer-events: none;
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+">
+    <!-- Title Bar (Windows 11 ပုံစံ) -->
+    <div style="
+        background: #2d2d2d;
+        padding: 6px 14px;
+        border-radius: 8px 8px 0 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #3d3d3d;
+    ">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 0.9rem;">📁</span>
+            <span style="color: #e8edf5; font-size: 0.75rem; font-weight: 500;">
+                သင်တန်းအချက်အလက်
+            </span>
+            <span style="
+                background: rgba(109, 107, 252, 0.12);
+                padding: 0px 8px;
+                border-radius: 4px;
+                font-size: 0.55rem;
+                color: #a8a4ff;
+                font-weight: 500;
+            ">
+                ဖွင့်ထား
+            </span>
+        </div>
+        <div style="display: flex; gap: 6px;">
+            <button onclick="closeToast()" style="
+                background: none;
+                border: none;
+                color: #8b95b0;
+                font-size: 0.85rem;
+                cursor: pointer;
+                padding: 0 4px;
+                transition: 0.2s ease;
+            " onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='#8b95b0'">
+                ✕
+            </button>
+        </div>
+    </div>
+
+    <!-- Content (Explorer ပုံစံ) -->
+    <div style="display: flex; min-height: 140px;">
+        <!-- Left Sidebar (Folder Tree) -->
+        <div style="
+            background: #252525;
+            padding: 10px 12px;
+            min-width: 100px;
+            border-right: 1px solid #3d3d3d;
+        ">
+            <div style="color: #8b95b0; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                📂 သင်တန်း
+            </div>
+            <div style="color: #e8edf5; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px;">
+                <span>📂</span> အခြေခံ
+            </div>
+            <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;">
+                <span>📄</span> Windows
+            </div>
+            <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;">
+                <span>📄</span> Word
+            </div>
+            <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;">
+                <span>📄</span> Excel
+            </div>
+            <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;">
+                <span>📄</span> PowerPoint
+            </div>
+        </div>
+
+        <!-- Right Side (File List) -->
+        <div style="
+            background: #1c1c1c;
+            padding: 10px 14px;
+            flex: 1;
+        ">
+            <!-- Header -->
+            <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #2d2d2d; padding-bottom: 4px; margin-bottom: 6px;">
+                <span style="color: #8b95b0; font-size: 0.6rem; font-weight: 600; text-transform: uppercase;">အမည်</span>
+                <span style="color: #8b95b0; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; margin-left: auto;">အသေးစိတ်</span>
+            </div>
+
+            <!-- File List -->
+            <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;">
+                <span style="color: #e8edf5; font-size: 0.75rem;">📅 သင်တန်းရက်</span>
+                <span style="color: #8b95b0; font-size: 0.65rem; margin-left: auto;">စနေ + တနင်္ဂနွေ</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;">
+                <span style="color: #e8edf5; font-size: 0.75rem;">🕐 အချိန်</span>
+                <span style="color: #8b95b0; font-size: 0.65rem; margin-left: auto;">မနက် ၉:၀၀ - ၁၁:၀၀</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;">
+                <span style="color: #e8edf5; font-size: 0.75rem;">⏱️ ကာလ</span>
+                <span style="color: #8b95b0; font-size: 0.65rem; margin-left: auto;">၂ လ (၃၂ နာရီ)</span>
+            </div>
+
+            <!-- Price (ပြင်ဆင်ပြီး) -->
+            <div style="
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 4px 0 2px 0;
+                border-top: 1px solid #2d2d2d;
+                margin-top: 4px;
+                padding-top: 6px;
+            ">
+                <span style="color: #ff6b9d; font-weight: 700; font-size: 0.95rem;">၅၀,၀၀၀ ကျပ်</span>
+                <span style="color: #8b95b0; font-size: 0.65rem;">/ ၁ လ</span>
+                <span style="
+                    background: rgba(255, 215, 0, 0.06);
+                    border: 1px solid rgba(255, 215, 0, 0.08);
+                    padding: 0px 8px;
+                    border-radius: 30px;
+                    font-size: 0.5rem;
+                    color: #f0e6b0;
+                    margin-left: auto;
+                ">
+                    ⭐ ၂ လ = ၁၀၀,၀၀၀ ကျပ်
+                </span>
+            </div>
+
+            <!-- Limit Badge -->
+            <div style="
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 2px 0;
+            ">
+                <span style="
+                    background: rgba(255, 107, 157, 0.06);
+                    border: 1px solid rgba(255, 107, 157, 0.08);
+                    padding: 0px 10px;
+                    border-radius: 30px;
+                    font-size: 0.55rem;
+                    color: #ff6b9d;
+                    margin-left: auto;
+                ">
+                    ⚡ နေရာအကန့်အသတ် (၂ ဦး)
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (Status Bar - Windows 11 ပုံစံ) -->
+    <div style="
+        background: #2d2d2d;
+        padding: 4px 14px;
+        border-radius: 0 0 8px 8px;
+        border-top: 1px solid #3d3d3d;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.6rem;
+        color: #8b95b0;
+    ">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span>📞 09-799497334</span>
+            <span style="color: #3d3d3d;">|</span>
+            <span>📧 myokyawthu@email.com</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span>📋 သင်တန်း</span>
+            <span style="color: #3d3d3d;">|</span>
+            <a href="tel:09799497334" style="
+                color: #0078d4;
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 0.65rem;
+                transition: 0.2s ease;
+            " onmouseover="this.style.color='#4fa8ff'" onmouseout="this.style.color='#0078d4'">
+                📞 ဆက်သွယ်ရန်
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            const toast = document.getElementById('toastNotification');
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+            toast.style.pointerEvents = 'auto';
+        }, 3000);
+
+        setTimeout(function() {
+            const toast = document.getElementById('toastNotification');
+            if (toast.style.opacity === '1') {
+                closeToast();
+            }
+        }, 60000);
+    });
+
+    function closeToast() {
+        const toast = document.getElementById('toastNotification');
+        toast.style.transform = 'translateY(20px)';
+        toast.style.opacity = '0';
+        toast.style.pointerEvents = 'none';
+    }
+</script>
+
         <!-- Hero Section -->
         <section class="hero">
             <h1>Top Flash Games <br><span>Arcade v1.1</span></h1>
