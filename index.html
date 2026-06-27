@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Top Flash Games Arcade v1.1 - Premium Launcher</title>
+    <title>Top Flash Games Arcade v1.1 - အကောင်းဆုံး Flash Games Launcher | PC Games</title>
     <link rel="icon" type="image/png" href="images/app_icon.png">
     <meta name="google-site-verification" content="0t0js8oTNMjVdSzTTTdI6d3pWkxPcC8R5GhN1ZEiBwI" />
+    <meta name="description" content="Top Flash Games Arcade v1.1 ဆော့ဖ်ဝဲလ်ကို ဤနေရာတွင် ဒေါင်းလုဒ်ရယူနိုင်ပါသည်။ Play classic 90s and 2000s nostalgic Flash games offline on Windows PC safely.">
+    <meta name="keywords" content="Top Flash Games, Top Flash Games Arcade, Flash Games, PC Games, Small Games, offline flash games, retro games, nostalgic games, Windows games, Myanmar software">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://topflashgamesarcade.github.io/">
-    <meta property="og:title" content="Top Flash Games Arcade v1.1">
-    <meta property="og:description" content=" Top Flash Games Arcade v1.1 ဆော့ဖ်ဝဲလ်ကို ဤနေရာတွင် ဒေါင်းလုဒ်ရယူနိုင်ပါသည်။ Play classic 90s and 2000s nostalgic Flash games offline on Windows PC safely.">
+    <meta property="og:title" content="Top Flash Games Arcade v1.1 - အကောင်းဆုံး Flash Games Launcher">
+    <meta property="og:description" content="Top Flash Games Arcade v1.1 ဆော့ဖ်ဝဲလ်ကို ဤနေရာတွင် ဒေါင်းလုဒ်ရယူနိုင်ပါသည်။ Play classic 90s and 2000s nostalgic Flash games offline on Windows PC safely.">
     <meta property="og:image" content="https://topflashgamesarcade.github.io/images/dashboard.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Top Flash Games Arcade v1.1">
+    <meta name="twitter:title" content="Top Flash Games Arcade v1.1 - အကောင်းဆုံး Flash Games Launcher">
     <meta name="twitter:description" content="Top Flash Games Arcade v1.1 ဆော့ဖ်ဝဲလ်ကို ဤနေရာတွင် ဒေါင်းလုဒ်ရယူနိုင်ပါသည်။">
     <meta name="twitter:image" content="https://topflashgamesarcade.github.io/images/dashboard.png">
     
-    <!-- Google Structured Data (JSON-LD Schema) supporting multi-currency -->
+    <!-- Google Structured Data (JSON-LD Schema) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -54,7 +56,7 @@
     }
     </script>
     
-    <!-- Google Fonts: Orbitron for Gaming Vibe, Inter for English, Noto Sans Myanmar for Burmese -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Noto+Sans+Myanmar:wght@400;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
@@ -63,6 +65,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* ခင်ဗျားရဲ့ CSS အကုန်လုံး ဒီမှာ ထည့်ပါ */
         :root {
             --bg-dark: #0a0e17;
             --bg-card: #151b29;
@@ -91,14 +94,12 @@
             background-size: 30px 30px;
         }
 
-        /* Container */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        /* Navigation */
         nav {
             padding: 20px 0;
             display: flex;
@@ -135,7 +136,6 @@
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
         }
 
-        /* Hero Section */
         .hero {
             padding: 80px 0;
             text-align: center;
@@ -242,7 +242,6 @@
             color: var(--text-muted);
         }
 
-        /* Description Section */
         .section-title {
             font-family: var(--font-heading);
             font-size: 2rem;
@@ -336,7 +335,6 @@
             transform: scale(1.08);
         }
 
-        /* Overlay icon on hover */
         .gallery-overlay {
             position: absolute;
             top: 0;
@@ -380,7 +378,6 @@
             color: var(--text-muted);
         }
 
-        /* Modals: Lightbox & Pricing */
         .lightbox, .pricing-modal {
             display: none;
             position: fixed;
@@ -442,12 +439,11 @@
             text-align: center;
         }
 
-        /* Compact Pricing Card inside Modal */
         .pricing-container {
             background: var(--bg-card);
             border: 2px solid var(--primary-neon);
             box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
-            max-width: 380px; /* Highly compact */
+            max-width: 380px;
             width: 100%;
             border-radius: 12px;
             padding: 20px;
@@ -483,7 +479,6 @@
             margin-bottom: 12px;
         }
 
-        /* Cyberpunk Tab Switcher */
         .pricing-tabs {
             display: flex;
             background: rgba(10, 14, 23, 0.6);
@@ -517,7 +512,6 @@
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
         }
 
-        /* Tab Content Panel switcher */
         .tab-panel {
             display: none;
         }
@@ -603,7 +597,6 @@
             line-height: 1.4;
         }
 
-        /* Features Grid */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -639,7 +632,6 @@
             font-size: 1.1rem;
         }
 
-        /* Technical Details & Guide Grid */
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -699,7 +691,6 @@
             font-weight: bold;
         }
 
-        /* Tags Section */
         .tags-container {
             display: flex;
             flex-wrap: wrap;
@@ -716,7 +707,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Footer */
         footer {
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding: 40px 0;
@@ -761,7 +751,6 @@
             color: var(--text-muted);
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2.5rem;
@@ -789,224 +778,83 @@
             </div>
         </nav>
 
-        <!-- ====== Windows 11 File Explorer ပုံစံ Toast ====== -->
-<div id="toastNotification" style="
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: #1c1c1c;
-    border: 1px solid #3d3d3d;
-    border-radius: 8px;
-    max-width: 420px;
-    width: 100%;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-    z-index: 9999;
-    transform: translateY(20px);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
-    pointer-events: none;
-    font-family: 'Segoe UI', -apple-system, sans-serif;
-">
-    <!-- Title Bar (Windows 11 ပုံစံ) -->
-    <div style="
-        background: #2d2d2d;
-        padding: 6px 14px;
-        border-radius: 8px 8px 0 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid #3d3d3d;
-    ">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 0.9rem;">📁</span>
-            <span style="color: #e8edf5; font-size: 0.75rem; font-weight: 500;">
-                သင်တန်းအချက်အလက်
-            </span>
-            <span style="
-                background: rgba(109, 107, 252, 0.12);
-                padding: 0px 8px;
-                border-radius: 4px;
-                font-size: 0.55rem;
-                color: #a8a4ff;
-                font-weight: 500;
-            ">
-                ဖွင့်ထား
-            </span>
-        </div>
-        <div style="display: flex; gap: 6px;">
-            <button onclick="closeToast()" style="
-                background: none;
-                border: none;
-                color: #8b95b0;
-                font-size: 0.85rem;
-                cursor: pointer;
-                padding: 0 4px;
-                transition: 0.2s ease;
-            " onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='#8b95b0'">
-                ✕
-            </button>
-        </div>
-    </div>
-
-    <!-- Content (Explorer ပုံစံ) -->
-    <div style="display: flex; min-height: 140px;">
-        <!-- Left Sidebar (Folder Tree) -->
-        <div style="
-            background: #252525;
-            padding: 10px 12px;
-            min-width: 100px;
-            border-right: 1px solid #3d3d3d;
-        ">
-            <div style="color: #8b95b0; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
-                📂 သင်တန်း
+        <!-- Toast Notification (ခင်ဗျားရဲ့ code အတိုင်း ထားနိုင်ပါတယ်) -->
+        <div id="toastNotification" style="position: fixed; bottom: 24px; right: 24px; background: #1c1c1c; border: 1px solid #3d3d3d; border-radius: 8px; max-width: 420px; width: 100%; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6); z-index: 9999; transform: translateY(20px); opacity: 0; transition: all 0.4s cubic-bezier(0.2, 0, 0, 1); pointer-events: none; font-family: 'Segoe UI', -apple-system, sans-serif;">
+            <div style="background: #2d2d2d; padding: 6px 14px; border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #3d3d3d;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 0.9rem;">📁</span>
+                    <span style="color: #e8edf5; font-size: 0.75rem; font-weight: 500;">သင်တန်းအချက်အလက်</span>
+                    <span style="background: rgba(109, 107, 252, 0.12); padding: 0px 8px; border-radius: 4px; font-size: 0.55rem; color: #a8a4ff; font-weight: 500;">ဖွင့်ထား</span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <button onclick="closeToast()" style="background: none; border: none; color: #8b95b0; font-size: 0.85rem; cursor: pointer; padding: 0 4px; transition: 0.2s ease;" onmouseover="this.style.color='#ff6b6b'" onmouseout="this.style.color='#8b95b0'">✕</button>
+                </div>
             </div>
-            <div style="color: #e8edf5; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px;">
-                <span>📂</span> အခြေခံ
+            <div style="display: flex; min-height: 140px;">
+                <div style="background: #252525; padding: 10px 12px; min-width: 100px; border-right: 1px solid #3d3d3d;">
+                    <div style="color: #8b95b0; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">📂 သင်တန်း</div>
+                    <div style="color: #e8edf5; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px;"><span>📂</span> အခြေခံ</div>
+                    <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;"><span>📄</span> Windows</div>
+                    <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;"><span>📄</span> Word</div>
+                    <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;"><span>📄</span> Excel</div>
+                    <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;"><span>📄</span> PowerPoint</div>
+                </div>
+                <div style="background: #1c1c1c; padding: 10px 14px; flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #2d2d2d; padding-bottom: 4px; margin-bottom: 6px;">
+                        <span style="color: #8b95b0; font-size: 0.6rem; font-weight: 600; text-transform: uppercase;">အမည်</span>
+                        <span style="color: #8b95b0; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; margin-left: auto;">အသေးစိတ်</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;"><span style="color: #e8edf5; font-size: 0.75rem;">📅 သင်တန်းရက်</span><span style="color: #8b95b0; font-size: 0.65rem; margin-left: auto;">စနေ + တနင်္ဂနွေ</span></div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;"><span style="color: #e8edf5; font-size: 0.75rem;">🕐 အချိန်</span><span style="color: #8b95b0; font-size: 0.65rem; margin-left: auto;">မနက် ၉:၀၀ - ၁၁:၀၀</span></div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;"><span style="color: #e8edf5; font-size: 0.75rem;">⏱️ ကာလ</span><span style="color: #8b95b0; font-size: 0.65rem; margin-left: auto;">၂ လ (၃၂ နာရီ)</span></div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 4px 0 2px 0; border-top: 1px solid #2d2d2d; margin-top: 4px; padding-top: 6px;">
+                        <span style="color: #ff6b9d; font-weight: 700; font-size: 0.95rem;">၅၀,၀၀၀ ကျပ်</span>
+                        <span style="color: #8b95b0; font-size: 0.65rem;">/ ၁ လ</span>
+                        <span style="background: rgba(255, 215, 0, 0.06); border: 1px solid rgba(255, 215, 0, 0.08); padding: 0px 8px; border-radius: 30px; font-size: 0.5rem; color: #f0e6b0; margin-left: auto;">⭐ ၂ လ = ၁၀၀,၀၀၀ ကျပ်</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;">
+                        <span style="background: rgba(255, 107, 157, 0.06); border: 1px solid rgba(255, 107, 157, 0.08); padding: 0px 10px; border-radius: 30px; font-size: 0.55rem; color: #ff6b9d; margin-left: auto;">⚡ နေရာအကန့်အသတ် (၂ ဦး)</span>
+                    </div>
+                </div>
             </div>
-            <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;">
-                <span>📄</span> Windows
-            </div>
-            <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;">
-                <span>📄</span> Word
-            </div>
-            <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;">
-                <span>📄</span> Excel
-            </div>
-            <div style="color: #8b95b0; font-size: 0.75rem; padding: 2px 0; display: flex; align-items: center; gap: 4px; padding-left: 12px;">
-                <span>📄</span> PowerPoint
+            <div style="background: #2d2d2d; padding: 4px 14px; border-radius: 0 0 8px 8px; border-top: 1px solid #3d3d3d; display: flex; justify-content: space-between; align-items: center; font-size: 0.6rem; color: #8b95b0;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span>📞 09-799497334</span>
+                    <span style="color: #3d3d3d;">|</span>
+                    <span>📧 myokyawthu@email.com</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span>📋 သင်တန်း</span>
+                    <span style="color: #3d3d3d;">|</span>
+                    <a href="tel:09799497334" style="color: #0078d4; text-decoration: none; font-weight: 500; font-size: 0.65rem; transition: 0.2s ease;" onmouseover="this.style.color='#4fa8ff'" onmouseout="this.style.color='#0078d4'">📞 ဆက်သွယ်ရန်</a>
+                </div>
             </div>
         </div>
 
-        <!-- Right Side (File List) -->
-        <div style="
-            background: #1c1c1c;
-            padding: 10px 14px;
-            flex: 1;
-        ">
-            <!-- Header -->
-            <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #2d2d2d; padding-bottom: 4px; margin-bottom: 6px;">
-                <span style="color: #8b95b0; font-size: 0.6rem; font-weight: 600; text-transform: uppercase;">အမည်</span>
-                <span style="color: #8b95b0; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; margin-left: auto;">အသေးစိတ်</span>
-            </div>
+        <script>
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    const toast = document.getElementById('toastNotification');
+                    toast.style.transform = 'translateY(0)';
+                    toast.style.opacity = '1';
+                    toast.style.pointerEvents = 'auto';
+                }, 3000);
 
-            <!-- File List -->
-            <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;">
-                <span style="color: #e8edf5; font-size: 0.75rem;">📅 သင်တန်းရက်</span>
-                <span style="color: #8b95b0; font-size: 0.65rem; margin-left: auto;">စနေ + တနင်္ဂနွေ</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;">
-                <span style="color: #e8edf5; font-size: 0.75rem;">🕐 အချိန်</span>
-                <span style="color: #8b95b0; font-size: 0.65rem; margin-left: auto;">မနက် ၉:၀၀ - ၁၁:၀၀</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px; padding: 2px 0;">
-                <span style="color: #e8edf5; font-size: 0.75rem;">⏱️ ကာလ</span>
-                <span style="color: #8b95b0; font-size: 0.65rem; margin-left: auto;">၂ လ (၃၂ နာရီ)</span>
-            </div>
+                setTimeout(function() {
+                    const toast = document.getElementById('toastNotification');
+                    if (toast.style.opacity === '1') {
+                        closeToast();
+                    }
+                }, 60000);
+            });
 
-            <!-- Price (ပြင်ဆင်ပြီး) -->
-            <div style="
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 4px 0 2px 0;
-                border-top: 1px solid #2d2d2d;
-                margin-top: 4px;
-                padding-top: 6px;
-            ">
-                <span style="color: #ff6b9d; font-weight: 700; font-size: 0.95rem;">၅၀,၀၀၀ ကျပ်</span>
-                <span style="color: #8b95b0; font-size: 0.65rem;">/ ၁ လ</span>
-                <span style="
-                    background: rgba(255, 215, 0, 0.06);
-                    border: 1px solid rgba(255, 215, 0, 0.08);
-                    padding: 0px 8px;
-                    border-radius: 30px;
-                    font-size: 0.5rem;
-                    color: #f0e6b0;
-                    margin-left: auto;
-                ">
-                    ⭐ ၂ လ = ၁၀၀,၀၀၀ ကျပ်
-                </span>
-            </div>
-
-            <!-- Limit Badge -->
-            <div style="
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 2px 0;
-            ">
-                <span style="
-                    background: rgba(255, 107, 157, 0.06);
-                    border: 1px solid rgba(255, 107, 157, 0.08);
-                    padding: 0px 10px;
-                    border-radius: 30px;
-                    font-size: 0.55rem;
-                    color: #ff6b9d;
-                    margin-left: auto;
-                ">
-                    ⚡ နေရာအကန့်အသတ် (၂ ဦး)
-                </span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer (Status Bar - Windows 11 ပုံစံ) -->
-    <div style="
-        background: #2d2d2d;
-        padding: 4px 14px;
-        border-radius: 0 0 8px 8px;
-        border-top: 1px solid #3d3d3d;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.6rem;
-        color: #8b95b0;
-    ">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <span>📞 09-799497334</span>
-            <span style="color: #3d3d3d;">|</span>
-            <span>📧 myokyawthu@email.com</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span>📋 သင်တန်း</span>
-            <span style="color: #3d3d3d;">|</span>
-            <a href="tel:09799497334" style="
-                color: #0078d4;
-                text-decoration: none;
-                font-weight: 500;
-                font-size: 0.65rem;
-                transition: 0.2s ease;
-            " onmouseover="this.style.color='#4fa8ff'" onmouseout="this.style.color='#0078d4'">
-                📞 ဆက်သွယ်ရန်
-            </a>
-        </div>
-    </div>
-</div>
-
-<script>
-    window.addEventListener('load', function() {
-        setTimeout(function() {
-            const toast = document.getElementById('toastNotification');
-            toast.style.transform = 'translateY(0)';
-            toast.style.opacity = '1';
-            toast.style.pointerEvents = 'auto';
-        }, 3000);
-
-        setTimeout(function() {
-            const toast = document.getElementById('toastNotification');
-            if (toast.style.opacity === '1') {
-                closeToast();
+            function closeToast() {
+                const toast = document.getElementById('toastNotification');
+                toast.style.transform = 'translateY(20px)';
+                toast.style.opacity = '0';
+                toast.style.pointerEvents = 'none';
             }
-        }, 60000);
-    });
-
-    function closeToast() {
-        const toast = document.getElementById('toastNotification');
-        toast.style.transform = 'translateY(20px)';
-        toast.style.opacity = '0';
-        toast.style.pointerEvents = 'none';
-    }
-</script>
+        </script>
 
         <!-- Hero Section -->
         <section class="hero">
@@ -1036,15 +884,13 @@
             </div>
         </div>
 
-        <h2 class="section-title"><i class="fa-solid fa-images"></i> Launcher Screenshots & Previews</h2>
+        <!-- Gallery Section -->
+        <h2 class="section-title"><i class="fa-solid fa-images"></i> Top Flash Games Arcade Screenshots & Preview</h2>
         <div class="gallery-grid">
-            <!-- Screenshot 1 -->
-            <div class="gallery-item" onclick="openLightbox('images/dashboard.png', 'Premium Launcher Grid & Game selection Dashboard')">
+            <div class="gallery-item" onclick="openLightbox('images/dashboard.png', 'Top Flash Games Arcade Main Dashboard UI - Best Flash Games Launcher for PC')">
                 <div class="gallery-img-container">
-                    <img src="images/dashboard.png" alt="Main Dashboard UI" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Main+Dashboard+UI'">
-                    <div class="gallery-overlay">
-                        <i class="fa-solid fa-expand"></i>
-                    </div>
+                    <img src="images/dashboard.png" alt="Top Flash Games Arcade Main Dashboard UI - Best Flash Games Launcher for PC" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Main+Dashboard+UI'">
+                    <div class="gallery-overlay"><i class="fa-solid fa-expand"></i></div>
                 </div>
                 <div class="gallery-info">
                     <h4>Main Dashboard UI</h4>
@@ -1052,13 +898,10 @@
                 </div>
             </div>
 
-            <!-- Screenshot 2 -->
-            <div class="gallery-item" onclick="openLightbox('images/offline_play.png', 'Offline Playback Mode & Game Screenshots')">
+            <div class="gallery-item" onclick="openLightbox('images/offline_play.png', 'Offline Flash Games Playback Mode - Play SWF Games on PC')">
                 <div class="gallery-img-container">
-                    <img src="images/offline_play.png" alt="Sleek SWF Player View" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Sleek+SWF+Player+View'">
-                    <div class="gallery-overlay">
-                        <i class="fa-solid fa-expand"></i>
-                    </div>
+                    <img src="images/offline_play.png" alt="Offline Flash Games Playback Mode - Play SWF Games on PC" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Sleek+SWF+Player+View'">
+                    <div class="gallery-overlay"><i class="fa-solid fa-expand"></i></div>
                 </div>
                 <div class="gallery-info">
                     <h4>Smooth Offline Play</h4>
@@ -1066,13 +909,10 @@
                 </div>
             </div>
 
-            <!-- Screenshot 3 -->
-            <div class="gallery-item" onclick="openLightbox('images/settings.png', 'Custom Light/Dark Theme & Myanmar Interface Options')">
+            <div class="gallery-item" onclick="openLightbox('images/settings.png', 'Top Flash Games Arcade Settings - Dark/Light Theme & Myanmar Language')">
                 <div class="gallery-img-container">
-                    <img src="images/settings.png" alt="Myanmar Language Settings" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Myanmar+Language+Settings'">
-                    <div class="gallery-overlay">
-                        <i class="fa-solid fa-expand"></i>
-                    </div>
+                    <img src="images/settings.png" alt="Top Flash Games Arcade Settings - Dark/Light Theme & Myanmar Language" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Myanmar+Language+Settings'">
+                    <div class="gallery-overlay"><i class="fa-solid fa-expand"></i></div>
                 </div>
                 <div class="gallery-info">
                     <h4>Dual Theme & Local Language</h4>
@@ -1080,13 +920,10 @@
                 </div>
             </div>
 
-            <!-- Screenshot 4 -->
-            <div class="gallery-item" onclick="openLightbox('images/parental_control.png', 'Secure Parental Control & Game Lock Settings')">
+            <div class="gallery-item" onclick="openLightbox('images/parental_control.png', 'Parental Control PIN Security - Top Flash Games Arcade')">
                 <div class="gallery-img-container">
-                    <img src="images/parental_control.png" alt="Parental Control Panel" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Parental+Control+Panel'">
-                    <div class="gallery-overlay">
-                        <i class="fa-solid fa-expand"></i>
-                    </div>
+                    <img src="images/parental_control.png" alt="Parental Control PIN Security - Top Flash Games Arcade" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Parental+Control+Panel'">
+                    <div class="gallery-overlay"><i class="fa-solid fa-expand"></i></div>
                 </div>
                 <div class="gallery-info">
                     <h4>Parental Control PIN</h4>
@@ -1094,13 +931,10 @@
                 </div>
             </div>
 
-            <!-- Screenshot 5 -->
-            <div class="gallery-item" onclick="openLightbox('images/favorites.png', 'Players Choice & Favorites Custom Grouping')">
+            <div class="gallery-item" onclick="openLightbox('images/favorites.png', 'Favorites Hub - Top Flash Games Arcade Players Choice')">
                 <div class="gallery-img-container">
-                    <img src="images/favorites.png" alt="Favorites List View" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Favorites+List+View'">
-                    <div class="gallery-overlay">
-                        <i class="fa-solid fa-expand"></i>
-                    </div>
+                    <img src="images/favorites.png" alt="Favorites Hub - Top Flash Games Arcade Players Choice" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Favorites+List+View'">
+                    <div class="gallery-overlay"><i class="fa-solid fa-expand"></i></div>
                 </div>
                 <div class="gallery-info">
                     <h4>Your Favorites Hub</h4>
@@ -1108,13 +942,10 @@
                 </div>
             </div>
 
-            <!-- Screenshot 6 -->
-            <div class="gallery-item" onclick="openLightbox('images/drag_drop.png', 'Smooth Drag and Drop SWF Games Importer')">
+            <div class="gallery-item" onclick="openLightbox('images/drag_drop.png', 'Drag and Drop SWF Import - Top Flash Games Arcade')">
                 <div class="gallery-img-container">
-                    <img src="images/drag_drop.png" alt="Drag & Drop SWF Importer" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Drag+%26+Drop+SWF+Importer'">
-                    <div class="gallery-overlay">
-                        <i class="fa-solid fa-expand"></i>
-                    </div>
+                    <img src="images/drag_drop.png" alt="Drag and Drop SWF Import - Top Flash Games Arcade" onerror="this.src='https://placehold.co/600x380/151b29/00f0ff?text=Drag+%26+Drop+SWF+Importer'">
+                    <div class="gallery-overlay"><i class="fa-solid fa-expand"></i></div>
                 </div>
                 <div class="gallery-info">
                     <h4>Drag & Drop Import</h4>
@@ -1123,7 +954,8 @@
             </div>
         </div>
 
-        <h2 class="section-title"><i class="fa-solid fa-bolt"></i> What's New & Key Features</h2>
+        <!-- Features Section -->
+        <h2 class="section-title"><i class="fa-solid fa-bolt"></i> Top Flash Games Arcade Features - Offline PC Games</h2>
         <div class="features-grid">
             <div class="feature-item">
                 <div class="feature-icon"><i class="fa-solid fa-circle-half-stroke"></i></div>
@@ -1157,11 +989,10 @@
             </div>
         </div>
 
-        <!-- Specs and Guide -->
+        <!-- Technical Details & How to Use -->
         <div class="info-grid">
-            <!-- Technical Details -->
             <div>
-                <h2 class="section-title"><i class="fa-solid fa-microchip"></i> Technical Details</h2>
+                <h2 class="section-title"><i class="fa-solid fa-microchip"></i> Technical Specifications of Top Flash Games Arcade</h2>
                 <ul class="tech-list">
                     <li><span>Platform</span> <span>Windows 10 / Windows 11 (64-bit)</span></li>
                     <li><span>Version</span> <span>1.1.0 (Build 20260612)</span></li>
@@ -1176,9 +1007,8 @@
                 </ul>
             </div>
 
-            <!-- How to Use -->
             <div>
-                <h2 class="section-title"><i class="fa-solid fa-gamepad"></i> How to Use</h2>
+                <h2 class="section-title"><i class="fa-solid fa-gamepad"></i> How to Download and Play Flash Games on PC</h2>
                 <ol class="steps-list">
                     <li>Download and run <code>TopFlashGames_Setup_v1.1.exe</code></li>
                     <li>Follow the installation wizard instructions.</li>
@@ -1206,7 +1036,7 @@
         </div>
     </div>
 
-    <!-- Pricing / Purchase Modal Component -->
+    <!-- Pricing Modal -->
     <div id="pricing-modal" class="pricing-modal" onclick="closePricingModal()">
         <span class="modal-close" onclick="closePricingModal()">&times;</span>
         <div class="pricing-container" onclick="event.stopPropagation()">
@@ -1215,7 +1045,6 @@
             </div>
             <p class="pricing-subtitle">Activate full lifetime access to retro nostalgic arcade</p>
             
-            <!-- Sleek Tab Switcher -->
             <div class="pricing-tabs">
                 <button class="pricing-tab-btn active" onclick="switchPricingTab('mmk-tab', this)">
                     🇲🇲 Myanmar (MMK)
@@ -1225,7 +1054,6 @@
                 </button>
             </div>
 
-            <!-- Tab 1: Myanmar MMK -->
             <div id="mmk-tab" class="tab-panel active">
                 <div class="price-badge">
                     <p>One-Time Lifetime Activation</p>
@@ -1250,7 +1078,6 @@
                 </p>
             </div>
 
-            <!-- Tab 2: Global Crypto (USDT) -->
             <div id="usdt-tab" class="tab-panel">
                 <div class="price-badge">
                     <p>Binance Pay (Zero Transfer Fee)</p>
@@ -1278,7 +1105,7 @@
         </div>
     </div>
 
-    <!-- Lightbox Zoom Modal Component -->
+    <!-- Lightbox -->
     <div id="lightbox" class="lightbox" onclick="closeLightbox()">
         <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
         <div class="lightbox-content" onclick="event.stopPropagation()">
@@ -1330,7 +1157,6 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Pricing Modal Functions
         function openPricingModal() {
             const pricingModal = document.getElementById('pricing-modal');
             pricingModal.classList.add('active');
@@ -1343,22 +1169,17 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Tab Switching Logic
         function switchPricingTab(tabId, btnElement) {
-            // Hide all tab panels
             const panels = document.querySelectorAll('.tab-panel');
             panels.forEach(panel => panel.classList.remove('active'));
 
-            // Deactivate all tab buttons
             const buttons = document.querySelectorAll('.pricing-tab-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
 
-            // Show active panel & active button
             document.getElementById(tabId).classList.add('active');
             btnElement.classList.add('active');
         }
 
-        // Close all modals on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeLightbox();

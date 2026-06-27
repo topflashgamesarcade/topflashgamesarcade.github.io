@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://topflashgamesarcade.github.io/sitemap.xml
