@@ -1,7 +1,6 @@
 # api/index.py
 from flask import Flask, request, jsonify
 from datetime import datetime
-import json
 
 app = Flask(__name__)
 
@@ -28,6 +27,6 @@ def activate_license():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
-# Vercel handler
+# Vercel requires this
 def handler(request, context):
     return app(request.environ, context)
