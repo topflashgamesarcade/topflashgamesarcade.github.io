@@ -1,4 +1,4 @@
-# api/index.py - Vercel Serverless Function
+# api/index.py
 from flask import Flask, request, jsonify
 from datetime import datetime
 import json
