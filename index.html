@@ -5,115 +5,262 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🛠 Maintenance | Top Flash Games Arcade</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ===== BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
             color: #fff;
             text-align: center;
-            padding: 20px;
+            padding: 1.5rem;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
-            padding: 3rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            padding: 2.5rem 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
         }
 
+        /* ===== ICON ===== */
         .icon-wrapper {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
             display: inline-block;
-            animation: float 3s ease-in-out infinite;
+            font-size: 4rem;
+            line-height: 1;
+            margin-bottom: 0.8rem;
+            animation: spin 4s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) scale(1.1);
+            }
+            100% {
+                transform: rotate(360deg) scale(1);
+            }
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
+        /* ===== TITLE ===== */
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #f7971e, #ffd200);
-            /* vendorPrefix fix */
-            -webkit-background-clip: text; 
-            background-clip: text;
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 0.4rem;
         }
 
-        .sub-text { color: rgba(255, 255, 255, 0.5); margin-bottom: 2rem; }
+        .sub-text {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+            margin-bottom: 0.2rem;
+        }
 
+        .sub-text small {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.85rem;
+        }
+
+        .divider {
+            width: 70px;
+            height: 2px;
+            margin: 1.5rem auto;
+            background: linear-gradient(90deg, transparent, #f7971e, transparent);
+            border-radius: 10px;
+        }
+
+        /* ===== TIMER GRID ===== */
         .timer-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 1rem;
+            margin: 1.8rem 0 0.5rem;
         }
 
         .timer-box {
-            background: rgba(0,0,0,0.3);
-            padding: 15px 5px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem 0.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(4px);
+            transition: 0.3s ease;
+        }
+        .timer-box:hover {
+            border-color: rgba(247, 151, 30, 0.3);
+            background: rgba(255, 255, 255, 0.06);
         }
 
-        .number {
-            display: block;
-            font-size: 2rem;
+        .timer-box .number {
+            font-size: 2.8rem;
             font-weight: 700;
-            /* vendorPrefix fix */
+            font-variant-numeric: tabular-nums;
+            background: linear-gradient(135deg, #fff 40%, #f7971e);
             -webkit-background-clip: text;
-            background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to bottom, #fff, #aaa);
+            line-height: 1.2;
+            letter-spacing: 1px;
         }
 
-        .label { font-size: 0.65rem; color: #666; text-transform: uppercase; margin-top: 5px; }
+        .timer-box .label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 4px;
+            font-weight: 600;
+        }
 
-        @media (max-width: 480px) {
-            .timer-grid { grid-template-columns: repeat(2, 1fr); }
+        /* ===== FOOTER ===== */
+        .footer-note {
+            margin-top: 2.2rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.12);
+            letter-spacing: 1.5px;
+        }
+        .footer-note span {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 500px) {
+            .container {
+                padding: 1.8rem 1.2rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .timer-grid {
+                gap: 0.6rem;
+            }
+            .timer-box .number {
+                font-size: 2rem;
+            }
+            .timer-box .label {
+                font-size: 0.6rem;
+            }
+            .icon-wrapper {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .timer-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="icon-wrapper">🚀</div>
-        <h1>Maintenance</h1>
-        <p class="sub-text">ကျွန်ုပ်တို့၏ ဝဘ်ဆိုက်ကို ပိုမိုကောင်းမွန်အောင် ပြင်ဆင်နေပါသည်။</p>
+        <!-- Spinning Icon -->
+        <div class="icon-wrapper">🔧</div>
 
+        <!-- Title -->
+        <h1>ပြုပြင်နေပါသည်</h1>
+        <p class="sub-text">
+            ပိုမိုကောင်းမွန်သော အတွေ့အကြုံအတွက် ပြင်ဆင်နေပါသည်
+        </p>
+        <p class="sub-text" style="font-size:0.9rem; color:rgba(255,255,255,0.25);">
+            ခေတ္တစောင့်ဆိုင်းပေးပါ။ မကြာမီ ပြန်လည်ဖွင့်လှစ်ပါမည်
+        </p>
+
+        <div class="divider"></div>
+
+        <!-- ===== COUNTDOWN TIMER ===== -->
         <div class="timer-grid" id="timerGrid">
-            <div class="timer-box"><span class="number" id="days">00</span><span class="label">ရက်</span></div>
-            <div class="timer-box"><span class="number" id="hours">00</span><span class="label">နာရီ</span></div>
-            <div class="timer-box"><span class="number" id="minutes">00</span><span class="label">မိနစ်</span></div>
-            <div class="timer-box"><span class="number" id="seconds">00</span><span class="label">စက္ကန့်</span></div>
+            <div class="timer-box">
+                <span class="number" id="days">00</span>
+                <span class="label">ရက်များ</span>
+            </div>
+            <div class="timer-box">
+                <span class="number" id="hours">00</span>
+                <span class="label">နာရီ</span>
+            </div>
+            <div class="timer-box">
+                <span class="number" id="minutes">00</span>
+                <span class="label">မိနစ်</span>
+            </div>
+            <div class="timer-box">
+                <span class="number" id="seconds">00</span>
+                <span class="label">စက္ကန့်</span>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            <span>✦</span> TOP FLASH GAMES ARCADE <span>✦</span>
         </div>
     </div>
 
+    <!-- ===== JAVASCRIPT COUNTDOWN LOGIC ===== -->
     <script>
-        const targetDate = new Date('July 11, 2026 23:59:59').getTime();
-        function updateTimer() {
-            const now = new Date().getTime();
-            const diff = targetDate - now;
-            if (diff <= 0) return;
-            
-            document.getElementById('days').textContent = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
-            document.getElementById('hours').textContent = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
-            document.getElementById('minutes').textContent = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-            document.getElementById('seconds').textContent = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
-        }
-        setInterval(updateTimer, 1000);
-        updateTimer();
+        (function() {
+            // =======================================================
+            // ★★ ဒီနေရာမှာ ပြန်ဖွင့်မယ့် ရက်စွဲကို ပြင်ထည့်ပါ ★★
+            // ဥပမာ - ၂၀၂၆ ခုနှစ်၊ ဇူလိုင်လ ၁၁ ရက်၊ ညနေ ၅ နာရီ မှာ ပြန်ဖွင့်ချင်ရင်...
+            // const targetDate = new Date('July 11, 2026 17:00:00').getTime();
+            // =======================================================
+            const targetDate = new Date('July 11, 2026 23:59:59').getTime(); // <-- ဒီရက်ကိုပြင်ပါ
+
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+
+            function padZero(num) {
+                return String(num).padStart(2, '0');
+            }
+
+            function updateTimer() {
+                const now = new Date().getTime();
+                let diff = targetDate - now;
+
+                // Timer ကုန်သွားရင် "ပြန်ဖွင့်ပြီ" လို့ပြမယ်
+                if (diff <= 0) {
+                    daysEl.textContent = '00';
+                    hoursEl.textContent = '00';
+                    minutesEl.textContent = '00';
+                    secondsEl.textContent = '00';
+                    // စာသားလေး ပြောင်းပေးမယ် (optional)
+                    document.querySelector('.sub-text').innerHTML = '🎉 ပြန်လည်ဖွင့်လှစ်ပြီးပါပြီ။ အားလုံးကိုကြိုဆိုပါတယ်!';
+                    return;
+                }
+
+                // ရက်၊ နာရီ၊ မိနစ်၊ စက္ကန့် တွက်ချက်ခြင်း
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                // UI မှာ ပြသခြင်း
+                daysEl.textContent = padZero(days);
+                hoursEl.textContent = padZero(hours);
+                minutesEl.textContent = padZero(minutes);
+                secondsEl.textContent = padZero(seconds);
+            }
+
+            // စက္ကန့်တိုင်း Update လုပ်မယ်
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        })();
     </script>
+
 </body>
 </html>
