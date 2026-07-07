@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Flash Game Arcade</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Pyidaungsu', sans-serif;
+            background: #0a0e17;
+            color: #e4e6eb;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+    background: linear-gradient(135deg, #f5af19, #f12711);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; /* 👈 ဒီတစ်ကြောင်းကို ထပ်ထည့်ပါ */
+}
+        .header p {
+            font-size: 1.1rem;
+            color: #a3b1cc;
+            margin-top: 6px;
+        }
+        .header .badge {
+            display: inline-block;
+            background: rgba(108, 92, 231, 0.2);
+            border: 1px solid #6c5ce7;
+            border-radius: 20px;
+            padding: 6px 18px;
+            font-size: 0.85rem;
+            color: #a29bfe;
+            margin-top: 10px;
+        }
+
+        /* ===== Search ===== */
+        .search-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 35px;
+        }
+        .search-wrap input {
+            width: 100%;
+            max-width: 500px;
+            padding: 14px 22px;
+            border: 2px solid #2d3748;
+            border-radius: 30px;
+            background: #151b29;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-wrap input::placeholder {
+            color: #64748b;
+        }
+        .search-wrap input:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+        }
+
+        /* ===== Grid ===== */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 28px;
+            justify-content: center;
+        }
+
+        /* ===== Card ===== */
+        .game-card {
+            background: #151b29;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid #2d3748;
+            transition: transform 0.25s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        .game-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            border-color: #6c5ce7;
+        }
+
+        .game-thumb {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #1a2236;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.1);
+            border-bottom: 1px solid #2d3748;
+            position: relative;
+            user-select: none;
+            overflow: hidden;
+        }
+        .game-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .game-thumb .auto-letter {
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.15);
+            text-transform: uppercase;
+        }
+        .game-thumb .emoji-badge {
+            position: absolute;
+            font-size: 2.8rem;
+            opacity: 0.2;
+            bottom: 8px;
+            right: 12px;
+        }
+
+        .game-info {
+            padding: 14px 16px 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .game-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #f1f5f9;
+        }
+        .game-meta {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            border: none;
+            color: white;
+            padding: 10px 0;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            margin-top: auto;
+            font-family: inherit;
+        }
+        .btn-download:hover {
+            background: linear-gradient(135deg, #5f3dc4, #8c7ae6);
+            transform: scale(1.02);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #2d3748;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        .no-result {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2rem; }
+            .game-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🎮 Flash Game Arcade</h1>
+        <p>Download classic Flash games – 100% free</p>
+        <span class="badge">📦 <span id="gameCount">0</span> games</span>
+    </div>
+
+    <div class="search-wrap">
+        <input type="text" id="searchInput" placeholder="🔍 Search games..." oninput="filterGames()">
+    </div>
+
+    <div class="game-grid" id="gameGrid"></div>
+
+    <div class="footer">
+        <p>© 2026 Top Flash Games Arcade &bull; For personal use only.</p>
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    // 🎮 ဒီနေရာကို Python Script က အလိုအလျောက် ပြင်ပေးမှာပါ
+    // ================================================================
+    const games = [
+    {
+        "name": "Angry Birds",
+        "file": "https://archive.org/download/my_flash_games_arcade/angry-birds.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Chess",
+        "file": "https://archive.org/download/my_flash_games_arcade/chess.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/chess.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Contra",
+        "file": "https://archive.org/download/my_flash_games_arcade/contra.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/contra.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Donkey Kong",
+        "file": "https://archive.org/download/my_flash_games_arcade/donkey-kong.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/donkey-kong.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Flash Football Game",
+        "file": "https://archive.org/download/my_flash_games_arcade/flash-football-game.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/flash-football-game.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Flash Tetris",
+        "file": "https://archive.org/download/my_flash_games_arcade/flash-tetris.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/flash-tetris.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "King Of Fighters",
+        "file": "https://archive.org/download/my_flash_games_arcade/king-of-fighters.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/king-of-fighters.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Kung Fu Remix",
+        "file": "https://archive.org/download/my_flash_games_arcade/kung-fu-remix.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/kung-fu-remix.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Metalslug",
+        "file": "https://archive.org/download/my_flash_games_arcade/metalslug.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/metalslug.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Minesweeper",
+        "file": "https://archive.org/download/my_flash_games_arcade/minesweeper.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/minesweeper.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Whack A Craft Minecraft Game",
+        "file": "https://archive.org/download/my_flash_games_arcade/whack-a-craft-minecraft-game.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/whack-a-craft-minecraft-game.png",
+        "emoji": "🎮"
+    }
+];
+
+    // ================================================================
+    // 🔧 Render Functions (အောက်က code ကို မထိပါနဲ့)
+    // ================================================================
+    let allGames = [...games];
+
+    function getColor(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const hue = Math.abs(hash % 360);
+        return `hsl(${hue}, 70%, 20%)`;
+    }
+
+    function renderGames(filtered) {
+        const grid = document.getElementById('gameGrid');
+        grid.innerHTML = '';
+        document.getElementById('gameCount').textContent = filtered.length;
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div class="no-result">😕 No games found.</div>`;
+            return;
+        }
+
+        filtered.forEach(game => {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+
+            // ===== Thumbnail =====
+            const thumb = document.createElement('div');
+            thumb.className = 'game-thumb';
+            thumb.style.background = getColor(game.name);
+
+            // ပုံရှိရင် ပုံပြမယ်
+            if (game.thumb && game.thumb.trim() !== '') {
+                const img = document.createElement('img');
+                img.src = game.thumb;
+                img.alt = game.name;
+                img.loading = 'lazy';
+                img.onerror = function() {
+                    // ပုံမပေါ်ရင် စာလုံးကြီးကို ပြန်ပြမယ်
+                    this.style.display = 'none';
+                    const letter = document.createElement('span');
+                    letter.className = 'auto-letter';
+                    letter.textContent = game.name.charAt(0).toUpperCase();
+                    thumb.appendChild(letter);
+                };
+                thumb.appendChild(img);
+            } else {
+                // ပုံမရှိရင် ပထမဆုံး စာလုံးကြီးကို ပြမယ်
+                const letter = document.createElement('span');
+                letter.className = 'auto-letter';
+                letter.textContent = game.name.charAt(0).toUpperCase();
+                thumb.appendChild(letter);
+            }
+
+            // Emoji badge (အမြဲတမ်းပါမယ်)
+            const emoji = document.createElement('span');
+            emoji.className = 'emoji-badge';
+            emoji.textContent = game.emoji || '🎮';
+            thumb.appendChild(emoji);
+
+            // ===== Info =====
+            const info = document.createElement('div');
+            info.className = 'game-info';
+
+            const nameEl = document.createElement('div');
+            nameEl.className = 'game-name';
+            nameEl.textContent = game.name;
+
+            const meta = document.createElement('div');
+            meta.className = 'game-meta';
+            meta.textContent = `📁 ${game.file.split('/').pop()}`;
+
+            const btn = document.createElement('a');
+            btn.className = 'btn-download';
+            btn.href = game.file;
+            btn.download = game.file.split('/').pop();
+            btn.textContent = '⬇ Download';
+
+            info.appendChild(nameEl);
+            info.appendChild(meta);
+            info.appendChild(btn);
+
+            card.appendChild(thumb);
+            card.appendChild(info);
+            grid.appendChild(card);
+        });
+    }
+
+    function filterGames() {
+        const q = document.getElementById('searchInput').value.toLowerCase().trim();
+        const filtered = allGames.filter(g => g.name.toLowerCase().includes(q));
+        renderGames(filtered);
+    }
+
+    // Initial load
+    allGames = [...games];
+    renderGames(allGames);
+</script>
+
+</body>
+</html>
