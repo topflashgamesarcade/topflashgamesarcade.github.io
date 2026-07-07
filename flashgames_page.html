@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Flash Game Arcade</title>
+    <style>
+        /* =========================================================
+                   1. RESET & GLOBAL
+                   ========================================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Pyidaungsu', system-ui, sans-serif;
+            background: #080c18;
+            color: #e4e6eb;
+            min-height: 100vh;
+            padding: 30px 20px;
+            /* ---- Neon Grid Background ---- */
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(108, 92, 231, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(245, 175, 25, 0.08) 0%, transparent 60%),
+                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255, 255, 255, 0.02) 39px, rgba(255, 255, 255, 0.02) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255, 255, 255, 0.02) 39px, rgba(255, 255, 255, 0.02) 40px);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* =========================================================
+                   2. HEADER / TITLE
+                   ========================================================= */
+        .header {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .header h1 {
+            font-size: 3.2rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            display: inline-block;
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            /* ---- Neon Glow ---- */
+            filter: drop-shadow(0 0 30px rgba(241, 39, 17, 0.25));
+            position: relative;
+        }
+
+        /* ခေါင်းစဉ်အောက်က မျဉ်းလှလေး */
+        .header h1::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            margin: 10px auto 0;
+            background: linear-gradient(90deg, transparent, #6c5ce7, #f5af19, transparent);
+            border-radius: 4px;
+        }
+
+        .header p {
+            font-size: 1.15rem;
+            color: #8896b8;
+            margin-top: 10px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: rgba(108, 92, 231, 0.15);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            border-radius: 30px;
+            padding: 8px 24px;
+            font-size: 0.85rem;
+            color: #c4b5fd;
+            margin-top: 14px;
+            font-weight: 600;
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.1);
+        }
+
+        /* =========================================================
+                   3. SEARCH BAR
+                   ========================================================= */
+        .search-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            max-width: 550px;
+            padding: 16px 28px;
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            border-radius: 50px;
+            background: rgba(21, 27, 41, 0.7);
+            backdrop-filter: blur(8px);
+            color: #f1f5f9;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-wrap input::placeholder {
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .search-wrap input:focus {
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15), 0 8px 30px rgba(0, 0, 0, 0.4);
+            transform: scale(1.01);
+        }
+
+        /* =========================================================
+                   4. GAME GRID
+                   ========================================================= */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 30px;
+            justify-content: center;
+        }
+
+        /* =========================================================
+                   5. GAME CARD (Glassmorphism + Neon Hover)
+                   ========================================================= */
+        .game-card {
+            background: rgba(21, 27, 41, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.01);
+            border-color: #6c5ce7;
+            box-shadow: 0 20px 60px rgba(108, 92, 231, 0.25), 0 0 40px rgba(108, 92, 231, 0.05);
+        }
+
+        /* ---- Thumbnail ---- */
+        .game-thumb {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            position: relative;
+            user-select: none;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        /* Hover ကျရင် ပုံကို ချဲ့ပြမယ် */
+        .game-card:hover .game-thumb img {
+            transform: scale(1.08);
+        }
+
+        .game-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .game-thumb .auto-letter {
+            font-size: 5rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.08);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+
+        .game-thumb .emoji-badge {
+            position: absolute;
+            font-size: 2.4rem;
+            opacity: 0.15;
+            bottom: 8px;
+            right: 14px;
+            transition: opacity 0.3s ease;
+        }
+        .game-card:hover .game-thumb .emoji-badge {
+            opacity: 0.3;
+        }
+
+        /* ---- Info ---- */
+        .game-info {
+            padding: 18px 18px 22px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #f8fafc;
+            letter-spacing: 0.2px;
+        }
+
+        .game-meta {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 14px;
+            font-weight: 500;
+            text-transform: lowercase;
+        }
+
+        /* ---- Download Button (Neon) ---- */
+        .btn-download {
+            background: linear-gradient(135deg, #6c5ce7, #8b5cf6);
+            border: none;
+            color: white;
+            padding: 12px 0;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            margin-top: auto;
+            font-family: inherit;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.25);
+        }
+
+        /* Hover ကျရင် Button ရွေ့ပြီး Glow လက်မယ် */
+        .btn-download:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: linear-gradient(135deg, #7c3aed, #6c5ce7);
+            box-shadow: 0 8px 30px rgba(108, 92, 231, 0.45);
+        }
+
+        /* Button ပေါ်က ရောင်စဉ်လှိုင်း (Shimmer Effect) */
+        .btn-download::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: skewX(-25deg);
+            transition: left 0.6s ease;
+        }
+        .btn-download:hover::before {
+            left: 100%;
+        }
+
+        /* =========================================================
+                   6. FOOTER
+                   ========================================================= */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            color: #475569;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+        }
+
+        .footer a {
+            color: #818cf8;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer a:hover {
+            color: #c4b5fd;
+        }
+
+        .no-result {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            color: #64748b;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        /* =========================================================
+                   7. RESPONSIVE
+                   ========================================================= */
+        @media (max-width: 640px) {
+            body {
+                padding: 16px 12px;
+            }
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            .header h1::after {
+                width: 50px;
+                height: 3px;
+            }
+            .game-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 18px;
+            }
+            .game-info {
+                padding: 12px 12px 16px;
+            }
+            .game-name {
+                font-size: 0.95rem;
+            }
+            .btn-download {
+                font-size: 0.8rem;
+                padding: 10px 0;
+                border-radius: 12px;
+            }
+            .search-wrap input {
+                padding: 14px 20px;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎮 Flash Game Arcade</h1>
+            <p>Download classic Flash games – 100% free</p>
+            <span class="badge">📦 <span id="gameCount">0</span> games</span>
+        </div>
+
+        <!-- Search -->
+        <div class="search-wrap">
+            <input type="text" id="searchInput" placeholder="🔍 Search games..." oninput="filterGames()">
+        </div>
+
+        <!-- Grid -->
+        <div class="game-grid" id="gameGrid"></div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 <a href="#" target="_blank">Top Flash Games Arcade</a> &bull; For personal use only.</p>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        // 🎮 GAME LIST (Auto-updated by Python script)
+        // ================================================================
+        const games = [
+            {
+                "name": "Angry Birds",
+                "file": "https://archive.org/download/my_flash_games_arcade/angry-birds.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds.png",
+                "emoji": "🎮"
+            },
+            {
+                "name": "Chess",
+                "file": "https://archive.org/download/my_flash_games_arcade/chess.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/chess.png",
+                "emoji": "🎮"
+            },
+            {
+                "name": "Contra",
+                "file": "https://archive.org/download/my_flash_games_arcade/contra.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/contra.png",
+                "emoji": "🎮"
+            },
+            {
+                "name": "Donkey Kong",
+                "file": "https://archive.org/download/my_flash_games_arcade/donkey-kong.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/donkey-kong.png",
+                "emoji": "🎮"
+            },
+            {
+                "name": "Flash Football Game",
+                "file": "https://archive.org/download/my_flash_games_arcade/flash-football-game.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/flash-football-game.png",
+                "emoji": "🎮"
+            },
+            {
+                "name": "Flash Tetris",
+                "file": "https://archive.org/download/my_flash_games_arcade/flash-tetris.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/flash-tetris.png",
+                "emoji": "🎮"
+            },
+            {
+                "name": "King Of Fighters",
+                "file": "https://archive.org/download/my_flash_games_arcade/king-of-fighters.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/king-of-fighters.png",
+                "emoji": "🎮"
+            },
+            {
+                "name": "Kung Fu Remix",
+                "file": "https://archive.org/download/my_flash_games_arcade/kung-fu-remix.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/kung-fu-remix.png",
+                "emoji": "🎮"
+            },
+            {
+                "name": "Metalslug",
+                "file": "https://archive.org/download/my_flash_games_arcade/metalslug.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/metalslug.png",
+                "emoji": "🎮"
+            },
+            {
+                "name": "Minesweeper",
+                "file": "https://archive.org/download/my_flash_games_arcade/minesweeper.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/minesweeper.png",
+                "emoji": "🎮"
+            },
+            {
+                "name": "Whack A Craft Minecraft Game",
+                "file": "https://archive.org/download/my_flash_games_arcade/whack-a-craft-minecraft-game.swf",
+                "thumb": "https://archive.org/download/my_flash_games_arcade/whack-a-craft-minecraft-game.png",
+                "emoji": "🎮"
+            }
+        ];
+
+        // ================================================================
+        // 🔧 RENDER ENGINE (Don't touch)
+        // ================================================================
+        let allGames = [...games];
+
+        function getColor(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const hue = Math.abs(hash % 360);
+            return `hsl(${hue}, 65%, 12%)`;
+        }
+
+        function renderGames(filtered) {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = '';
+            document.getElementById('gameCount').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="no-result">😕 No games found.</div>`;
+                return;
+            }
+
+            filtered.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+
+                // ---- Thumbnail ----
+                const thumb = document.createElement('div');
+                thumb.className = 'game-thumb';
+                thumb.style.background = getColor(game.name);
+
+                if (game.thumb && game.thumb.trim() !== '') {
+                    const img = document.createElement('img');
+                    img.src = game.thumb;
+                    img.alt = game.name;
+                    img.loading = 'lazy';
+                    img.onerror = function() {
+                        this.style.display = 'none';
+                        const letter = document.createElement('span');
+                        letter.className = 'auto-letter';
+                        letter.textContent = game.name.charAt(0).toUpperCase();
+                        thumb.appendChild(letter);
+                    };
+                    thumb.appendChild(img);
+                } else {
+                    const letter = document.createElement('span');
+                    letter.className = 'auto-letter';
+                    letter.textContent = game.name.charAt(0).toUpperCase();
+                    thumb.appendChild(letter);
+                }
+
+                const emoji = document.createElement('span');
+                emoji.className = 'emoji-badge';
+                emoji.textContent = game.emoji || '🎮';
+                thumb.appendChild(emoji);
+
+                // ---- Info ----
+                const info = document.createElement('div');
+                info.className = 'game-info';
+
+                const nameEl = document.createElement('div');
+                nameEl.className = 'game-name';
+                nameEl.textContent = game.name;
+
+                const meta = document.createElement('div');
+                meta.className = 'game-meta';
+                const fileName = game.file.split('/').pop();
+                meta.textContent = `📁 ${fileName}`;
+
+                const btn = document.createElement('a');
+                btn.className = 'btn-download';
+                btn.href = game.file;
+                btn.download = fileName;
+                btn.textContent = '⬇ Download';
+
+                info.appendChild(nameEl);
+                info.appendChild(meta);
+                info.appendChild(btn);
+
+                card.appendChild(thumb);
+                card.appendChild(info);
+                grid.appendChild(card);
+            });
+        }
+
+        function filterGames() {
+            const q = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filtered = allGames.filter(g => g.name.toLowerCase().includes(q));
+            renderGames(filtered);
+        }
+
+        // Initial load
+        allGames = [...games];
+        renderGames(allGames);
+    </script>
+
+</body>
+</html>
