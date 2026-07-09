@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 Flash Game Arcade</title>
+    <title>🎮 Flash Game Arcade – Premium Classics</title>
+
+    <!-- Google Fonts + FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         /* =========================================================
-                   1. RESET & GLOBAL
+                   1. RESET & VARIABLES
                    ========================================================= */
         * {
             margin: 0;
@@ -14,203 +21,352 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-deep: #070b15;
+            --bg-surface: #0f172a;
+            --bg-card: #1a2338;
+            --bg-card-hover: #212d48;
+            --border-subtle: rgba(255, 255, 255, 0.05);
+            --border-glow: rgba(124, 58, 237, 0.4);
+
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #22d3ee;
+            --accent-pink: #ec4899;
+            --accent-gradient: linear-gradient(135deg, #8b5cf6, #22d3ee);
+
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.15);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 8px;
+            --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
         body {
-            font-family: 'Segoe UI', 'Pyidaungsu', system-ui, sans-serif;
-            background: #080c18;
-            color: #e4e6eb;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 30px 20px;
-            /* ---- Neon Grid Background ---- */
+            padding: 0;
+            margin: 0;
             background-image:
-                radial-gradient(ellipse at 20% 50%, rgba(108, 92, 231, 0.15) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 50%, rgba(245, 175, 25, 0.08) 0%, transparent 60%),
-                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255, 255, 255, 0.02) 39px, rgba(255, 255, 255, 0.02) 40px),
-                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255, 255, 255, 0.02) 39px, rgba(255, 255, 255, 0.02) 40px);
+                radial-gradient(ellipse at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 90% 80%, rgba(34, 211, 238, 0.05) 0%, transparent 50%),
+                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255, 255, 255, 0.01) 39px, rgba(255, 255, 255, 0.01) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255, 255, 255, 0.01) 39px, rgba(255, 255, 255, 0.01) 40px);
             background-attachment: fixed;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1360px;
             margin: 0 auto;
-            position: relative;
-            z-index: 2;
+            padding: 0 28px;
         }
 
         /* =========================================================
-                   2. HEADER / TITLE
+                   2. NAVIGATION (with HOME BUTTON)
                    ========================================================= */
-        .header {
-            text-align: center;
-            margin-bottom: 45px;
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
-        .header h1 {
-            font-size: 3.2rem;
-            font-weight: 900;
-            letter-spacing: 1.5px;
-            display: inline-block;
-            background: linear-gradient(135deg, #f5af19, #f12711);
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .nav-home {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            padding: 8px 16px 8px 14px;
+            border-radius: 40px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-home i {
+            font-size: 1rem;
+            color: var(--accent-cyan);
+            transition: var(--transition);
+        }
+
+        .nav-home:hover {
+            background: rgba(139, 92, 246, 0.08);
+            border-color: var(--accent-purple);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.05);
+        }
+
+        .nav-home:hover i {
+            color: var(--accent-purple);
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            /* ---- Neon Glow ---- */
-            filter: drop-shadow(0 0 30px rgba(241, 39, 17, 0.25));
-            position: relative;
         }
 
-        /* ခေါင်းစဉ်အောက်က မျဉ်းလှလေး */
-        .header h1::after {
-            content: '';
-            display: block;
-            width: 80px;
-            height: 4px;
-            margin: 10px auto 0;
-            background: linear-gradient(90deg, transparent, #6c5ce7, #f5af19, transparent);
-            border-radius: 4px;
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        .header p {
-            font-size: 1.15rem;
-            color: #8896b8;
-            margin-top: 10px;
-            font-weight: 400;
-            letter-spacing: 0.3px;
-        }
-
-        .header .badge {
-            display: inline-block;
-            background: rgba(108, 92, 231, 0.15);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(108, 92, 231, 0.3);
-            border-radius: 30px;
-            padding: 8px 24px;
-            font-size: 0.85rem;
-            color: #c4b5fd;
-            margin-top: 14px;
+        .nav-badge {
+            background: rgba(34, 211, 238, 0.06);
+            border: 1px solid rgba(34, 211, 238, 0.1);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.7rem;
             font-weight: 600;
-            box-shadow: 0 0 20px rgba(108, 92, 231, 0.1);
+            color: var(--accent-cyan);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         /* =========================================================
-                   3. SEARCH BAR
+                   3. HERO SECTION
                    ========================================================= */
-        .search-wrap {
+        .hero {
+            text-align: center;
+            padding: 28px 0 36px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3.4rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 .highlight {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 580px;
+            margin: 0 auto 24px;
+            line-height: 1.7;
+        }
+
+        .hero-stats {
             display: flex;
             justify-content: center;
-            margin-bottom: 40px;
+            align-items: center;
+            gap: 28px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
 
-        .search-wrap input {
+        .hero-stats span i {
+            color: var(--accent-purple);
+            margin-right: 6px;
+        }
+        .hero-stats span strong {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* ---- Search Bar (Hero integrated) ---- */
+        .search-wrapper {
+            max-width: 560px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+
+        .search-wrapper input {
             width: 100%;
-            max-width: 550px;
-            padding: 16px 28px;
-            border: 2px solid rgba(255, 255, 255, 0.06);
-            border-radius: 50px;
-            background: rgba(21, 27, 41, 0.7);
-            backdrop-filter: blur(8px);
-            color: #f1f5f9;
+            padding: 16px 20px 16px 52px;
+            border: 2px solid var(--border-subtle);
+            border-radius: 60px;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
             font-size: 1rem;
+            font-family: inherit;
             outline: none;
-            transition: all 0.4s ease;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+            box-shadow: var(--shadow-card);
         }
 
-        .search-wrap input::placeholder {
-            color: #64748b;
+        .search-wrapper input::placeholder {
+            color: var(--text-muted);
             font-weight: 400;
         }
 
-        .search-wrap input:focus {
-            border-color: #6c5ce7;
-            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15), 0 8px 30px rgba(0, 0, 0, 0.4);
+        .search-wrapper input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1), var(--shadow-card);
             transform: scale(1.01);
         }
 
         /* =========================================================
                    4. GAME GRID
                    ========================================================= */
+        .games-section {
+            margin-top: 40px;
+            padding-bottom: 40px;
+        }
+
         .game-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-            gap: 30px;
-            justify-content: center;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 28px;
         }
 
         /* =========================================================
-                   5. GAME CARD (Glassmorphism + Neon Hover)
+                   5. GAME CARD (Premium Redesign)
                    ========================================================= */
         .game-card {
-            background: rgba(21, 27, 41, 0.6);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-subtle);
+            transition: var(--transition);
             display: flex;
             flex-direction: column;
+            box-shadow: var(--shadow-card);
+            position: relative;
+        }
+
+        /* Glow line on top */
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 2;
         }
 
         .game-card:hover {
-            transform: translateY(-10px) scale(1.01);
-            border-color: #6c5ce7;
-            box-shadow: 0 20px 60px rgba(108, 92, 231, 0.25), 0 0 40px rgba(108, 92, 231, 0.05);
+            transform: translateY(-10px);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-glow), var(--shadow-card);
+            background: var(--bg-card-hover);
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
         }
 
         /* ---- Thumbnail ---- */
         .game-thumb {
             width: 100%;
             aspect-ratio: 16 / 9;
-            background: #111827;
+            background: #0f172a;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4.5rem;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.06);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             position: relative;
-            user-select: none;
             overflow: hidden;
-            transition: all 0.4s ease;
-        }
-
-        /* Hover ကျရင် ပုံကို ချဲ့ပြမယ် */
-        .game-card:hover .game-thumb img {
-            transform: scale(1.08);
+            border-bottom: 1px solid var(--border-subtle);
         }
 
         .game-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
             transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        .game-thumb .auto-letter {
-            font-size: 5rem;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.08);
+        .game-card:hover .game-thumb img {
+            transform: scale(1.06);
+        }
+
+        .game-thumb .fallback {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+        }
+
+        .game-thumb .fallback .emoji {
+            font-size: 4.5rem;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.2));
+        }
+
+        .game-thumb .fallback .letter {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.04);
             text-transform: uppercase;
+            margin-top: -6px;
             letter-spacing: 4px;
         }
 
-        .game-thumb .emoji-badge {
+        /* Type Badge on Thumbnail */
+        .game-thumb .type-badge {
             position: absolute;
-            font-size: 2.4rem;
-            opacity: 0.15;
-            bottom: 8px;
-            right: 14px;
-            transition: opacity 0.3s ease;
-        }
-        .game-card:hover .game-thumb .emoji-badge {
-            opacity: 0.3;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            border: 1px solid rgba(34, 211, 238, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* ---- Info ---- */
         .game-info {
-            padding: 18px 18px 22px;
+            padding: 18px 20px 22px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -218,54 +374,79 @@
 
         .game-name {
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
+            color: var(--text-primary);
             margin-bottom: 2px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: #f8fafc;
-            letter-spacing: 0.2px;
         }
 
         .game-meta {
-            font-size: 0.75rem;
-            color: #64748b;
+            font-size: 0.7rem;
+            color: var(--text-muted);
             margin-bottom: 14px;
-            font-weight: 500;
-            text-transform: lowercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        /* ---- Download Button (Neon) ---- */
+        .game-meta .file-name {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            font-family: monospace;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ---- Download Button (Premium) ---- */
         .btn-download {
-            background: linear-gradient(135deg, #6c5ce7, #8b5cf6);
+            background: var(--accent-gradient);
             border: none;
             color: white;
-            padding: 12px 0;
-            border-radius: 16px;
+            padding: 14px 0;
+            border-radius: var(--radius-md);
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             text-align: center;
             text-decoration: none;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             margin-top: auto;
             font-family: inherit;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.25);
         }
 
-        /* Hover ကျရင် Button ရွေ့ပြီး Glow လက်မယ် */
+        .btn-download i {
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
         .btn-download:hover {
-            transform: translateY(-3px) scale(1.02);
-            background: linear-gradient(135deg, #7c3aed, #6c5ce7);
-            box-shadow: 0 8px 30px rgba(108, 92, 231, 0.45);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.45);
+            filter: brightness(1.05);
         }
 
-        /* Button ပေါ်က ရောင်စဉ်လှိုင်း (Shimmer Effect) */
-        .btn-download::before {
+        .btn-download:hover i {
+            transform: translateY(-2px);
+        }
+
+        /* Shimmer effect */
+        .btn-download::after {
             content: '';
             position: absolute;
             top: 0;
@@ -276,7 +457,8 @@
             transform: skewX(-25deg);
             transition: left 0.6s ease;
         }
-        .btn-download:hover::before {
+
+        .btn-download:hover::after {
             left: 100%;
         }
 
@@ -285,97 +467,229 @@
                    ========================================================= */
         .footer {
             text-align: center;
-            margin-top: 60px;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            color: #475569;
-            font-size: 0.85rem;
-            letter-spacing: 0.3px;
+            margin-top: 40px;
+            padding: 32px 0 24px;
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-size: 0.8rem;
         }
 
         .footer a {
-            color: #818cf8;
+            color: var(--accent-purple);
             text-decoration: none;
-            transition: color 0.2s;
+            font-weight: 500;
+            transition: var(--transition);
         }
+
         .footer a:hover {
-            color: #c4b5fd;
+            color: var(--accent-cyan);
         }
 
         .no-result {
             grid-column: 1 / -1;
             text-align: center;
             padding: 80px 20px;
-            color: #64748b;
-            font-size: 1.3rem;
+            color: var(--text-muted);
+            font-size: 1.2rem;
             font-weight: 500;
+        }
+
+        .no-result i {
+            font-size: 2.4rem;
+            display: block;
+            margin-bottom: 12px;
+            color: var(--accent-purple);
+            opacity: 0.4;
         }
 
         /* =========================================================
                    7. RESPONSIVE
                    ========================================================= */
-        @media (max-width: 640px) {
-            body {
-                padding: 16px 12px;
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
             }
-            .header h1 {
+
+            .navbar {
+                padding: 14px 0 12px;
+            }
+
+            .nav-home span {
+                display: none;
+            }
+            .nav-home {
+                padding: 8px 12px;
+            }
+
+            .logo {
+                font-size: 1.1rem;
+            }
+
+            .nav-badge {
+                font-size: 0.6rem;
+                padding: 4px 12px;
+            }
+
+            .hero h1 {
                 font-size: 2.2rem;
             }
-            .header h1::after {
-                width: 50px;
-                height: 3px;
+
+            .hero p {
+                font-size: 0.95rem;
             }
+
+            .hero-stats {
+                gap: 16px;
+                font-size: 0.75rem;
+            }
+
+            .search-wrapper input {
+                padding: 14px 16px 14px 48px;
+                font-size: 0.9rem;
+            }
+
             .game-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
                 gap: 18px;
             }
+
             .game-info {
-                padding: 12px 12px 16px;
+                padding: 14px 14px 18px;
             }
+
             .game-name {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
             }
+
             .btn-download {
                 font-size: 0.8rem;
-                padding: 10px 0;
-                border-radius: 12px;
+                padding: 12px 0;
+                border-radius: var(--radius-sm);
             }
-            .search-wrap input {
-                padding: 14px 20px;
-                font-size: 0.95rem;
+
+            .game-thumb .type-badge {
+                font-size: 0.5rem;
+                padding: 2px 10px;
+                bottom: 8px;
+                left: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .game-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .game-thumb .fallback .emoji {
+                font-size: 3rem;
+            }
+            .game-meta .file-name {
+                max-width: 80px;
+                font-size: 0.55rem;
             }
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🎮 Flash Game Arcade</h1>
-            <p>Download classic Flash games – 100% free</p>
-            <span class="badge">📦 <span id="gameCount">0</span> games</span>
-        </div>
 
-        <!-- Search -->
-        <div class="search-wrap">
-            <input type="text" id="searchInput" placeholder="🔍 Search games..." oninput="filterGames()">
-        </div>
+        <!-- ============================================================
+        NAVIGATION WITH HOME BUTTON
+        ============================================================ -->
+        <nav class="navbar">
+            <div class="nav-left">
+                <!-- ✅ HOME BUTTON (links to main site) -->
+                <a href="https://topflashgamesarcade.github.io/" class="nav-home" title="Back to Top Flash Games Arcade Home">
+                    <i class="fas fa-house"></i>
+                    <span>Home</span>
+                </a>
+                <span class="logo">🎮 Flash Arcade</span>
+            </div>
+            <div class="nav-right">
+                <span class="nav-badge"><i class="far fa-gem"></i> Premium Archive</span>
+            </div>
+        </nav>
 
-        <!-- Grid -->
-        <div class="game-grid" id="gameGrid"></div>
+        <!-- ============================================================
+        HERO + SEARCH
+        ============================================================ -->
+        <section class="hero">
+            <h1>
+                Classic <span class="highlight">Flash</span> Games<br>
+                <span style="font-size:0.7em; background: linear-gradient(135deg, #ec4899, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Relive the 90s &amp; 2000s</span>
+            </h1>
+            <p>Download timeless retro games instantly. 100% free, offline-ready, and curated for nostalgia.</p>
 
-        <!-- Footer -->
-        <div class="footer">
-            <p>© 2026 <a href="#" target="_blank">Top Flash Games Arcade</a> &bull; For personal use only.</p>
-        </div>
+            <div class="hero-stats">
+                <span><i class="fas fa-gamepad"></i> <strong id="gameCount">0</strong> Games</span>
+                <span><i class="fas fa-download"></i> Direct SWF</span>
+                <span><i class="fas fa-shield-alt"></i> No Ads</span>
+            </div>
+
+            <!-- Search -->
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search games by name..." oninput="filterGames()">
+            </div>
+        </section>
+
+        <!-- ============================================================
+        GAME GRID
+        ============================================================ -->
+        <section class="games-section">
+            <div class="game-grid" id="gameGrid"></div>
+        </section>
+
+        <!-- ============================================================
+        FOOTER
+        ============================================================ -->
+        <footer class="footer">
+            <p>
+                © 2026 <a href="https://topflashgamesarcade.github.io/" target="_blank">Top Flash Games Arcade</a> &bull;
+                For educational &amp; personal preservation use only.
+                <br><span style="font-size:0.7rem; color: var(--text-muted);">All original content belongs to their respective copyright holders.</span>
+            </p>
+        </footer>
+
     </div>
 
+    <!-- ============================================================
+    SCRIPT (Game Data + Render Engine)
+    ============================================================ -->
     <script>
         // ================================================================
-        // 🎮 GAME LIST (Auto-updated by Python script)
+        // 🎮 GAME LIST
         // ================================================================
         const games = [
+    {
+        "name": "100Men",
+        "file": "https://archive.org/download/my_flash_games_arcade/100men.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/100men.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "13 Days In Hell",
+        "file": "https://archive.org/download/my_flash_games_arcade/13 Days in Hell.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/13 Days in Hell.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "1Balloon",
+        "file": "https://archive.org/download/my_flash_games_arcade/1balloon.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/1balloon.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "3 Foot Ninja Ii",
+        "file": "https://archive.org/download/my_flash_games_arcade/3 foot ninja II.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/3 foot ninja II.png",
+        "emoji": "🎮"
+    },
     {
         "name": "333",
         "file": "https://archive.org/download/my_flash_games_arcade/333.swf",
@@ -413,9 +727,21 @@
         "emoji": "🎮"
     },
     {
+        "name": "3Foot Ninja Chapter 1 The Lost Scrolls",
+        "file": "https://archive.org/download/my_flash_games_arcade/3FOOT NINJA CHAPTER 1 THE LOST SCROLLS.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/3FOOT NINJA CHAPTER 1 THE LOST SCROLLS.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "4 Wheel Madness",
         "file": "https://archive.org/download/my_flash_games_arcade/4 Wheel Madness.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/4 Wheel Madness.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "9Ball",
+        "file": "https://archive.org/download/my_flash_games_arcade/9BALL.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/9BALL.png",
         "emoji": "🎮"
     },
     {
@@ -425,9 +751,39 @@
         "emoji": "🎮"
     },
     {
+        "name": "Abba'S On A Mission",
+        "file": "https://archive.org/download/my_flash_games_arcade/ABBA'S ON A MISSION.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/ABBA'S ON A MISSION.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Acci",
         "file": "https://archive.org/download/my_flash_games_arcade/Acci.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Acci.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Achilles",
+        "file": "https://archive.org/download/my_flash_games_arcade/Achilles.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Achilles.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Age Of War 1",
+        "file": "https://archive.org/download/my_flash_games_arcade/AGE OF WAR 1.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/AGE OF WAR 1.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Age Of War 2",
+        "file": "https://archive.org/download/my_flash_games_arcade/AGE OF WAR 2.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/AGE OF WAR 2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Aggressive Attack",
+        "file": "https://archive.org/download/my_flash_games_arcade/Aggressive Attack.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Aggressive Attack.png",
         "emoji": "🎮"
     },
     {
@@ -449,9 +805,69 @@
         "emoji": "🎮"
     },
     {
+        "name": "Alex In Danger",
+        "file": "https://archive.org/download/my_flash_games_arcade/ALEX in DANGER.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/ALEX in DANGER.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Alienhominid",
+        "file": "https://archive.org/download/my_flash_games_arcade/Alienhominid.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Alienhominid.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Allythealien",
+        "file": "https://archive.org/download/my_flash_games_arcade/allythealien.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/allythealien.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Ameoba",
+        "file": "https://archive.org/download/my_flash_games_arcade/Ameoba.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Ameoba.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Angel Differences Bbl",
+        "file": "https://archive.org/download/my_flash_games_arcade/angel_differences_Bbl.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/angel_differences_Bbl.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Angry Birds Bad Pigs",
+        "file": "https://archive.org/download/my_flash_games_arcade/Angry Birds Bad Pigs.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Angry Birds Bad Pigs.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Angry Birds",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Animator Vs  Animation By Alanbecker",
+        "file": "https://archive.org/download/my_flash_games_arcade/Animator_vs__Animation_by_alanbecker.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Animator_vs__Animation_by_alanbecker.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Aqua Slug",
+        "file": "https://archive.org/download/my_flash_games_arcade/Aqua Slug.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Aqua Slug.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Army Swat",
+        "file": "https://archive.org/download/my_flash_games_arcade/ARMY SWAT.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/ARMY SWAT.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Arny'S Battle Carribeans",
+        "file": "https://archive.org/download/my_flash_games_arcade/ARNY'S BATTLE CARRIBEANS.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/ARNY'S BATTLE CARRIBEANS.png",
         "emoji": "🎮"
     },
     {
@@ -461,9 +877,39 @@
         "emoji": "🎮"
     },
     {
+        "name": "Avenue Of Death",
+        "file": "https://archive.org/download/my_flash_games_arcade/Avenue of Death.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Avenue of Death.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Babbie",
         "file": "https://archive.org/download/my_flash_games_arcade/Babbie.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Babbie.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Bakeriesef",
+        "file": "https://archive.org/download/my_flash_games_arcade/bakeriesEF.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/bakeriesEF.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Balling",
+        "file": "https://archive.org/download/my_flash_games_arcade/Balling.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Balling.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Balloon Hunter [From Www.Metacafe.Com]",
+        "file": "https://archive.org/download/my_flash_games_arcade/Balloon Hunter [from www.metacafe.com].swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Balloon Hunter [from www.metacafe.com].png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Balloony",
+        "file": "https://archive.org/download/my_flash_games_arcade/balloony.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/balloony.png",
         "emoji": "🎮"
     },
     {
@@ -473,9 +919,111 @@
         "emoji": "🎮"
     },
     {
+        "name": "Battle For Gondor",
+        "file": "https://archive.org/download/my_flash_games_arcade/Battle for Gondor.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Battle for Gondor.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Battleships",
+        "file": "https://archive.org/download/my_flash_games_arcade/battleships.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/battleships.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Be The Slayer",
+        "file": "https://archive.org/download/my_flash_games_arcade/Be The Slayer.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Be The Slayer.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Bed Bug'S Puzzle",
+        "file": "https://archive.org/download/my_flash_games_arcade/BED BUG'S PUZZLE.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/BED BUG'S PUZZLE.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Ben 10   Blockade Blitz",
+        "file": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Blockade Blitz.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Blockade Blitz.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Ben 10   Hero Matrix",
+        "file": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Hero Matrix.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Hero Matrix.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Ben 10   Powersplash",
+        "file": "https://archive.org/download/my_flash_games_arcade/Ben 10 - powersplash.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Ben 10 - powersplash.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Ben 10   Savage Pursuit",
+        "file": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Savage Pursuit.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Savage Pursuit.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Ben 10 Critical Impact",
+        "file": "https://archive.org/download/my_flash_games_arcade/Ben 10 Critical Impact.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Ben 10 Critical Impact.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Billiards Master Pro",
+        "file": "https://archive.org/download/my_flash_games_arcade/BILLIARDS MASTER PRO.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/BILLIARDS MASTER PRO.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Billiarels",
+        "file": "https://archive.org/download/my_flash_games_arcade/Billiarels.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Billiarels.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Blastem [From Www.Metacafe.Com]",
+        "file": "https://archive.org/download/my_flash_games_arcade/blastem [from www.metacafe.com].swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/blastem [from www.metacafe.com].png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Blobs Offsite",
+        "file": "https://archive.org/download/my_flash_games_arcade/Blobs Offsite.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Blobs Offsite.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Bloody Day",
+        "file": "https://archive.org/download/my_flash_games_arcade/Bloody Day.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Bloody Day.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Blox",
+        "file": "https://archive.org/download/my_flash_games_arcade/BLOX.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/BLOX.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Bloxorz",
+        "file": "https://archive.org/download/my_flash_games_arcade/BLOXORZ.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/BLOXORZ.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Bobobomb",
         "file": "https://archive.org/download/my_flash_games_arcade/bobobomb.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bobobomb.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Bombay Taxi",
+        "file": "https://archive.org/download/my_flash_games_arcade/BOMBAY TAXI.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/BOMBAY TAXI.png",
         "emoji": "🎮"
     },
     {
@@ -485,9 +1033,75 @@
         "emoji": "🎮"
     },
     {
+        "name": "Bongo Balls",
+        "file": "https://archive.org/download/my_flash_games_arcade/Bongo Balls.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Bongo Balls.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Boomboom",
         "file": "https://archive.org/download/my_flash_games_arcade/boomboom.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/boomboom.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Bowmaster Prelude",
+        "file": "https://archive.org/download/my_flash_games_arcade/Bowmaster prelude.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Bowmaster prelude.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Bubble Shooter",
+        "file": "https://archive.org/download/my_flash_games_arcade/BUBBLE SHOOTER.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/BUBBLE SHOOTER.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Bubble Trouble",
+        "file": "https://archive.org/download/my_flash_games_arcade/BUBBLE TROUBLE.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/BUBBLE TROUBLE.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Buggyrun",
+        "file": "https://archive.org/download/my_flash_games_arcade/buggyrun.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/buggyrun.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Buzzer",
+        "file": "https://archive.org/download/my_flash_games_arcade/buzzer.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/buzzer.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Cat A Pult",
+        "file": "https://archive.org/download/my_flash_games_arcade/Cat-A-Pult.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Cat-A-Pult.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Cat Uac Catapult Ii",
+        "file": "https://archive.org/download/my_flash_games_arcade/CAT-UAC CATAPULT II.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/CAT-UAC CATAPULT II.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Caveman Game",
+        "file": "https://archive.org/download/my_flash_games_arcade/caveman game.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/caveman game.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Cg Mario Level Pack",
+        "file": "https://archive.org/download/my_flash_games_arcade/CG MARIO LEVEL PACK.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/CG MARIO LEVEL PACK.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Cgi Mario Levels Pack",
+        "file": "https://archive.org/download/my_flash_games_arcade/cgi mario levels pack.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/cgi mario levels pack.png",
         "emoji": "🎮"
     },
     {
@@ -497,15 +1111,165 @@
         "emoji": "🎮"
     },
     {
+        "name": "Clone Adoodledoo",
+        "file": "https://archive.org/download/my_flash_games_arcade/Clone-ADoodleDoo.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Clone-ADoodleDoo.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Contra",
         "file": "https://archive.org/download/my_flash_games_arcade/contra.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/contra.png",
         "emoji": "🎮"
     },
     {
+        "name": "Crazy Flasher 3",
+        "file": "https://archive.org/download/my_flash_games_arcade/Crazy Flasher 3.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Crazy Flasher 3.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Crush The Castle",
+        "file": "https://archive.org/download/my_flash_games_arcade/Crush the Castle.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Crush the Castle.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Crypt Raider2003",
+        "file": "https://archive.org/download/my_flash_games_arcade/CRYPT RAIDER2003.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/CRYPT RAIDER2003.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Cyber Uf2",
+        "file": "https://archive.org/download/my_flash_games_arcade/Cyber UF2.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Cyber UF2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Cybermice",
+        "file": "https://archive.org/download/my_flash_games_arcade/cybermice.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/cybermice.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Cycle Racers",
+        "file": "https://archive.org/download/my_flash_games_arcade/Cycle Racers.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Cycle Racers.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Dead Frontier   Night One",
+        "file": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night One.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night One.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Dead Frontier   Night Three",
+        "file": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night Three.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night Three.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Dead Frontier   Night Two",
+        "file": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night Two.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night Two.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Deluxe Pool Deluxepool Miniclip",
+        "file": "https://archive.org/download/my_flash_games_arcade/deluxe pool deluxepool miniclip.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/deluxe pool deluxepool miniclip.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Dirt Bike",
+        "file": "https://archive.org/download/my_flash_games_arcade/Dirt Bike.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Dirt Bike.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Dog & Cat Game",
+        "file": "https://archive.org/download/my_flash_games_arcade/Dog & Cat Game.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Dog & Cat Game.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Donkey Kong",
         "file": "https://archive.org/download/my_flash_games_arcade/donkey-kong.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/donkey-kong.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Doodle",
+        "file": "https://archive.org/download/my_flash_games_arcade/doodle.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/doodle.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Doom",
+        "file": "https://archive.org/download/my_flash_games_arcade/DOOM.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/DOOM.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Drakojan Skies   Mission 2",
+        "file": "https://archive.org/download/my_flash_games_arcade/Drakojan Skies - Mission 2.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Drakojan Skies - Mission 2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Draw Play 2",
+        "file": "https://archive.org/download/my_flash_games_arcade/Draw Play 2.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Draw Play 2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Drive The Rabbit Crazy",
+        "file": "https://archive.org/download/my_flash_games_arcade/Drive The Rabbit Crazy.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Drive The Rabbit Crazy.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Earn To Die 2 Exodus",
+        "file": "https://archive.org/download/my_flash_games_arcade/Earn to Die 2 Exodus.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Earn to Die 2 Exodus.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Escape",
+        "file": "https://archive.org/download/my_flash_games_arcade/escape.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/escape.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Exoforse [From Www.Metacafe.Com]",
+        "file": "https://archive.org/download/my_flash_games_arcade/Exoforse [from www.metacafe.com].swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Exoforse [from www.metacafe.com].png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Find Different Point Findgames",
+        "file": "https://archive.org/download/my_flash_games_arcade/FIND DIFFERENT POINT-FINDGAMES.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/FIND DIFFERENT POINT-FINDGAMES.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Fireworks",
+        "file": "https://archive.org/download/my_flash_games_arcade/fireworks.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/fireworks.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Fit To Be Pie'D",
+        "file": "https://archive.org/download/my_flash_games_arcade/FIT TO BE PIE'D.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/FIT TO BE PIE'D.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Flash Chess Iii",
+        "file": "https://archive.org/download/my_flash_games_arcade/Flash Chess III.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Flash Chess III.png",
         "emoji": "🎮"
     },
     {
@@ -521,9 +1285,123 @@
         "emoji": "🎮"
     },
     {
+        "name": "Flashblox",
+        "file": "https://archive.org/download/my_flash_games_arcade/Flashblox.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Flashblox.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Flashman",
+        "file": "https://archive.org/download/my_flash_games_arcade/Flashman.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Flashman.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Food Bash",
+        "file": "https://archive.org/download/my_flash_games_arcade/FOOD BASH.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/FOOD BASH.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Frisbee Dog",
+        "file": "https://archive.org/download/my_flash_games_arcade/Frisbee Dog.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Frisbee Dog.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Frog Mania",
+        "file": "https://archive.org/download/my_flash_games_arcade/Frog Mania.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Frog Mania.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Ghosty Ghosty",
+        "file": "https://archive.org/download/my_flash_games_arcade/Ghosty Ghosty.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Ghosty Ghosty.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Ghost Rider Demon Duel",
+        "file": "https://archive.org/download/my_flash_games_arcade/GHOST_RIDER_Demon_Duel.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/GHOST_RIDER_Demon_Duel.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Girl & Boy",
+        "file": "https://archive.org/download/my_flash_games_arcade/girl & boy.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/girl & boy.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Glopjs",
+        "file": "https://archive.org/download/my_flash_games_arcade/GlopJS.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/GlopJS.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Gold Miner",
         "file": "https://archive.org/download/my_flash_games_arcade/Gold Miner.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Gold Miner.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Golf 2001",
+        "file": "https://archive.org/download/my_flash_games_arcade/Golf 2001.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Golf 2001.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Golf Master 3D",
+        "file": "https://archive.org/download/my_flash_games_arcade/Golf Master 3D.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Golf Master 3D.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Governor Of Poker",
+        "file": "https://archive.org/download/my_flash_games_arcade/GOVERNOR OF POKER.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/GOVERNOR OF POKER.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Gun Knight",
+        "file": "https://archive.org/download/my_flash_games_arcade/GUN KNIGHT.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/GUN KNIGHT.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Gunblood",
+        "file": "https://archive.org/download/my_flash_games_arcade/GUNBLOOD.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/GUNBLOOD.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Gunny Bunny Ver2",
+        "file": "https://archive.org/download/my_flash_games_arcade/Gunny Bunny Ver2.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Gunny Bunny Ver2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Gunrun",
+        "file": "https://archive.org/download/my_flash_games_arcade/GUNRUN.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/GUNRUN.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Gunslinger",
+        "file": "https://archive.org/download/my_flash_games_arcade/GunSlinger.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/GunSlinger.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Happywheels",
+        "file": "https://archive.org/download/my_flash_games_arcade/HAPPYWHEELS.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/HAPPYWHEELS.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Hexxagon",
+        "file": "https://archive.org/download/my_flash_games_arcade/HEXXAGON.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/HEXXAGON.png",
         "emoji": "🎮"
     },
     {
@@ -533,15 +1411,69 @@
         "emoji": "🎮"
     },
     {
+        "name": "Horse Show Jumping",
+        "file": "https://archive.org/download/my_flash_games_arcade/Horse Show Jumping.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Horse Show Jumping.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "King Of Fighters",
         "file": "https://archive.org/download/my_flash_games_arcade/king-of-fighters.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/king-of-fighters.png",
         "emoji": "🎮"
     },
     {
+        "name": "Kingdomrush",
+        "file": "https://archive.org/download/my_flash_games_arcade/KINGDOMRUSH.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/KINGDOMRUSH.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Kung Fu Remix",
         "file": "https://archive.org/download/my_flash_games_arcade/kung-fu-remix.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/kung-fu-remix.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Loco Motion",
+        "file": "https://archive.org/download/my_flash_games_arcade/LOCO Motion.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/LOCO Motion.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Mapleflashstory",
+        "file": "https://archive.org/download/my_flash_games_arcade/MapleFlashStory.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MapleFlashStory.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Maplestory Kill Panda",
+        "file": "https://archive.org/download/my_flash_games_arcade/MapleStory Kill Panda.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MapleStory Kill Panda.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Mario Adventure",
+        "file": "https://archive.org/download/my_flash_games_arcade/Mario adventure.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Mario adventure.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Mario Combat",
+        "file": "https://archive.org/download/my_flash_games_arcade/Mario Combat.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Mario Combat.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Mario In The Jungle",
+        "file": "https://archive.org/download/my_flash_games_arcade/Mario in the jungle.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Mario in the jungle.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Master Fighting",
+        "file": "https://archive.org/download/my_flash_games_arcade/MASTER_FIGHTING.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MASTER_FIGHTING.png",
         "emoji": "🎮"
     },
     {
@@ -563,9 +1495,87 @@
         "emoji": "🎮"
     },
     {
+        "name": "Monk",
+        "file": "https://archive.org/download/my_flash_games_arcade/Monk.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Monk.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Monkey Lander",
+        "file": "https://archive.org/download/my_flash_games_arcade/MONKEY LANDER.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MONKEY LANDER.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Monkeynutste",
+        "file": "https://archive.org/download/my_flash_games_arcade/MonkeyNutSte.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MonkeyNutSte.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Monster Memory",
+        "file": "https://archive.org/download/my_flash_games_arcade/MONSTER MEMORY.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MONSTER MEMORY.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Monster Pool Side Sumo",
+        "file": "https://archive.org/download/my_flash_games_arcade/MONSTER POOL SIDE SUMO.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MONSTER POOL SIDE SUMO.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Motocross Fmx",
+        "file": "https://archive.org/download/my_flash_games_arcade/Motocross FMX.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Motocross FMX.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Motorcycle Racer",
+        "file": "https://archive.org/download/my_flash_games_arcade/MOTORCYCLE RACER.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MOTORCYCLE RACER.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Mountain Bike",
+        "file": "https://archive.org/download/my_flash_games_arcade/MOUNTAIN BIKE.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MOUNTAIN BIKE.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Mountain Bike",
+        "file": "https://archive.org/download/my_flash_games_arcade/MOUNTAIN_BIKE.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MOUNTAIN_BIKE.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Mouse Hunt",
+        "file": "https://archive.org/download/my_flash_games_arcade/MOUSE HUNT.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/MOUSE HUNT.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Moving  Cat",
+        "file": "https://archive.org/download/my_flash_games_arcade/moving  cat.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/moving  cat.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Ninja Guiji",
+        "file": "https://archive.org/download/my_flash_games_arcade/ninja guiji.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/ninja guiji.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Ninja Virus",
         "file": "https://archive.org/download/my_flash_games_arcade/ninja-virus.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ninja-virus.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Orbox B",
+        "file": "https://archive.org/download/my_flash_games_arcade/ORBOX B.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/ORBOX B.png",
         "emoji": "🎮"
     },
     {
@@ -575,9 +1585,75 @@
         "emoji": "🎮"
     },
     {
+        "name": "Papa'S Burgeria",
+        "file": "https://archive.org/download/my_flash_games_arcade/Papa's Burgeria.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Papa's Burgeria.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Papa'S Pastaria",
+        "file": "https://archive.org/download/my_flash_games_arcade/Papa's Pastaria.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Papa's Pastaria.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Pingpong",
+        "file": "https://archive.org/download/my_flash_games_arcade/PingPong.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/PingPong.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Playing With Fire 2",
+        "file": "https://archive.org/download/my_flash_games_arcade/Playing with fire 2.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Playing with fire 2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Plumber",
+        "file": "https://archive.org/download/my_flash_games_arcade/Plumber.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Plumber.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Puzzlemaniaxibpag",
+        "file": "https://archive.org/download/my_flash_games_arcade/puzzlemaniaxIBPAG.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/puzzlemaniaxIBPAG.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Quick Draw",
+        "file": "https://archive.org/download/my_flash_games_arcade/Quick Draw.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Quick Draw.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Run 2",
         "file": "https://archive.org/download/my_flash_games_arcade/Run 2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Run 2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Samurai Jack Code Of The Samurai",
+        "file": "https://archive.org/download/my_flash_games_arcade/Samurai Jack Code of The Samurai.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Samurai Jack Code of The Samurai.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Scooby Doo And The Creepy Castle",
+        "file": "https://archive.org/download/my_flash_games_arcade/Scooby Doo and The Creepy Castle.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Scooby Doo and The Creepy Castle.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Silversphere",
+        "file": "https://archive.org/download/my_flash_games_arcade/Silversphere.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Silversphere.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Skeet Shoot",
+        "file": "https://archive.org/download/my_flash_games_arcade/Skeet Shoot.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Skeet Shoot.png",
         "emoji": "🎮"
     },
     {
@@ -587,9 +1663,105 @@
         "emoji": "🎮"
     },
     {
+        "name": "Soap Bubble",
+        "file": "https://archive.org/download/my_flash_games_arcade/SOAP BUBBLE.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/SOAP BUBBLE.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Stone",
+        "file": "https://archive.org/download/my_flash_games_arcade/STONE.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/STONE.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Sumo",
+        "file": "https://archive.org/download/my_flash_games_arcade/sumo.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/sumo.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Super Mario Flash 3",
+        "file": "https://archive.org/download/my_flash_games_arcade/SUPER MARIO FLASH 3.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/SUPER MARIO FLASH 3.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Super Ninja Strike",
+        "file": "https://archive.org/download/my_flash_games_arcade/Super Ninja Strike.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Super Ninja Strike.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "The Fancy Pants Adventures World 1",
+        "file": "https://archive.org/download/my_flash_games_arcade/The Fancy Pants Adventures World 1.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/The Fancy Pants Adventures World 1.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "The Fancy Pants Adventures World 2",
+        "file": "https://archive.org/download/my_flash_games_arcade/The Fancy Pants Adventures World 2.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/The Fancy Pants Adventures World 2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "The Final War",
+        "file": "https://archive.org/download/my_flash_games_arcade/THE FINAL WAR.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/THE FINAL WAR.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "The Last Stand 2",
+        "file": "https://archive.org/download/my_flash_games_arcade/THE LAST STAND 2.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/THE LAST STAND 2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "The Smurfs Brainy'S Bad Day",
+        "file": "https://archive.org/download/my_flash_games_arcade/THE SMURFS BRAINY'S BAD DAY.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/THE SMURFS BRAINY'S BAD DAY.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Third Rock Rescue",
+        "file": "https://archive.org/download/my_flash_games_arcade/THIRD ROCK RESCUE.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/THIRD ROCK RESCUE.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Tom And Jerry [From Www.Metacafe.Com]",
+        "file": "https://archive.org/download/my_flash_games_arcade/Tom and Jerry [from www.metacafe.com].swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Tom and Jerry [from www.metacafe.com].png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Ufo Joe",
+        "file": "https://archive.org/download/my_flash_games_arcade/UFO joe.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/UFO joe.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Warfare 1917",
+        "file": "https://archive.org/download/my_flash_games_arcade/WARFARE 1917.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/WARFARE 1917.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Warfare 1944",
+        "file": "https://archive.org/download/my_flash_games_arcade/WARFARE 1944.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/WARFARE 1944.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Whack A Craft Minecraft Game",
         "file": "https://archive.org/download/my_flash_games_arcade/whack-a-craft-minecraft-game.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/whack-a-craft-minecraft-game.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Wheelers",
+        "file": "https://archive.org/download/my_flash_games_arcade/Wheelers.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Wheelers.png",
         "emoji": "🎮"
     },
     {
@@ -597,21 +1769,69 @@
         "file": "https://archive.org/download/my_flash_games_arcade/Windows XP.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Windows XP.png",
         "emoji": "🎮"
+    },
+    {
+        "name": "Worldcupfever",
+        "file": "https://archive.org/download/my_flash_games_arcade/Worldcupfever.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Worldcupfever.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Wpnfire",
+        "file": "https://archive.org/download/my_flash_games_arcade/WpnFire.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/WpnFire.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Xiaoxiao Man Shoot Down",
+        "file": "https://archive.org/download/my_flash_games_arcade/XIAOXIAO MAN SHOOT DOWN.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/XIAOXIAO MAN SHOOT DOWN.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Xraye",
+        "file": "https://archive.org/download/my_flash_games_arcade/XRAYE.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/XRAYE.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Xtremeshelleste",
+        "file": "https://archive.org/download/my_flash_games_arcade/XtremeShelleSte.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/XtremeShelleSte.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Year Of The Snake",
+        "file": "https://archive.org/download/my_flash_games_arcade/Year of the Snake.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Year of the Snake.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Youda Camper",
+        "file": "https://archive.org/download/my_flash_games_arcade/youda CAMPER.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/youda CAMPER.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Zombie Run",
+        "file": "https://archive.org/download/my_flash_games_arcade/ZOMBIE RUN.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/ZOMBIE RUN.png",
+        "emoji": "🎮"
     }
 ];
 
         // ================================================================
-        // 🔧 RENDER ENGINE (Don't touch)
+        // RENDER ENGINE
         // ================================================================
         let allGames = [...games];
 
-        function getColor(name) {
+        function getFallbackColor(name) {
             let hash = 0;
             for (let i = 0; i < name.length; i++) {
                 hash = name.charCodeAt(i) + ((hash << 5) - hash);
             }
             const hue = Math.abs(hash % 360);
-            return `hsl(${hue}, 65%, 12%)`;
+            return `hsl(${hue}, 60%, 12%)`;
         }
 
         function renderGames(filtered) {
@@ -620,7 +1840,12 @@
             document.getElementById('gameCount').textContent = filtered.length;
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div class="no-result">😕 No games found.</div>`;
+                grid.innerHTML = `
+                            <div class="no-result">
+                                <i class="fas fa-gamepad"></i>
+                                No games found. Try a different keyword!
+                            </div>
+                        `;
                 return;
             }
 
@@ -631,7 +1856,7 @@
                 // ---- Thumbnail ----
                 const thumb = document.createElement('div');
                 thumb.className = 'game-thumb';
-                thumb.style.background = getColor(game.name);
+                thumb.style.background = getFallbackColor(game.name);
 
                 if (game.thumb && game.thumb.trim() !== '') {
                     const img = document.createElement('img');
@@ -640,23 +1865,30 @@
                     img.loading = 'lazy';
                     img.onerror = function() {
                         this.style.display = 'none';
-                        const letter = document.createElement('span');
-                        letter.className = 'auto-letter';
-                        letter.textContent = game.name.charAt(0).toUpperCase();
-                        thumb.appendChild(letter);
+                        const fallback = document.createElement('div');
+                        fallback.className = 'fallback';
+                        fallback.innerHTML = `
+                                    <span class="emoji">${game.emoji || '🎮'}</span>
+                                    <span class="letter">${game.name.charAt(0).toUpperCase()}</span>
+                                `;
+                        thumb.appendChild(fallback);
                     };
                     thumb.appendChild(img);
                 } else {
-                    const letter = document.createElement('span');
-                    letter.className = 'auto-letter';
-                    letter.textContent = game.name.charAt(0).toUpperCase();
-                    thumb.appendChild(letter);
+                    const fallback = document.createElement('div');
+                    fallback.className = 'fallback';
+                    fallback.innerHTML = `
+                                <span class="emoji">${game.emoji || '🎮'}</span>
+                                <span class="letter">${game.name.charAt(0).toUpperCase()}</span>
+                            `;
+                    thumb.appendChild(fallback);
                 }
 
-                const emoji = document.createElement('span');
-                emoji.className = 'emoji-badge';
-                emoji.textContent = game.emoji || '🎮';
-                thumb.appendChild(emoji);
+                // Badge
+                const badge = document.createElement('span');
+                badge.className = 'type-badge';
+                badge.textContent = 'SWF';
+                thumb.appendChild(badge);
 
                 // ---- Info ----
                 const info = document.createElement('div');
@@ -669,13 +1901,16 @@
                 const meta = document.createElement('div');
                 meta.className = 'game-meta';
                 const fileName = game.file.split('/').pop();
-                meta.textContent = `📁 ${fileName}`;
+                meta.innerHTML = `
+                            <span class="file-name" title="${fileName}">${fileName}</span>
+                            <span style="color:var(--text-muted);"><i class="far fa-file-archive"></i></span>
+                        `;
 
                 const btn = document.createElement('a');
                 btn.className = 'btn-download';
                 btn.href = game.file;
                 btn.download = fileName;
-                btn.textContent = 'Download';
+                btn.innerHTML = `<i class="fas fa-download"></i> Download`;
 
                 info.appendChild(nameEl);
                 info.appendChild(meta);
@@ -693,7 +1928,7 @@
             renderGames(filtered);
         }
 
-        // Initial load
+        // Initial render
         allGames = [...games];
         renderGames(allGames);
     </script>
