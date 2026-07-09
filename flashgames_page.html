@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="images/app_icon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 Flash Game Arcade – Premium Classics</title>
+    <title>🎮 Flash Game Arcade – Download 300+ Classic Flash Games | Top Flash Games Arcade</title>
+    <meta name="description" content="Download 300+ classic Flash games for free. Play nostalgic retro games offline on Windows PC. Curated by Top Flash Games Arcade.">
+    <meta name="keywords" content="Flash Games, Arcade, Download SWF, Retro Games, Offline Games, Top Flash Games Arcade">
 
     <!-- Google Fonts + FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +16,7 @@
 
     <style>
         /* =========================================================
-                   1. RESET & VARIABLES
+                   1. RESET & VARIABLES (Updated to match CyberVerse Theme)
                    ========================================================= */
         * {
             margin: 0;
@@ -28,19 +30,23 @@
             --bg-card: #1a2338;
             --bg-card-hover: #212d48;
             --border-subtle: rgba(255, 255, 255, 0.05);
-            --border-glow: rgba(124, 58, 237, 0.4);
+            --border-glow: rgba(157, 0, 255, 0.4);
 
-            --accent-purple: #8b5cf6;
-            --accent-cyan: #22d3ee;
-            --accent-pink: #ec4899;
-            --accent-gradient: linear-gradient(135deg, #8b5cf6, #22d3ee);
+            /* CyberVerse Theme Colors */
+            --primary-neon: #00f0ff;
+            --secondary-neon: #ff007f;
+            --accent-purple: #9d00ff;
+            --accent-cyan: #00f0ff;
+            --accent-pink: #ff007f;
+            
+            --accent-gradient: linear-gradient(135deg, var(--secondary-neon), var(--primary-neon));
 
             --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
             --text-muted: #475569;
 
             --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.6);
-            --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.15);
+            --shadow-glow: 0 0 40px rgba(0, 240, 255, 0.15);
             --radius-lg: 16px;
             --radius-md: 10px;
             --radius-sm: 6px;
@@ -55,8 +61,8 @@
             padding: 0;
             margin: 0;
             background-image:
-                radial-gradient(ellipse at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 90% 80%, rgba(34, 211, 238, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 10% 20%, rgba(157, 0, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 90% 80%, rgba(0, 240, 255, 0.05) 0%, transparent 50%),
                 repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255, 255, 255, 0.01) 39px, rgba(255, 255, 255, 0.01) 40px),
                 repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255, 255, 255, 0.01) 39px, rgba(255, 255, 255, 0.01) 40px);
             background-attachment: fixed;
@@ -69,7 +75,7 @@
         }
 
         /* =========================================================
-                   2. NAVIGATION (with HOME BUTTON)
+                   2. NAVIGATION
                    ========================================================= */
         .navbar {
             display: flex;
@@ -77,7 +83,7 @@
             align-items: center;
             padding: 14px 0 12px;
             border-bottom: 1px solid var(--border-subtle);
-            margin-bottom: 20px;
+            margin-bottom: 0px;
             flex-wrap: wrap;
             gap: 10px;
         }
@@ -106,20 +112,20 @@
 
         .nav-home i {
             font-size: 0.9rem;
-            color: var(--accent-cyan);
+            color: var(--primary-neon);
             transition: var(--transition);
         }
 
         .nav-home:hover {
-            background: rgba(139, 92, 246, 0.08);
-            border-color: var(--accent-purple);
+            background: rgba(0, 240, 255, 0.08);
+            border-color: var(--primary-neon);
             color: var(--text-primary);
             transform: translateY(-1px);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.05);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.05);
         }
 
         .nav-home:hover i {
-            color: var(--accent-purple);
+            color: var(--secondary-neon);
         }
 
         .logo {
@@ -139,19 +145,43 @@
         }
 
         .nav-badge {
-            background: rgba(34, 211, 238, 0.06);
-            border: 1px solid rgba(34, 211, 238, 0.1);
+            background: rgba(0, 240, 255, 0.06);
+            border: 1px solid rgba(0, 240, 255, 0.1);
             padding: 4px 14px;
             border-radius: 40px;
             font-size: 0.6rem;
             font-weight: 600;
-            color: var(--accent-cyan);
+            color: var(--primary-neon);
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
 
+        /* Breadcrumb */
+        .breadcrumb {
+            padding: 12px 0 8px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 10px;
+        }
+        .breadcrumb a {
+            color: var(--primary-neon);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .breadcrumb a:hover {
+            color: var(--secondary-neon);
+        }
+        .breadcrumb .sep {
+            margin: 0 8px;
+            color: var(--text-muted);
+        }
+        .breadcrumb .current {
+            color: var(--text-secondary);
+        }
+
         /* =========================================================
-                   3. HERO SECTION (COMPACT)
+                   3. HERO SECTION
                    ========================================================= */
         .hero {
             text-align: center;
@@ -194,7 +224,7 @@
         }
 
         .hero-stats span i {
-            color: var(--accent-purple);
+            color: var(--primary-neon);
             margin-right: 5px;
         }
         .hero-stats span strong {
@@ -239,13 +269,13 @@
         }
 
         .search-wrapper input:focus {
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1), var(--shadow-card);
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.1), var(--shadow-card);
             transform: scale(1.01);
         }
 
         /* =========================================================
-                   4. GAME GRID — 8 COLUMNS (compact)
+                   4. GAME GRID — 8 COLUMNS (Compact)
                    ========================================================= */
         .games-section {
             margin-top: 28px;
@@ -259,7 +289,7 @@
         }
 
         /* =========================================================
-                   5. GAME CARD (Compact Redesign)
+                   5. GAME CARD (Download Only)
                    ========================================================= */
         .game-card {
             background: var(--bg-card);
@@ -297,7 +327,6 @@
             opacity: 1;
         }
 
-        /* ---- Thumbnail (compact) ---- */
         .game-thumb {
             width: 100%;
             aspect-ratio: 16 / 9;
@@ -334,7 +363,7 @@
         .game-thumb .fallback .emoji {
             font-size: 2.8rem;
             opacity: 0.8;
-            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.2));
+            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.2));
         }
 
         .game-thumb .fallback .letter {
@@ -356,13 +385,12 @@
             border-radius: 30px;
             font-size: 0.5rem;
             font-weight: 600;
-            color: var(--accent-cyan);
-            border: 1px solid rgba(34, 211, 238, 0.1);
+            color: var(--primary-neon);
+            border: 1px solid rgba(0, 240, 255, 0.1);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        /* ---- Info (compact) ---- */
         .game-info {
             padding: 10px 12px 14px;
             flex: 1;
@@ -374,7 +402,7 @@
             font-weight: 700;
             font-size: 0.78rem;
             color: var(--text-primary);
-            margin-bottom: 1px;
+            margin-bottom: 2px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -386,7 +414,7 @@
             margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .game-meta .file-name {
@@ -401,9 +429,10 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            cursor: default;
         }
 
-        /* ---- Download Button (compact) ---- */
+        /* ---- Download Button (Classic) ---- */
         .btn-download {
             background: var(--accent-gradient);
             border: none;
@@ -411,7 +440,7 @@
             padding: 10px 0;
             border-radius: var(--radius-sm);
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: var(--transition);
             text-align: center;
@@ -419,11 +448,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             margin-top: auto;
             font-family: inherit;
             letter-spacing: 0.3px;
-            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
+            box-shadow: 0 4px 16px rgba(255, 0, 127, 0.25);
             position: relative;
             overflow: hidden;
         }
@@ -435,7 +464,7 @@
 
         .btn-download:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.45);
+            box-shadow: 0 8px 30px rgba(0, 240, 255, 0.45);
             filter: brightness(1.05);
         }
 
@@ -460,26 +489,40 @@
         }
 
         /* =========================================================
-                   6. FOOTER
+                   6. FOOTER (Updated to match Index)
                    ========================================================= */
         .footer {
-            text-align: center;
+            text-align: left;
             margin-top: 32px;
             padding: 24px 0 18px;
             border-top: 1px solid var(--border-subtle);
             color: var(--text-muted);
             font-size: 0.7rem;
+            background: var(--bg-deep);
         }
-
         .footer a {
-            color: var(--accent-purple);
+            color: var(--primary-neon);
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition);
         }
-
         .footer a:hover {
-            color: var(--accent-cyan);
+            color: var(--secondary-neon);
+        }
+        .footer .footer-flex {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .footer .footer-flex .right {
+            text-align: right;
+            line-height: 1.8;
+        }
+        .footer .footer-flex .right i {
+            color: var(--primary-neon);
+            width: 16px;
         }
 
         .no-result {
@@ -495,174 +538,66 @@
             font-size: 2rem;
             display: block;
             margin-bottom: 10px;
-            color: var(--accent-purple);
+            color: var(--primary-neon);
             opacity: 0.4;
         }
 
         /* =========================================================
-                   7. RESPONSIVE — 6–8 columns
+                   7. RESPONSIVE
                    ========================================================= */
-
-        /* 1200px+ → 8 columns */
         @media (max-width: 1280px) {
-            .game-grid {
-                grid-template-columns: repeat(8, 1fr);
-                gap: 12px;
-            }
+            .game-grid { grid-template-columns: repeat(8, 1fr); gap: 12px; }
         }
-
-        /* 1024–1279 → 7 columns */
         @media (max-width: 1200px) {
-            .game-grid {
-                grid-template-columns: repeat(7, 1fr);
-                gap: 12px;
-            }
+            .game-grid { grid-template-columns: repeat(7, 1fr); gap: 12px; }
         }
-
-        /* 900–1023 → 6 columns */
         @media (max-width: 1024px) {
-            .game-grid {
-                grid-template-columns: repeat(6, 1fr);
-                gap: 12px;
-            }
-            .hero h1 {
-                font-size: 2.2rem;
-            }
+            .game-grid { grid-template-columns: repeat(6, 1fr); gap: 12px; }
+            .hero h1 { font-size: 2.2rem; }
         }
-
-        /* 700–899 → 5 columns */
         @media (max-width: 900px) {
-            .game-grid {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 12px;
-            }
-            .game-info {
-                padding: 8px 10px 12px;
-            }
-            .game-name {
-                font-size: 0.7rem;
-            }
-            .btn-download {
-                font-size: 0.6rem;
-                padding: 8px 0;
-            }
-            .game-thumb .fallback .emoji {
-                font-size: 2.2rem;
-            }
+            .game-grid { grid-template-columns: repeat(5, 1fr); gap: 12px; }
+            .game-info { padding: 8px 10px 12px; }
+            .game-name { font-size: 0.7rem; }
+            .btn-download { font-size: 0.65rem; padding: 8px 0; }
+            .game-thumb .fallback .emoji { font-size: 2.2rem; }
         }
-
-        /* 550–699 → 4 columns */
         @media (max-width: 700px) {
-            .game-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 10px;
-            }
-            .hero h1 {
-                font-size: 1.8rem;
-            }
-            .hero p {
-                font-size: 0.85rem;
-            }
-            .container {
-                padding: 0 14px;
-            }
-            .nav-home span {
-                display: none;
-            }
-            .nav-home {
-                padding: 6px 10px;
-            }
-            .logo {
-                font-size: 1rem;
-            }
-            .nav-badge {
-                font-size: 0.5rem;
-                padding: 3px 10px;
-            }
-            .game-info {
-                padding: 6px 8px 10px;
-            }
-            .game-name {
-                font-size: 0.65rem;
-            }
-            .game-meta .file-name {
-                max-width: 60px;
-                font-size: 0.45rem;
-            }
-            .btn-download {
-                font-size: 0.55rem;
-                padding: 7px 0;
-                border-radius: 4px;
-            }
-            .game-thumb .type-badge {
-                font-size: 0.4rem;
-                padding: 1px 8px;
-                bottom: 5px;
-                left: 5px;
-            }
-            .game-thumb .fallback .emoji {
-                font-size: 1.8rem;
-            }
-            .game-thumb .fallback .letter {
-                font-size: 0.9rem;
-            }
+            .game-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+            .hero h1 { font-size: 1.8rem; }
+            .hero p { font-size: 0.85rem; }
+            .container { padding: 0 14px; }
+            .nav-home span { display: none; }
+            .nav-home { padding: 6px 10px; }
+            .logo { font-size: 1rem; }
+            .nav-badge { font-size: 0.5rem; padding: 3px 10px; }
+            .game-info { padding: 6px 8px 10px; }
+            .game-name { font-size: 0.65rem; }
+            .game-meta .file-name { max-width: 60px; font-size: 0.45rem; }
+            .btn-download { font-size: 0.6rem; padding: 7px 0; border-radius: 4px; }
+            .game-thumb .type-badge { font-size: 0.4rem; padding: 1px 8px; bottom: 5px; left: 5px; }
+            .game-thumb .fallback .emoji { font-size: 1.8rem; }
+            .game-thumb .fallback .letter { font-size: 0.9rem; }
+            .footer .footer-flex { flex-direction: column; align-items: center; text-align: center; }
+            .footer .footer-flex .right { text-align: center; }
         }
-
-        /* 420–549 → 3 columns */
         @media (max-width: 550px) {
-            .game-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
-            }
-            .hero h1 {
-                font-size: 1.5rem;
-            }
-            .hero-stats {
-                gap: 12px;
-                font-size: 0.65rem;
-            }
-            .search-wrapper input {
-                padding: 10px 14px 10px 40px;
-                font-size: 0.8rem;
-            }
+            .game-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .hero h1 { font-size: 1.5rem; }
+            .hero-stats { gap: 12px; font-size: 0.65rem; }
+            .search-wrapper input { padding: 10px 14px 10px 40px; font-size: 0.8rem; }
         }
-
-        /* < 420 → 2 columns */
         @media (max-width: 420px) {
-            .game-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            .hero h1 {
-                font-size: 1.3rem;
-            }
-            .hero p {
-                font-size: 0.75rem;
-            }
-            .game-info {
-                padding: 4px 6px 8px;
-            }
-            .game-name {
-                font-size: 0.6rem;
-            }
-            .btn-download {
-                font-size: 0.5rem;
-                padding: 6px 0;
-            }
-            .game-meta .file-name {
-                max-width: 45px;
-                font-size: 0.4rem;
-            }
-            .game-thumb .fallback .emoji {
-                font-size: 1.4rem;
-            }
-            .game-thumb .fallback .letter {
-                font-size: 0.7rem;
-            }
-            .game-thumb .type-badge {
-                font-size: 0.35rem;
-                padding: 1px 6px;
-            }
+            .game-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .hero h1 { font-size: 1.3rem; }
+            .hero p { font-size: 0.75rem; }
+            .game-info { padding: 4px 6px 8px; }
+            .game-name { font-size: 0.6rem; }
+            .btn-download { font-size: 0.5rem; padding: 6px 0; }
+            .game-meta .file-name { max-width: 45px; font-size: 0.4rem; }
+            .game-thumb .fallback .emoji { font-size: 1.4rem; }
+            .game-thumb .fallback .letter { font-size: 0.7rem; }
+            .game-thumb .type-badge { font-size: 0.35rem; padding: 1px 6px; }
         }
     </style>
 </head>
@@ -672,11 +607,11 @@
     <div class="container">
 
         <!-- ============================================================
-        NAVIGATION WITH HOME BUTTON
+        NAVIGATION
         ============================================================ -->
         <nav class="navbar">
             <div class="nav-left">
-                <a href="https://topflashgamesarcade.github.io/" class="nav-home" title="Back to Top Flash Games Arcade Home">
+                <a href="https://topflashgamesarcade.github.io/" class="nav-home" title="Home">
                     <i class="fas fa-house"></i>
                     <span>Home</span>
                 </a>
@@ -687,13 +622,20 @@
             </div>
         </nav>
 
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="https://topflashgamesarcade.github.io/"><i class="fas fa-home"></i> Home</a>
+            <span class="sep">›</span>
+            <span class="current">Flash Games Archive</span>
+        </div>
+
         <!-- ============================================================
         HERO + SEARCH
         ============================================================ -->
         <section class="hero">
             <h1>
                 Classic <span class="highlight">Flash</span> Games<br>
-                <span style="font-size:0.65em; background: linear-gradient(135deg, #ec4899, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Relive the 90s &amp; 2000s</span>
+                <span style="font-size:0.65em; background: linear-gradient(135deg, #ff007f, #00f0ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Download &amp; Play Offline</span>
             </h1>
             <p>Download timeless retro games instantly. 100% free, offline-ready, and curated for nostalgia.</p>
 
@@ -717,14 +659,24 @@
         </section>
 
         <!-- ============================================================
-        FOOTER
+        FOOTER (Updated)
         ============================================================ -->
         <footer class="footer">
-            <p>
-                © 2026 <a href="https://topflashgamesarcade.github.io/" target="_blank">Top Flash Games Arcade</a> &bull;
-                For educational &amp; personal preservation use only.
-                <br><span style="font-size:0.65rem; color: var(--text-muted);">All original content belongs to their respective copyright holders.</span>
-            </p>
+            <div class="footer-flex">
+                <div class="left">
+                    <p style="line-height:1.8;">
+                        © 2026 <a href="https://topflashgamesarcade.github.io/" target="_blank">Top Flash Games Arcade</a> &bull;
+                        For educational &amp; personal preservation use only.
+                        <br><span style="font-size:0.65rem;">All original content belongs to their respective copyright holders.</span>
+                    </p>
+                </div>
+                <div class="right">
+                    <p><i class="fas fa-user"></i> Developer: Myo Kyaw Thu</p>
+                    <p><i class="fas fa-phone"></i> 09799497334</p>
+                    <p><i class="fab fa-telegram"></i> @myokyawthu_info</p>
+                    <p><i class="fas fa-building"></i> CyberVerse Computer Training</p>
+                </div>
+            </div>
         </footer>
 
     </div>
@@ -734,7 +686,7 @@
     ============================================================ -->
     <script>
         // ================================================================
-        // 🎮 GAME LIST (truncated for brevity — full list from original)
+        // 🎮 GAME LIST (Full list)
         // ================================================================
         const games = [{
             "name": "100Men",
@@ -2197,6 +2149,7 @@
                     thumb.appendChild(fallback);
                 }
 
+                // Badge
                 const badge = document.createElement('span');
                 badge.className = 'type-badge';
                 badge.textContent = 'SWF';
