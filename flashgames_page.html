@@ -8,6 +8,20 @@
     <meta name="description" content="Download 300+ classic Flash games for free. Play nostalgic retro games offline on Windows PC. Curated by Top Flash Games Arcade.">
     <meta name="keywords" content="Flash Games, Arcade, Download SWF, Retro Games, Offline Games, Top Flash Games Arcade">
 
+    <!-- ============================================================
+    🟢 GOOGLE ANALYTICS (GA4) TRACKING CODE - ဒီနေရာမှာ ထည့်ထားပါတယ်
+    ============================================================ -->
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1N5H0EXPRC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1N5H0EXPRC');
+</script>
+    <!-- ============================================================ -->
+
     <!-- Google Fonts + FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -682,7 +696,7 @@
     </div>
 
     <!-- ============================================================
-    SCRIPT (Game Data + Render Engine)
+    SCRIPT (Game Data + Render Engine + GA Download Tracking)
     ============================================================ -->
     <script>
         // ================================================================
@@ -2808,6 +2822,38 @@
             const filtered = allGames.filter(g => g.name.toLowerCase().includes(q));
             renderGames(filtered);
         }
+
+        // ================================================================
+        // 🟢 GOOGLE ANALYTICS DOWNLOAD TRACKING (Event Listener)
+        // ================================================================
+        // ဒီနေရာမှာ Dynamic ဖြစ်နေတဲ့ Download ခလုတ်တွေကို 
+        // Event Delegation နည်းလမ်းနဲ့ ခြေရာခံထားပါတယ်။
+        document.getElementById('gameGrid').addEventListener('click', function(e) {
+            // နှိပ်လိုက်တဲ့ နေရာက .btn-download ဖြစ်မဖြစ် စစ်ပါ
+            const btn = e.target.closest('.btn-download');
+            if (btn) {
+                // သက်ဆိုင်ရာ Game Card ထဲက Game Name ကို ထုတ်ယူပါ
+                const card = btn.closest('.game-card');
+                if (card) {
+                    const nameEl = card.querySelector('.game-name');
+                    if (nameEl) {
+                        const gameName = nameEl.textContent;
+                        
+                        // GA4 Event ပို့ပါ
+                        if (typeof gtag === 'function') {
+                            gtag('event', 'download', {
+                                'event_category': 'Flash Games',
+                                'event_label': gameName,
+                                'value': 1
+                            });
+                            console.log('✅ GA Event Sent: Download - ' + gameName); // Browser Console မှာ စမ်းကြည့်လို့ရပါတယ်
+                        } else {
+                            console.warn('⚠️ gtag function not found. Make sure GA is loaded.');
+                        }
+                    }
+                }
+            }
+        });
 
         // Initial render
         allGames = [...games];
