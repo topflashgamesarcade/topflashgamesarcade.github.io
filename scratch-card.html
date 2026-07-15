@@ -141,9 +141,10 @@
         }
 
         .scratch-card.revealed {
-            cursor: default;
+            cursor: default !important;
             border-color: rgba(0, 240, 255, 0.2);
             opacity: 0.9;
+            pointer-events: none !important;
         }
 
         .promo-result {
@@ -247,7 +248,8 @@
 
         #scratchCanvas.hidden {
             opacity: 0;
-            pointer-events: none;
+            pointer-events: none !important;
+            cursor: default !important;
         }
 
         .scratch-progress {
@@ -507,6 +509,7 @@
         const canvas = document.getElementById('scratchCanvas');
         const ctx = canvas.getContext('2d');
         const progressEl = document.getElementById('scratchProgress');
+        const card = document.getElementById('scratchCard');
 
         let isDrawing = false;
         let isRevealed = false;
@@ -523,7 +526,7 @@
             canvas.style.height = rect.height + 'px';
             ctx.scale(dpr, dpr);
             
-            // Don't draw cover if already revealed
+            // Don't draw cover if already revealed or fully used
             if (!isRevealed && !(usage.used >= usage.max_uses)) {
                 drawCover();
             }
@@ -595,8 +598,14 @@
         }
 
         function scratch(x, y) {
-            if (isRevealed) return;
-            if (usage.used >= usage.max_uses) return;
+            if (isRevealed) {
+                console.log('⛔ Already revealed, ignoring scratch');
+                return;
+            }
+            if (usage.used >= usage.max_uses) {
+                console.log('⛔ Already fully used, ignoring scratch');
+                return;
+            }
             
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
@@ -632,9 +641,16 @@
         }
 
         function fullyReveal() {
-            if (isRevealed) return;
-            if (usage.used >= usage.max_uses) return;
+            if (isRevealed) {
+                console.log('⛔ Already revealed, skipping full reveal');
+                return;
+            }
+            if (usage.used >= usage.max_uses) {
+                console.log('⛔ Already fully used, skipping full reveal');
+                return;
+            }
             
+            console.log('🎉 Fully revealed!');
             isRevealed = true;
             
             // Clear canvas
@@ -642,7 +658,16 @@
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.clearRect(0, 0, w, h);
             progressEl.classList.add('hidden');
+            
+            // 🔥 CRITICAL: Disable canvas completely
             canvas.classList.add('hidden');
+            canvas.style.pointerEvents = 'none';
+            canvas.style.cursor = 'default';
+            
+            // Disable the card too
+            card.classList.add('revealed');
+            card.style.pointerEvents = 'none';
+            card.style.cursor = 'default';
             
             // Update usage (only once)
             if (!hasUpdatedUsage) {
@@ -659,7 +684,6 @@
             }
             
             // Update UI
-            document.getElementById('scratchCard').classList.add('revealed');
             document.getElementById('scratchBadge').innerHTML = '<i class="fas fa-check-circle"></i> ခြစ်ပြီးပါပြီ';
             document.getElementById('scratchBadge').classList.add('revealed');
             document.getElementById('scratchDesc').classList.add('revealed');
@@ -679,7 +703,6 @@
             `;
             
             // Animation
-            const card = document.getElementById('scratchCard');
             card.style.transform = 'scale(1.02)';
             setTimeout(() => { card.style.transform = ''; }, 300);
             
@@ -703,8 +726,17 @@
 
         function onStart(e) {
             e.preventDefault();
-            if (isRevealed) return;
-            if (usage.used >= usage.max_uses) return;
+            
+            // 🔥 Check if already revealed or fully used
+            if (isRevealed) {
+                console.log('⛔ Cannot scratch - already revealed');
+                return;
+            }
+            if (usage.used >= usage.max_uses) {
+                console.log('⛔ Cannot scratch - already fully used');
+                return;
+            }
+            
             isDrawing = true;
             const pos = getPos(e);
             scratch(pos.x, pos.y);
@@ -712,8 +744,18 @@
 
         function onMove(e) {
             e.preventDefault();
-            if (!isDrawing || isRevealed) return;
-            if (usage.used >= usage.max_uses) return;
+            if (!isDrawing) return;
+            
+            // 🔥 Check if already revealed or fully used
+            if (isRevealed) {
+                console.log('⛔ Cannot scratch - already revealed');
+                return;
+            }
+            if (usage.used >= usage.max_uses) {
+                console.log('⛔ Cannot scratch - already fully used');
+                return;
+            }
+            
             const pos = getPos(e);
             scratch(pos.x, pos.y);
         }
@@ -721,7 +763,9 @@
         function onEnd(e) {
             e.preventDefault();
             isDrawing = false;
-            if (!isRevealed && !(usage.used >= usage.max_uses)) updateProgress();
+            if (!isRevealed && !(usage.used >= usage.max_uses)) {
+                updateProgress();
+            }
         }
 
         // ================================================================
@@ -741,6 +785,8 @@
                 const w = canvas.width / (window.devicePixelRatio || 1);
                 const h = canvas.height / (window.devicePixelRatio || 1);
                 ctx.clearRect(0, 0, w, h);
+                canvas.classList.add('hidden');
+                canvas.style.pointerEvents = 'none';
             }
         });
 
@@ -753,6 +799,7 @@
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.clearRect(0, 0, w, h);
             canvas.classList.add('hidden');
+            canvas.style.pointerEvents = 'none';
             progressEl.classList.add('hidden');
         } else {
             resizeCanvas();
@@ -761,6 +808,7 @@
         console.log('✅ Scratch Card ready!');
         console.log('📦 Promo Code:', selectedCode);
         console.log('📊 Usage:', usage.used + '/' + usage.max_uses);
+        console.log('🔒 isRevealed:', isRevealed);
     </script>
 </body>
 </html>
