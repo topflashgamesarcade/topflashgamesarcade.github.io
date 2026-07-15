@@ -375,7 +375,7 @@
     
     <script>
         // ================================================================
-        // 🎟️ SCRATCH CARD LOGIC (Fully Working with localStorage)
+        // 🎟️ SCRATCH CARD LOGIC (With localStorage persistence)
         // ================================================================
 
         // ================================================================
@@ -393,7 +393,7 @@
         };
 
         // ================================================================
-        // 2. LOCALSTORAGE FUNCTIONS (No API needed)
+        // 2. LOCALSTORAGE FUNCTIONS
         // ================================================================
         function getPromoUsage(code) {
             const allData = localStorage.getItem('promo_usage_data');
@@ -480,31 +480,15 @@
         document.getElementById('usesCount').textContent = usage.used;
         document.getElementById('maxUsesCount').textContent = usage.max_uses;
 
-        // Check if already fully used
-        if (usage.used >= usage.max_uses) {
-            document.getElementById('promoCodeDisplay').textContent = '❌ EXPIRED';
-            document.getElementById('promoCodeDisplay').classList.add('expired');
-            document.getElementById('promoValueDisplay').innerHTML = '<i class="fas fa-times-circle"></i> No longer available';
-            document.getElementById('scratchCard').classList.add('revealed');
-            document.getElementById('scratchBadge').innerHTML = '<i class="fas fa-times-circle"></i> ကုန်သွားပါပြီ';
-            document.getElementById('scratchBadge').classList.add('revealed');
-            document.getElementById('scratchDesc').classList.add('revealed');
-            document.querySelector('.desc-default').style.display = 'none';
-            document.querySelector('.desc-revealed').style.display = 'inline';
-            document.querySelector('.desc-revealed').innerHTML = `
-                <i class="fas fa-exclamation-circle" style="color:#ef4444;"></i>
-                ဤ Promo Code သည် အသုံးပြုပြီးပါပြီ။
-                <br>
-                <span style="font-size:0.65rem; color:var(--text-muted);">
-                    ကျေးဇူးပြု၍ အခြား Code တစ်ခုကို ရယူပါ။
-                </span>
-            `;
-            document.getElementById('scratchCard').style.opacity = '0.5';
-            document.getElementById('scratchCard').style.cursor = 'not-allowed';
-        }
+        // ================================================================
+        // 5. CHECK REVEALED STATUS FROM LOCALSTORAGE
+        // ================================================================
+        // 🔥 CRITICAL: ခြစ်ပြီးသားလား စစ်မယ်
+        const isAlreadyRevealed = localStorage.getItem('scratch_revealed_' + selectedCode) === 'true';
+        const isAlreadyFullyUsed = usage.used >= usage.max_uses;
 
         // ================================================================
-        // 5. CANVAS SCRATCH ENGINE
+        // 6. CANVAS SCRATCH ENGINE
         // ================================================================
         const canvas = document.getElementById('scratchCanvas');
         const ctx = canvas.getContext('2d');
@@ -512,8 +496,8 @@
         const card = document.getElementById('scratchCard');
 
         let isDrawing = false;
-        let isRevealed = false;
-        let hasUpdatedUsage = false;
+        let isRevealed = isAlreadyRevealed || isAlreadyFullyUsed; // 🔥 localStorage ကနေ ယူမယ်
+        let hasUpdatedUsage = isAlreadyRevealed; // 🔥 ခြစ်ပြီးသားဆိုရင် update မလုပ်တော့ဘူး
         const RADIUS = 28;
         const REVEAL_THRESHOLD = 0.50;
 
@@ -527,8 +511,17 @@
             ctx.scale(dpr, dpr);
             
             // Don't draw cover if already revealed or fully used
-            if (!isRevealed && !(usage.used >= usage.max_uses)) {
+            if (!isRevealed && !isAlreadyFullyUsed) {
                 drawCover();
+            } else {
+                // 🔥 ခြစ်ပြီးသားဆိုရင် canvas ကိုပိတ်ထားမယ်
+                canvas.classList.add('hidden');
+                canvas.style.pointerEvents = 'none';
+                canvas.style.cursor = 'default';
+                card.classList.add('revealed');
+                card.style.pointerEvents = 'none';
+                card.style.cursor = 'default';
+                progressEl.classList.add('hidden');
             }
         }
 
@@ -602,7 +595,7 @@
                 console.log('⛔ Already revealed, ignoring scratch');
                 return;
             }
-            if (usage.used >= usage.max_uses) {
+            if (isAlreadyFullyUsed) {
                 console.log('⛔ Already fully used, ignoring scratch');
                 return;
             }
@@ -620,7 +613,7 @@
 
         function updateProgress() {
             if (isRevealed) return;
-            if (usage.used >= usage.max_uses) return;
+            if (isAlreadyFullyUsed) return;
             
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
@@ -645,13 +638,16 @@
                 console.log('⛔ Already revealed, skipping full reveal');
                 return;
             }
-            if (usage.used >= usage.max_uses) {
+            if (isAlreadyFullyUsed) {
                 console.log('⛔ Already fully used, skipping full reveal');
                 return;
             }
             
             console.log('🎉 Fully revealed!');
             isRevealed = true;
+            
+            // 🔥 localStorage မှာ ခြစ်ပြီးသား ဆိုတာ သိမ်းထားမယ်
+            localStorage.setItem('scratch_revealed_' + selectedCode, 'true');
             
             // Clear canvas
             const w = canvas.width / (window.devicePixelRatio || 1);
@@ -732,7 +728,7 @@
                 console.log('⛔ Cannot scratch - already revealed');
                 return;
             }
-            if (usage.used >= usage.max_uses) {
+            if (isAlreadyFullyUsed) {
                 console.log('⛔ Cannot scratch - already fully used');
                 return;
             }
@@ -751,7 +747,7 @@
                 console.log('⛔ Cannot scratch - already revealed');
                 return;
             }
-            if (usage.used >= usage.max_uses) {
+            if (isAlreadyFullyUsed) {
                 console.log('⛔ Cannot scratch - already fully used');
                 return;
             }
@@ -763,13 +759,13 @@
         function onEnd(e) {
             e.preventDefault();
             isDrawing = false;
-            if (!isRevealed && !(usage.used >= usage.max_uses)) {
+            if (!isRevealed && !isAlreadyFullyUsed) {
                 updateProgress();
             }
         }
 
         // ================================================================
-        // 6. EVENT LISTENERS
+        // 7. EVENT LISTENERS
         // ================================================================
         canvas.addEventListener('mousedown', onStart);
         canvas.addEventListener('mousemove', onMove);
@@ -781,7 +777,7 @@
 
         window.addEventListener('resize', () => {
             resizeCanvas();
-            if (isRevealed || usage.used >= usage.max_uses) {
+            if (isRevealed || isAlreadyFullyUsed) {
                 const w = canvas.width / (window.devicePixelRatio || 1);
                 const h = canvas.height / (window.devicePixelRatio || 1);
                 ctx.clearRect(0, 0, w, h);
@@ -791,16 +787,39 @@
         });
 
         // ================================================================
-        // 7. INIT
+        // 8. INIT
         // ================================================================
-        // If already fully used, don't draw cover
-        if (usage.used >= usage.max_uses) {
-            const w = canvas.width / (window.devicePixelRatio || 1);
-            const h = canvas.height / (window.devicePixelRatio || 1);
-            ctx.clearRect(0, 0, w, h);
+        // 🔥 ခြစ်ပြီးသားဆိုရင် UI ကို အဆင်သင့်ဖြစ်အောင် ပြင်မယ်
+        if (isAlreadyRevealed || isAlreadyFullyUsed) {
+            // UI ကို ခြစ်ပြီးသား အနေအထားပြောင်းမယ်
+            document.getElementById('scratchBadge').innerHTML = '<i class="fas fa-check-circle"></i> ခြစ်ပြီးပါပြီ';
+            document.getElementById('scratchBadge').classList.add('revealed');
+            document.getElementById('scratchDesc').classList.add('revealed');
+            card.classList.add('revealed');
+            card.style.pointerEvents = 'none';
+            card.style.cursor = 'default';
+            
+            // Canvas ကိုပိတ်မယ်
             canvas.classList.add('hidden');
             canvas.style.pointerEvents = 'none';
+            canvas.style.cursor = 'default';
             progressEl.classList.add('hidden');
+            
+            if (isAlreadyFullyUsed) {
+                document.getElementById('promoCodeDisplay').textContent = '❌ EXPIRED';
+                document.getElementById('promoCodeDisplay').classList.add('expired');
+                document.getElementById('promoValueDisplay').innerHTML = '<i class="fas fa-times-circle"></i> No longer available';
+                document.getElementById('scratchBadge').innerHTML = '<i class="fas fa-times-circle"></i> ကုန်သွားပါပြီ';
+                document.querySelector('.desc-revealed').innerHTML = `
+                    <i class="fas fa-exclamation-circle" style="color:#ef4444;"></i>
+                    ဤ Promo Code သည် အသုံးပြုပြီးပါပြီ။
+                    <br>
+                    <span style="font-size:0.65rem; color:var(--text-muted);">
+                        ကျေးဇူးပြု၍ အခြား Code တစ်ခုကို ရယူပါ။
+                    </span>
+                `;
+                card.style.opacity = '0.5';
+            }
         } else {
             resizeCanvas();
         }
@@ -809,6 +828,7 @@
         console.log('📦 Promo Code:', selectedCode);
         console.log('📊 Usage:', usage.used + '/' + usage.max_uses);
         console.log('🔒 isRevealed:', isRevealed);
+        console.log('🔒 isAlreadyRevealed (from localStorage):', isAlreadyRevealed);
     </script>
 </body>
 </html>
