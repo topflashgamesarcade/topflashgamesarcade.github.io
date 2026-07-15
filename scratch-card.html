@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratch Card</title>
+    <style>
+        /* Scratch card styles (from flashgames_page.html) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-deep: #070b15;
+            --bg-surface: #0f172a;
+            --bg-card: #1a2338;
+            --bg-card-hover: #212d48;
+            --border-subtle: rgba(255, 255, 255, 0.05);
+            --border-glow: rgba(157, 0, 255, 0.4);
+            --primary-neon: #00f0ff;
+            --secondary-neon: #ff007f;
+            --accent-purple: #9d00ff;
+            --accent-gradient: linear-gradient(135deg, var(--secondary-neon), var(--primary-neon));
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 40px rgba(0, 240, 255, 0.15);
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: transparent;
+            color: var(--text-primary);
+            min-height: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        .scratch-section {
+            padding: 24px 20px 28px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .scratch-section::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            height: 2px;
+            background: var(--accent-gradient);
+            opacity: 0.6;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .scratch-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .scratch-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scratch-header h3 i {
+            -webkit-text-fill-color: initial;
+            color: var(--primary-neon);
+            font-size: 1.2rem;
+        }
+
+        .scratch-badge {
+            background: rgba(255, 0, 127, 0.12);
+            border: 1px solid rgba(255, 0, 127, 0.2);
+            padding: 3px 14px;
+            border-radius: 40px;
+            font-size: 0.55rem;
+            font-weight: 600;
+            color: var(--secondary-neon);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .scratch-card-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .scratch-card {
+            position: relative;
+            width: 340px;
+            height: 140px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.06), inset 0 0 30px rgba(0, 240, 255, 0.02);
+            border: 2px solid var(--border-subtle);
+            transition: var(--transition);
+            flex-shrink: 0;
+            background: var(--bg-card);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        .scratch-card:hover {
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.12), inset 0 0 40px rgba(0, 240, 255, 0.03);
+            transform: scale(1.01);
+        }
+
+        .promo-result {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            padding: 16px;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .promo-result .promo-label {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+
+        .promo-result .promo-code {
+            font-size: 1.9rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            text-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+        }
+
+        .promo-result .promo-value {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .promo-result .promo-value i {
+            color: var(--secondary-neon);
+            margin-right: 4px;
+        }
+
+        .promo-result .promo-expiry {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            letter-spacing: 0.3px;
+        }
+
+        .promo-result .promo-expiry i {
+            color: var(--primary-neon);
+            margin-right: 4px;
+        }
+
+        #scratchCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            border-radius: var(--radius-md);
+            touch-action: none;
+            cursor: pointer;
+            display: block;
+        }
+
+        .scratch-progress {
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+            z-index: 4;
+            font-size: 0.55rem;
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .scratch-progress.hidden {
+            opacity: 0;
+        }
+
+        .scratch-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            max-width: 260px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .scratch-desc i {
+            color: var(--primary-neon);
+            margin: 0 2px;
+        }
+
+        @media (max-width: 700px) {
+            .scratch-section { padding: 18px 14px 22px; }
+            .scratch-header h3 { font-size: 0.95rem; }
+            .scratch-card { width: 280px; height: 120px; }
+            .promo-result .promo-code { font-size: 1.5rem; }
+            .scratch-badge { font-size: 0.45rem; padding: 2px 10px; }
+            .scratch-desc { font-size: 0.65rem; max-width: 200px; }
+            .scratch-progress { font-size: 0.45rem; bottom: 4px; right: 6px; }
+        }
+
+        @media (max-width: 420px) {
+            .scratch-card { width: 230px; height: 105px; }
+            .promo-result .promo-code { font-size: 1.2rem; }
+            .promo-result .promo-label { font-size: 0.45rem; }
+            .promo-result .promo-value { font-size: 0.6rem; }
+            .scratch-desc { font-size: 0.6rem; max-width: 170px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scratch-section">
+        <div class="scratch-header">
+            <h3>
+                <i class="fas fa-ticket-alt"></i>
+                Lucky Scratch Card
+            </h3>
+            <span class="scratch-badge"><i class="fas fa-bolt"></i> ခဲခြစ်ပြီး ကံစမ်းပါ</span>
+        </div>
+
+        <div class="scratch-card-wrapper">
+            <div class="scratch-card" id="scratchCard">
+                <div class="promo-result" id="promoResult">
+                    <span class="promo-label"><i class="fas fa-gift"></i> Your Promo Code</span>
+                    <span class="promo-code" id="promoCodeDisplay">———</span>
+                    <span class="promo-value" id="promoValueDisplay"><i class="fas fa-percent"></i> Loading...</span>
+                    <span class="promo-expiry" id="promoExpiryDisplay"><i class="far fa-calendar-alt"></i> Expires: —</span>
+                </div>
+                <canvas id="scratchCanvas"></canvas>
+                <span class="scratch-progress" id="scratchProgress">0%</span>
+            </div>
+
+            <div class="scratch-desc">
+                <i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i>
+                လက်ချောင်းနဲ့ ပွတ်ဆွဲပြီး ခဲခြစ်လိုက်ပါ။
+                <br>
+                <span style="font-size:0.65rem; color:var(--text-muted);">တစ်ကြိမ်သာ အသုံးပြုနိုင်သော ပရိုမိုကုဒ်</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FontAwesome (required for icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <script>
+        // ================================================================
+        // 🎟️ SCRATCH CARD LOGIC (Copied from flashgames_page.html)
+        // ================================================================
+        const promoCodes = {
+            "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100, "used": 1 },
+            "BETA100": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF", "expiry": "2026-08-01", "max_uses": 10, "used": 1 },
+            "BETA50": { "type": "fixed", "value": 500, "label": "500 MMK OFF", "expiry": "2026-08-01", "max_uses": 10, "used": 1 },
+            "FLASH10": { "type": "fixed", "value": 10, "label": "10% OFF", "expiry": "2026-12-31", "max_uses": 100, "used": 1 },
+            "VIP1000": { "type": "fixed", "value": 1000, "label": "100% FREE", "expiry": "2026-07-31", "max_uses": 5, "used": 1 },
+            "GAMER25": { "type": "percent", "value": 25, "label": "25% OFF", "expiry": "2026-08-01", "max_uses": 10, "used": 1 },
+            "FLASH75": { "type": "percent", "value": 75, "label": "75% OFF", "expiry": "2026-12-31", "max_uses": 100, "used": 1 },
+            "ARCADE50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100, "used": 1 },
+        };
+
+        let selectedCode = localStorage.getItem('myPromoCode');
+        if (!selectedCode || !promoCodes[selectedCode]) {
+            const codes = Object.keys(promoCodes);
+            selectedCode = codes[Math.floor(Math.random() * codes.length)];
+            localStorage.setItem('myPromoCode', selectedCode);
+        } else {
+            const codeData = promoCodes[selectedCode];
+            if (codeData.expiry) {
+                const expiryDate = new Date(codeData.expiry);
+                const today = new Date();
+                if (expiryDate < today) {
+                    const codes = Object.keys(promoCodes);
+                    selectedCode = codes[Math.floor(Math.random() * codes.length)];
+                    localStorage.setItem('myPromoCode', selectedCode);
+                }
+            }
+        }
+
+        let promo = promoCodes[selectedCode];
+        if (!promo) {
+            const codes = Object.keys(promoCodes);
+            selectedCode = codes[0];
+            promo = promoCodes[selectedCode];
+            localStorage.setItem('myPromoCode', selectedCode);
+        }
+
+        document.getElementById('promoCodeDisplay').textContent = selectedCode;
+        document.getElementById('promoValueDisplay').innerHTML = `<i class="fas fa-gift"></i> ${promo.label}`;
+        if (promo.expiry) {
+            document.getElementById('promoExpiryDisplay').innerHTML = `<i class="far fa-calendar-alt"></i> Expires: ${promo.expiry}`;
+        } else {
+            document.getElementById('promoExpiryDisplay').innerHTML = `<i class="far fa-calendar-alt"></i> No expiry`;
+        }
+
+        // Canvas scratch engine
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        const progressEl = document.getElementById('scratchProgress');
+
+        let isDrawing = false;
+        let isRevealed = false;
+        const RADIUS = 28;
+        const REVEAL_THRESHOLD = 0.50;
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            ctx.scale(dpr, dpr);
+            drawCover();
+        }
+
+        function drawCover() {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.clearRect(0, 0, w, h);
+
+            const grad = ctx.createLinearGradient(0, 0, w, h);
+            grad.addColorStop(0, '#1a2338');
+            grad.addColorStop(0.5, '#0f172a');
+            grad.addColorStop(1, '#1a2338');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)';
+            ctx.lineWidth = 1;
+            const step = 20;
+            for (let x = 0; x < w; x += step) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+            }
+            for (let y = 0; y < h; y += step) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = '600 1.2rem "Inter", sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.fillText('🎟️ ခဲခြစ်ပါ', w / 2, h / 2 - 8);
+            ctx.font = '400 0.6rem "Inter", sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+            ctx.fillText('scratch to reveal', w / 2, h / 2 + 22);
+
+            const cornerLen = 18;
+            const cornerColor = 'rgba(0, 240, 255, 0.15)';
+            ctx.strokeStyle = cornerColor;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(10, 10 + cornerLen);
+            ctx.lineTo(10, 10);
+            ctx.lineTo(10 + cornerLen, 10);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(w - 10 - cornerLen, 10);
+            ctx.lineTo(w - 10, 10);
+            ctx.lineTo(w - 10, 10 + cornerLen);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(10, h - 10 - cornerLen);
+            ctx.lineTo(10, h - 10);
+            ctx.lineTo(10 + cornerLen, h - 10);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(w - 10 - cornerLen, h - 10);
+            ctx.lineTo(w - 10, h - 10);
+            ctx.lineTo(w - 10, h - 10 - cornerLen);
+            ctx.stroke();
+
+            window._coverData = ctx.getImageData(0, 0, w, h);
+        }
+
+        function scratch(x, y) {
+            if (isRevealed) return;
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, RADIUS, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            updateProgress();
+        }
+
+        function updateProgress() {
+            if (isRevealed) return;
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            const imageData = ctx.getImageData(0, 0, w, h);
+            const data = imageData.data;
+            let transparent = 0;
+            const total = data.length / 4;
+            const step = 4;
+            for (let i = 3; i < data.length; i += 4 * step) {
+                if (data[i] < 128) transparent++;
+            }
+            const ratio = transparent / (total / step);
+            const percent = Math.min(100, Math.round(ratio * 100));
+            progressEl.textContent = percent + '%';
+            if (percent >= REVEAL_THRESHOLD * 100 && !isRevealed) {
+                fullyReveal();
+            }
+        }
+
+        function fullyReveal() {
+            if (isRevealed) return;
+            isRevealed = true;
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.clearRect(0, 0, w, h);
+            progressEl.classList.add('hidden');
+            if (typeof gtag === 'function') {
+                gtag('event', 'scratch_reveal', {
+                    'event_category': 'Promo',
+                    'event_label': selectedCode,
+                    'value': promo.value
+                });
+                console.log('✅ GA Event: Scratch Reveal - ' + selectedCode);
+            }
+            const card = document.getElementById('scratchCard');
+            card.style.transform = 'scale(1.02)';
+            setTimeout(() => { card.style.transform = ''; }, 300);
+        }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function onStart(e) {
+            e.preventDefault();
+            if (isRevealed) return;
+            isDrawing = true;
+            const pos = getPos(e);
+            scratch(pos.x, pos.y);
+        }
+
+        function onMove(e) {
+            e.preventDefault();
+            if (!isDrawing || isRevealed) return;
+            const pos = getPos(e);
+            scratch(pos.x, pos.y);
+        }
+
+        function onEnd(e) {
+            e.preventDefault();
+            isDrawing = false;
+            if (!isRevealed) updateProgress();
+        }
+
+        canvas.addEventListener('mousedown', onStart);
+        canvas.addEventListener('mousemove', onMove);
+        canvas.addEventListener('mouseup', onEnd);
+        canvas.addEventListener('mouseleave', onEnd);
+        canvas.addEventListener('touchstart', onStart, { passive: false });
+        canvas.addEventListener('touchmove', onMove, { passive: false });
+        canvas.addEventListener('touchend', onEnd, { passive: false });
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            if (isRevealed) {
+                const w = canvas.width / (window.devicePixelRatio || 1);
+                const h = canvas.height / (window.devicePixelRatio || 1);
+                ctx.clearRect(0, 0, w, h);
+            }
+        });
+
+        resizeCanvas();
+    </script>
+</body>
+</html>
