@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scratch Card</title>
     <style>
-        /* ===== CSS (မူရင်းအတိုင်း) ===== */
+        /* ===== CSS ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
@@ -386,6 +386,20 @@
             "ARCADE50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100 },
         };
 
+        // ================================================================
+        // 💾 REVEAL STATUS FUNCTIONS
+        // ================================================================
+
+        function getRevealedStatus(code) {
+            const key = 'scratch_revealed_' + code;
+            return localStorage.getItem(key) === 'true';
+        }
+
+        function setRevealedStatus(code, status) {
+            const key = 'scratch_revealed_' + code;
+            localStorage.setItem(key, status ? 'true' : 'false');
+        }
+
         // DOM Elements
         const loadingOverlay = document.getElementById('loadingOverlay');
         const promoCodeDisplay = document.getElementById('promoCodeDisplay');
@@ -414,7 +428,6 @@
         // 🔹 Get promo usage from Realtime Database
         async function getPromoUsageFromRTDB(code) {
             try {
-                // ✅ Path: promoCodes/BETA100
                 const ref = db.ref('promoCodes/' + code);
                 const snapshot = await ref.once('value');
                 
@@ -438,7 +451,6 @@
         // 🔹 Update promo usage in Realtime Database
         async function updatePromoUsageInRTDB(code) {
             try {
-                // ✅ Path: promoCodes/BETA100
                 const ref = db.ref('promoCodes/' + code);
                 
                 return new Promise((resolve, reject) => {
@@ -559,6 +571,13 @@
             } catch (error) {
                 const usage = getPromoUsageFromLocal(selectedCode);
                 displayPromoInfo(usage);
+            }
+            
+            // ✅ Check if already revealed
+            if (getRevealedStatus(selectedCode)) {
+                isRevealed = true;
+                canvas.style.display = 'none';
+                progressEl.classList.add('hidden');
             }
             
             loadingOverlay.style.display = 'none';
@@ -703,6 +722,10 @@
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.clearRect(0, 0, w, h);
             progressEl.classList.add('hidden');
+            
+            // ✅ Save reveal status and hide canvas
+            canvas.style.display = 'none';
+            setRevealedStatus(selectedCode, true);
             
             try {
                 const updatedUsage = await updatePromoUsageInRTDB(selectedCode);
