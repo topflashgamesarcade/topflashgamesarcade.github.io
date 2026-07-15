@@ -373,7 +373,27 @@
     <!-- FontAwesome (required for icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
+    <!-- 🔥 Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
     <script>
+        // 🔥 ခင်ဗျားရဲ့ Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGsw8OKSeuhkhzPct_0ewvCBM7JcTftj4",
+            authDomain: "scratch-card-promo-6883d.firebaseapp.com",
+            databaseURL: "https://scratch-card-promo-6883d-default-rtdb.firebaseio.com",
+            projectId: "scratch-card-promo-6883d",
+            storageBucket: "scratch-card-promo-6883d.firebasestorage.app",
+            messagingSenderId: "334910262552",
+            appId: "1:334910262552:web:45e2f372d64f6f5166626d"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        console.log('✅ Firebase initialized successfully!');
         // ================================================================
         // 🎟️ SCRATCH CARD LOGIC (With localStorage persistence)
         // ================================================================

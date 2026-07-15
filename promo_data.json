@@ -1,0 +1,37 @@
+{
+  "promoCodes": {
+    "WELCOME50": {
+      "used": 0,
+      "max_uses": 100
+    },
+    "BETA100": {
+      "used": 0,
+      "max_uses": 10
+    },
+    "BETA50": {
+      "used": 0,
+      "max_uses": 10
+    },
+    "FLASH10": {
+      "used": 0,
+      "max_uses": 100
+    },
+    "VIP1000": {
+      "used": 0,
+      "max_uses": 5
+    },
+    "GAMER25": {
+      "used": 0,
+      "max_uses": 10
+    },
+    "FLASH75": {
+      "used": 0,
+      "max_uses": 100
+    },
+    "ARCADE50": {
+      "used": 0,
+      "max_uses": 100
+    }
+  },
+  "usedUsers": {}
+}
