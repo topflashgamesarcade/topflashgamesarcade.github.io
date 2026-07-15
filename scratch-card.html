@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scratch Card</title>
     <style>
-        /* Scratch card styles (from flashgames_page.html) */
+        /* ===== CSS (မူရင်းအတိုင်း) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
@@ -100,13 +100,6 @@
             color: var(--secondary-neon);
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            transition: var(--transition);
-        }
-
-        .scratch-badge.revealed {
-            background: rgba(0, 240, 255, 0.12);
-            border-color: rgba(0, 240, 255, 0.3);
-            color: var(--primary-neon);
         }
 
         .scratch-card-wrapper {
@@ -134,17 +127,10 @@
             touch-action: none;
         }
 
-        .scratch-card:hover:not(.revealed) {
+        .scratch-card:hover {
             border-color: var(--primary-neon);
             box-shadow: 0 0 40px rgba(0, 240, 255, 0.12), inset 0 0 40px rgba(0, 240, 255, 0.03);
             transform: scale(1.01);
-        }
-
-        .scratch-card.revealed {
-            cursor: default !important;
-            border-color: rgba(0, 240, 255, 0.2);
-            opacity: 0.9;
-            pointer-events: none !important;
         }
 
         .promo-result {
@@ -182,13 +168,6 @@
             letter-spacing: 2px;
             line-height: 1.2;
             text-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
-            transition: var(--transition);
-        }
-
-        .promo-result .promo-code.expired {
-            background: none;
-            -webkit-text-fill-color: #ef4444;
-            color: #ef4444;
         }
 
         .promo-result .promo-value {
@@ -215,21 +194,16 @@
             margin-right: 4px;
         }
 
-        .promo-result .promo-uses {
+        .promo-uses {
             font-size: 0.55rem;
             color: var(--text-muted);
             margin-top: 2px;
             letter-spacing: 0.3px;
         }
 
-        .promo-result .promo-uses i {
+        .promo-uses i {
             color: var(--secondary-neon);
             margin-right: 4px;
-        }
-
-        .promo-result .promo-uses .uses-number {
-            color: var(--primary-neon);
-            font-weight: 600;
         }
 
         #scratchCanvas {
@@ -243,13 +217,6 @@
             touch-action: none;
             cursor: pointer;
             display: block;
-            transition: opacity 0.5s ease;
-        }
-
-        #scratchCanvas.hidden {
-            opacity: 0;
-            pointer-events: none !important;
-            cursor: default !important;
         }
 
         .scratch-progress {
@@ -276,7 +243,6 @@
             max-width: 260px;
             text-align: center;
             line-height: 1.6;
-            transition: var(--transition);
         }
 
         .scratch-desc i {
@@ -284,23 +250,39 @@
             margin: 0 2px;
         }
 
-        .scratch-desc .desc-revealed {
-            display: none;
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            border-radius: var(--radius-md);
         }
 
-        .scratch-desc.revealed .desc-default {
-            display: none;
+        .loading-overlay .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-subtle);
+            border-top: 3px solid var(--primary-neon);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
 
-        .scratch-desc.revealed .desc-revealed {
-            display: inline;
+        .loading-overlay p {
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
 
-        .scratch-desc .promo-code-text {
-            color: var(--primary-neon);
-            font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @media (max-width: 700px) {
@@ -329,56 +311,54 @@
                 <i class="fas fa-ticket-alt"></i>
                 Lucky Scratch Card
             </h3>
-            <span class="scratch-badge" id="scratchBadge"><i class="fas fa-bolt"></i> ခဲခြစ်ပြီး ကံစမ်းပါ</span>
+            <span class="scratch-badge"><i class="fas fa-bolt"></i> ခဲခြစ်ပြီး ကံစမ်းပါ</span>
         </div>
 
         <div class="scratch-card-wrapper">
             <div class="scratch-card" id="scratchCard">
+                <!-- Loading Overlay -->
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <p>Loading promo...</p>
+                </div>
+
                 <div class="promo-result" id="promoResult">
                     <span class="promo-label"><i class="fas fa-gift"></i> Your Promo Code</span>
                     <span class="promo-code" id="promoCodeDisplay">———</span>
                     <span class="promo-value" id="promoValueDisplay"><i class="fas fa-percent"></i> Loading...</span>
-                    <span class="promo-expiry" id="promoExpiryDisplay"><i class="far fa-calendar-alt"></i> Expires: —</span>
                     <span class="promo-uses" id="promoUsesDisplay">
-                        <i class="fas fa-users"></i> Uses: <span class="uses-number" id="usesCount">—</span>/<span id="maxUsesCount">—</span>
+                        <i class="fas fa-users"></i> Uses: <span id="usesCount">—</span>/<span id="maxUsesCount">—</span>
                     </span>
+                    <span class="promo-expiry" id="promoExpiryDisplay"><i class="far fa-calendar-alt"></i> Expires: —</span>
                 </div>
                 <canvas id="scratchCanvas"></canvas>
                 <span class="scratch-progress" id="scratchProgress">0%</span>
             </div>
 
-            <div class="scratch-desc" id="scratchDesc">
-                <span class="desc-default">
-                    <i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i>
-                    လက်ချောင်းနဲ့ ပွတ်ဆွဲပြီး ခဲခြစ်လိုက်ပါ။
-                    <br>
-                    <span style="font-size:0.65rem; color:var(--text-muted);">တစ်ကြိမ်သာ အသုံးပြုနိုင်သော ပရိုမိုကုဒ်</span>
-                </span>
-                <span class="desc-revealed">
-                    <i class="fas fa-check-circle" style="color:var(--primary-neon);"></i>
-                    သင့် Promo Code ကို ရရှိပြီးပါပြီ။
-                    <br>
-                    <span style="font-size:0.65rem; color:var(--text-muted);">
-                        Code: <strong class="promo-code-text" id="descPromoCode">———</strong>
-                    </span>
-                    <br>
-                    <span style="font-size:0.6rem; color:var(--text-muted);">
-                        <i class="fas fa-info-circle"></i> ကျေးဇူးပြု၍ ကူးယူပြီး အသုံးပြုပါ။
-                    </span>
+            <div class="scratch-desc">
+                <i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i>
+                လက်ချောင်းနဲ့ ပွတ်ဆွဲပြီး ခဲခြစ်လိုက်ပါ။
+                <br>
+                <span style="font-size:0.65rem; color:var(--text-muted);">တစ်ကြိမ်သာ အသုံးပြုနိုင်သော ပရိုမိုကုဒ်</span>
+                <br><br>
+                <span style="color: #ffffff; padding: 4px 12px; border: 3px solid #353535; border-radius: 8px; display: inline-block; font-weight: bold; box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);">
+                    ကံကောင်းကြပါစေဗျာ
                 </span>
             </div>
         </div>
     </div>
 
-    <!-- FontAwesome (required for icons) -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <!-- 🔥 Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // 🔥 ခင်ဗျားရဲ့ Firebase Config
+        // ================================================================
+        // 🔥 FIREBASE CONFIG
+        // ================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyAGsw8OKSeuhkhzPct_0ewvCBM7JcTftj4",
             authDomain: "scratch-card-promo-6883d.firebaseapp.com",
@@ -389,17 +369,11 @@
             appId: "1:334910262552:web:45e2f372d64f6f5166626d"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        console.log('✅ Firebase initialized successfully!');
-        // ================================================================
-        // 🎟️ SCRATCH CARD LOGIC (With localStorage persistence)
-        // ================================================================
+        const db = firebase.database();
 
         // ================================================================
-        // 1. PROMO CODES DATA
+        // 🎟️ PROMO CODES
         // ================================================================
         const promoCodes = {
             "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100 },
@@ -412,10 +386,108 @@
             "ARCADE50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100 },
         };
 
+        // DOM Elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const promoCodeDisplay = document.getElementById('promoCodeDisplay');
+        const promoValueDisplay = document.getElementById('promoValueDisplay');
+        const promoExpiryDisplay = document.getElementById('promoExpiryDisplay');
+        const usesCount = document.getElementById('usesCount');
+        const maxUsesCount = document.getElementById('maxUsesCount');
+
+        // Canvas Elements
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        const progressEl = document.getElementById('scratchProgress');
+
+        let selectedCode = null;
+        let promo = null;
+        let isDrawing = false;
+        let isRevealed = false;
+        let isUpdating = false;
+        const RADIUS = 28;
+        const REVEAL_THRESHOLD = 0.50;
+
         // ================================================================
-        // 2. LOCALSTORAGE FUNCTIONS
+        // 📡 REALTIME DATABASE FUNCTIONS
         // ================================================================
-        function getPromoUsage(code) {
+
+        // 🔹 Get promo usage from Realtime Database
+        async function getPromoUsageFromRTDB(code) {
+            try {
+                // ✅ Path: promoCodes/BETA100
+                const ref = db.ref('promoCodes/' + code);
+                const snapshot = await ref.once('value');
+                
+                if (snapshot.exists()) {
+                    return snapshot.val();
+                } else {
+                    const newData = {
+                        used: 0,
+                        max_uses: promoCodes[code]?.max_uses || 100,
+                        createdAt: Date.now()
+                    };
+                    await ref.set(newData);
+                    return newData;
+                }
+            } catch (error) {
+                console.error('❌ Error getting promo usage:', error);
+                return getPromoUsageFromLocal(code);
+            }
+        }
+
+        // 🔹 Update promo usage in Realtime Database
+        async function updatePromoUsageInRTDB(code) {
+            try {
+                // ✅ Path: promoCodes/BETA100
+                const ref = db.ref('promoCodes/' + code);
+                
+                return new Promise((resolve, reject) => {
+                    ref.transaction((currentData) => {
+                        if (currentData === null) {
+                            return {
+                                used: 1,
+                                max_uses: promoCodes[code]?.max_uses || 100,
+                                createdAt: Date.now()
+                            };
+                        }
+                        
+                        const newUsed = (currentData.used || 0) + 1;
+                        currentData.used = newUsed;
+                        currentData.updatedAt = Date.now();
+                        
+                        return currentData;
+                        
+                    }, (error, committed, snapshot) => {
+                        if (error) {
+                            console.error('❌ Transaction error:', error);
+                            reject(error);
+                            return;
+                        }
+                        
+                        if (!committed) {
+                            console.warn('⚠️ Transaction not committed');
+                            reject(new Error('Transaction not committed'));
+                            return;
+                        }
+                        
+                        const data = snapshot.val();
+                        console.log('✅ Transaction committed! Data:', data);
+                        
+                        resolve({
+                            used: data?.used || 1,
+                            max_uses: data?.max_uses || promoCodes[code]?.max_uses || 100
+                        });
+                    });
+                });
+                
+            } catch (error) {
+                console.error('❌ Error updating promo usage:', error);
+                return updatePromoUsageInLocal(code);
+            }
+        }
+
+        // 🔹 LocalStorage fallback
+        function getPromoUsageFromLocal(code) {
             const allData = localStorage.getItem('promo_usage_data');
             let usageData = allData ? JSON.parse(allData) : {};
             
@@ -430,7 +502,7 @@
             return usageData[code];
         }
 
-        function updatePromoUsage(code) {
+        function updatePromoUsageInLocal(code) {
             const allData = localStorage.getItem('promo_usage_data');
             let usageData = allData ? JSON.parse(allData) : {};
             
@@ -441,85 +513,79 @@
                 };
             }
             
-            // Don't increment if already fully used
-            if (usageData[code].used >= usageData[code].max_uses) {
-                console.warn('⚠️ Promo code already fully used!');
-                return usageData[code];
-            }
-            
             usageData[code].used += 1;
             localStorage.setItem('promo_usage_data', JSON.stringify(usageData));
             return usageData[code];
         }
 
         // ================================================================
-        // 3. SELECT PROMO CODE
+        // 🎯 MAIN LOGIC
         // ================================================================
-        let selectedCode = localStorage.getItem('myPromoCode');
-        if (!selectedCode || !promoCodes[selectedCode]) {
-            const codes = Object.keys(promoCodes);
-            selectedCode = codes[Math.floor(Math.random() * codes.length)];
-            localStorage.setItem('myPromoCode', selectedCode);
-        } else {
-            // Check if expired
-            const promo = promoCodes[selectedCode];
-            if (promo.expiry) {
-                const expiryDate = new Date(promo.expiry);
-                const today = new Date();
-                if (expiryDate < today) {
-                    const codes = Object.keys(promoCodes);
-                    selectedCode = codes[Math.floor(Math.random() * codes.length)];
-                    localStorage.setItem('myPromoCode', selectedCode);
+
+        async function loadPromoCode() {
+            loadingOverlay.style.display = 'flex';
+            
+            let code = localStorage.getItem('myPromoCode');
+            if (!code || !promoCodes[code]) {
+                const codes = Object.keys(promoCodes);
+                code = codes[Math.floor(Math.random() * codes.length)];
+                localStorage.setItem('myPromoCode', code);
+            } else {
+                const codeData = promoCodes[code];
+                if (codeData.expiry) {
+                    const expiryDate = new Date(codeData.expiry);
+                    const today = new Date();
+                    if (expiryDate < today) {
+                        const codes = Object.keys(promoCodes);
+                        code = codes[Math.floor(Math.random() * codes.length)];
+                        localStorage.setItem('myPromoCode', code);
+                    }
                 }
+            }
+            
+            selectedCode = code;
+            promo = promoCodes[selectedCode];
+            
+            if (!promo) {
+                const codes = Object.keys(promoCodes);
+                selectedCode = codes[0];
+                promo = promoCodes[selectedCode];
+                localStorage.setItem('myPromoCode', selectedCode);
+            }
+            
+            try {
+                const usage = await getPromoUsageFromRTDB(selectedCode);
+                displayPromoInfo(usage);
+            } catch (error) {
+                const usage = getPromoUsageFromLocal(selectedCode);
+                displayPromoInfo(usage);
+            }
+            
+            loadingOverlay.style.display = 'none';
+        }
+
+        function displayPromoInfo(usage) {
+            promoCodeDisplay.textContent = selectedCode;
+            promoValueDisplay.innerHTML = `<i class="fas fa-gift"></i> ${promo.label}`;
+            
+            if (promo.expiry) {
+                promoExpiryDisplay.innerHTML = `<i class="far fa-calendar-alt"></i> Expires: ${promo.expiry}`;
+            } else {
+                promoExpiryDisplay.innerHTML = `<i class="far fa-calendar-alt"></i> No expiry`;
+            }
+            
+            usesCount.textContent = usage.used || 0;
+            maxUsesCount.textContent = usage.max_uses || promo.max_uses || '∞';
+            
+            if ((usage.used || 0) >= (usage.max_uses || promo.max_uses || 100)) {
+                promoCodeDisplay.textContent = '❌ EXPIRED';
+                promoValueDisplay.innerHTML = '<i class="fas fa-times-circle"></i> No more uses left';
             }
         }
 
-        let promo = promoCodes[selectedCode];
-        if (!promo) {
-            const codes = Object.keys(promoCodes);
-            selectedCode = codes[0];
-            promo = promoCodes[selectedCode];
-            localStorage.setItem('myPromoCode', selectedCode);
-        }
-
         // ================================================================
-        // 4. DISPLAY PROMO INFO
+        // 🖌️ CANVAS SCRATCH ENGINE
         // ================================================================
-        const usage = getPromoUsage(selectedCode);
-
-        document.getElementById('promoCodeDisplay').textContent = selectedCode;
-        document.getElementById('promoValueDisplay').innerHTML = `<i class="fas fa-gift"></i> ${promo.label}`;
-        document.getElementById('descPromoCode').textContent = selectedCode;
-
-        if (promo.expiry) {
-            document.getElementById('promoExpiryDisplay').innerHTML = `<i class="far fa-calendar-alt"></i> Expires: ${promo.expiry}`;
-        } else {
-            document.getElementById('promoExpiryDisplay').innerHTML = `<i class="far fa-calendar-alt"></i> No expiry`;
-        }
-
-        document.getElementById('usesCount').textContent = usage.used;
-        document.getElementById('maxUsesCount').textContent = usage.max_uses;
-
-        // ================================================================
-        // 5. CHECK REVEALED STATUS FROM LOCALSTORAGE
-        // ================================================================
-        // 🔥 CRITICAL: ခြစ်ပြီးသားလား စစ်မယ်
-        const isAlreadyRevealed = localStorage.getItem('scratch_revealed_' + selectedCode) === 'true';
-        const isAlreadyFullyUsed = usage.used >= usage.max_uses;
-
-        // ================================================================
-        // 6. CANVAS SCRATCH ENGINE
-        // ================================================================
-        const canvas = document.getElementById('scratchCanvas');
-        const ctx = canvas.getContext('2d');
-        const progressEl = document.getElementById('scratchProgress');
-        const card = document.getElementById('scratchCard');
-
-        let isDrawing = false;
-        let isRevealed = isAlreadyRevealed || isAlreadyFullyUsed; // 🔥 localStorage ကနေ ယူမယ်
-        let hasUpdatedUsage = isAlreadyRevealed; // 🔥 ခြစ်ပြီးသားဆိုရင် update မလုပ်တော့ဘူး
-        const RADIUS = 28;
-        const REVEAL_THRESHOLD = 0.50;
 
         function resizeCanvas() {
             const rect = canvas.parentElement.getBoundingClientRect();
@@ -529,20 +595,7 @@
             canvas.style.width = rect.width + 'px';
             canvas.style.height = rect.height + 'px';
             ctx.scale(dpr, dpr);
-            
-            // Don't draw cover if already revealed or fully used
-            if (!isRevealed && !isAlreadyFullyUsed) {
-                drawCover();
-            } else {
-                // 🔥 ခြစ်ပြီးသားဆိုရင် canvas ကိုပိတ်ထားမယ်
-                canvas.classList.add('hidden');
-                canvas.style.pointerEvents = 'none';
-                canvas.style.cursor = 'default';
-                card.classList.add('revealed');
-                card.style.pointerEvents = 'none';
-                card.style.cursor = 'default';
-                progressEl.classList.add('hidden');
-            }
+            drawCover();
         }
 
         function drawCover() {
@@ -606,20 +659,10 @@
             ctx.lineTo(w - 10, h - 10);
             ctx.lineTo(w - 10, h - 10 - cornerLen);
             ctx.stroke();
-
-            window._coverData = ctx.getImageData(0, 0, w, h);
         }
 
         function scratch(x, y) {
-            if (isRevealed) {
-                console.log('⛔ Already revealed, ignoring scratch');
-                return;
-            }
-            if (isAlreadyFullyUsed) {
-                console.log('⛔ Already fully used, ignoring scratch');
-                return;
-            }
-            
+            if (isRevealed || isUpdating) return;
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.save();
@@ -632,9 +675,7 @@
         }
 
         function updateProgress() {
-            if (isRevealed) return;
-            if (isAlreadyFullyUsed) return;
-            
+            if (isRevealed || isUpdating) return;
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             const imageData = ctx.getImageData(0, 0, w, h);
@@ -653,85 +694,44 @@
             }
         }
 
-        function fullyReveal() {
-            if (isRevealed) {
-                console.log('⛔ Already revealed, skipping full reveal');
-                return;
-            }
-            if (isAlreadyFullyUsed) {
-                console.log('⛔ Already fully used, skipping full reveal');
-                return;
-            }
-            
-            console.log('🎉 Fully revealed!');
+        async function fullyReveal() {
+            if (isRevealed || isUpdating) return;
+            isUpdating = true;
             isRevealed = true;
             
-            // 🔥 localStorage မှာ ခြစ်ပြီးသား ဆိုတာ သိမ်းထားမယ်
-            localStorage.setItem('scratch_revealed_' + selectedCode, 'true');
-            
-            // Clear canvas
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.clearRect(0, 0, w, h);
             progressEl.classList.add('hidden');
             
-            // 🔥 CRITICAL: Disable canvas completely
-            canvas.classList.add('hidden');
-            canvas.style.pointerEvents = 'none';
-            canvas.style.cursor = 'default';
-            
-            // Disable the card too
-            card.classList.add('revealed');
-            card.style.pointerEvents = 'none';
-            card.style.cursor = 'default';
-            
-            // Update usage (only once)
-            if (!hasUpdatedUsage) {
-                const updatedUsage = updatePromoUsage(selectedCode);
-                document.getElementById('usesCount').textContent = updatedUsage.used;
-                hasUpdatedUsage = true;
-                
-                // Check if fully used now
-                if (updatedUsage.used >= updatedUsage.max_uses) {
-                    document.getElementById('promoCodeDisplay').textContent = '❌ EXPIRED';
-                    document.getElementById('promoCodeDisplay').classList.add('expired');
-                    document.getElementById('promoValueDisplay').innerHTML = '<i class="fas fa-times-circle"></i> No longer available';
-                }
+            try {
+                const updatedUsage = await updatePromoUsageInRTDB(selectedCode);
+                displayPromoInfo(updatedUsage);
+                console.log('✅ Realtime DB updated: ' + selectedCode + ' - used: ' + updatedUsage.used);
+            } catch (error) {
+                console.error('❌ Realtime DB update failed, using localStorage:', error);
+                const updatedUsage = updatePromoUsageInLocal(selectedCode);
+                displayPromoInfo(updatedUsage);
             }
             
-            // Update UI
-            document.getElementById('scratchBadge').innerHTML = '<i class="fas fa-check-circle"></i> ခြစ်ပြီးပါပြီ';
-            document.getElementById('scratchBadge').classList.add('revealed');
-            document.getElementById('scratchDesc').classList.add('revealed');
-            
-            // Update description with promo code
-            document.querySelector('.desc-revealed').innerHTML = `
-                <i class="fas fa-check-circle" style="color:var(--primary-neon);"></i>
-                သင့် Promo Code ကို ရရှိပြီးပါပြီ။
-                <br>
-                <span style="font-size:0.65rem; color:var(--text-muted);">
-                    Code: <strong class="promo-code-text">${selectedCode}</strong>
-                </span>
-                <br>
-                <span style="font-size:0.6rem; color:var(--text-muted);">
-                    <i class="fas fa-info-circle"></i> ကျေးဇူးပြု၍ ကူးယူပြီး အသုံးပြုပါ။
-                </span>
-            `;
-            
-            // Animation
-            card.style.transform = 'scale(1.02)';
-            setTimeout(() => { card.style.transform = ''; }, 300);
-            
-            // GA Event (if available)
             if (typeof gtag === 'function') {
                 gtag('event', 'scratch_reveal', {
                     'event_category': 'Promo',
                     'event_label': selectedCode,
                     'value': promo.value
                 });
-                console.log('✅ GA Event: Scratch Reveal - ' + selectedCode);
             }
+            
+            const card = document.getElementById('scratchCard');
+            card.style.transform = 'scale(1.02)';
+            setTimeout(() => { card.style.transform = ''; }, 300);
+            
+            isUpdating = false;
         }
+
+        // ================================================================
+        // 🖱️ EVENT LISTENERS
+        // ================================================================
 
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -742,17 +742,7 @@
 
         function onStart(e) {
             e.preventDefault();
-            
-            // 🔥 Check if already revealed or fully used
-            if (isRevealed) {
-                console.log('⛔ Cannot scratch - already revealed');
-                return;
-            }
-            if (isAlreadyFullyUsed) {
-                console.log('⛔ Cannot scratch - already fully used');
-                return;
-            }
-            
+            if (isRevealed || isUpdating) return;
             isDrawing = true;
             const pos = getPos(e);
             scratch(pos.x, pos.y);
@@ -760,18 +750,7 @@
 
         function onMove(e) {
             e.preventDefault();
-            if (!isDrawing) return;
-            
-            // 🔥 Check if already revealed or fully used
-            if (isRevealed) {
-                console.log('⛔ Cannot scratch - already revealed');
-                return;
-            }
-            if (isAlreadyFullyUsed) {
-                console.log('⛔ Cannot scratch - already fully used');
-                return;
-            }
-            
+            if (!isDrawing || isRevealed || isUpdating) return;
             const pos = getPos(e);
             scratch(pos.x, pos.y);
         }
@@ -779,14 +758,9 @@
         function onEnd(e) {
             e.preventDefault();
             isDrawing = false;
-            if (!isRevealed && !isAlreadyFullyUsed) {
-                updateProgress();
-            }
+            if (!isRevealed && !isUpdating) updateProgress();
         }
 
-        // ================================================================
-        // 7. EVENT LISTENERS
-        // ================================================================
         canvas.addEventListener('mousedown', onStart);
         canvas.addEventListener('mousemove', onMove);
         canvas.addEventListener('mouseup', onEnd);
@@ -797,58 +771,23 @@
 
         window.addEventListener('resize', () => {
             resizeCanvas();
-            if (isRevealed || isAlreadyFullyUsed) {
+            if (isRevealed) {
                 const w = canvas.width / (window.devicePixelRatio || 1);
                 const h = canvas.height / (window.devicePixelRatio || 1);
                 ctx.clearRect(0, 0, w, h);
-                canvas.classList.add('hidden');
-                canvas.style.pointerEvents = 'none';
             }
         });
 
         // ================================================================
-        // 8. INIT
+        // 🚀 INITIALIZE
         // ================================================================
-        // 🔥 ခြစ်ပြီးသားဆိုရင် UI ကို အဆင်သင့်ဖြစ်အောင် ပြင်မယ်
-        if (isAlreadyRevealed || isAlreadyFullyUsed) {
-            // UI ကို ခြစ်ပြီးသား အနေအထားပြောင်းမယ်
-            document.getElementById('scratchBadge').innerHTML = '<i class="fas fa-check-circle"></i> ခြစ်ပြီးပါပြီ';
-            document.getElementById('scratchBadge').classList.add('revealed');
-            document.getElementById('scratchDesc').classList.add('revealed');
-            card.classList.add('revealed');
-            card.style.pointerEvents = 'none';
-            card.style.cursor = 'default';
-            
-            // Canvas ကိုပိတ်မယ်
-            canvas.classList.add('hidden');
-            canvas.style.pointerEvents = 'none';
-            canvas.style.cursor = 'default';
-            progressEl.classList.add('hidden');
-            
-            if (isAlreadyFullyUsed) {
-                document.getElementById('promoCodeDisplay').textContent = '❌ EXPIRED';
-                document.getElementById('promoCodeDisplay').classList.add('expired');
-                document.getElementById('promoValueDisplay').innerHTML = '<i class="fas fa-times-circle"></i> No longer available';
-                document.getElementById('scratchBadge').innerHTML = '<i class="fas fa-times-circle"></i> ကုန်သွားပါပြီ';
-                document.querySelector('.desc-revealed').innerHTML = `
-                    <i class="fas fa-exclamation-circle" style="color:#ef4444;"></i>
-                    ဤ Promo Code သည် အသုံးပြုပြီးပါပြီ။
-                    <br>
-                    <span style="font-size:0.65rem; color:var(--text-muted);">
-                        ကျေးဇူးပြု၍ အခြား Code တစ်ခုကို ရယူပါ။
-                    </span>
-                `;
-                card.style.opacity = '0.5';
-            }
-        } else {
+
+        async function init() {
+            await loadPromoCode();
             resizeCanvas();
         }
 
-        console.log('✅ Scratch Card ready!');
-        console.log('📦 Promo Code:', selectedCode);
-        console.log('📊 Usage:', usage.used + '/' + usage.max_uses);
-        console.log('🔒 isRevealed:', isRevealed);
-        console.log('🔒 isAlreadyRevealed (from localStorage):', isAlreadyRevealed);
+        init();
     </script>
 </body>
 </html>
