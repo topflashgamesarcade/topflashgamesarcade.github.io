@@ -100,6 +100,13 @@
             color: var(--secondary-neon);
             text-transform: uppercase;
             letter-spacing: 0.8px;
+            transition: var(--transition);
+        }
+
+        .scratch-badge.revealed {
+            background: rgba(0, 240, 255, 0.12);
+            border-color: rgba(0, 240, 255, 0.3);
+            color: var(--primary-neon);
         }
 
         .scratch-card-wrapper {
@@ -127,10 +134,16 @@
             touch-action: none;
         }
 
-        .scratch-card:hover {
+        .scratch-card:hover:not(.revealed) {
             border-color: var(--primary-neon);
             box-shadow: 0 0 40px rgba(0, 240, 255, 0.12), inset 0 0 40px rgba(0, 240, 255, 0.03);
             transform: scale(1.01);
+        }
+
+        .scratch-card.revealed {
+            cursor: default;
+            border-color: rgba(0, 240, 255, 0.2);
+            opacity: 0.9;
         }
 
         .promo-result {
@@ -168,6 +181,13 @@
             letter-spacing: 2px;
             line-height: 1.2;
             text-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+            transition: var(--transition);
+        }
+
+        .promo-result .promo-code.expired {
+            background: none;
+            -webkit-text-fill-color: #ef4444;
+            color: #ef4444;
         }
 
         .promo-result .promo-value {
@@ -194,6 +214,23 @@
             margin-right: 4px;
         }
 
+        .promo-result .promo-uses {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            letter-spacing: 0.3px;
+        }
+
+        .promo-result .promo-uses i {
+            color: var(--secondary-neon);
+            margin-right: 4px;
+        }
+
+        .promo-result .promo-uses .uses-number {
+            color: var(--primary-neon);
+            font-weight: 600;
+        }
+
         #scratchCanvas {
             position: absolute;
             top: 0;
@@ -205,6 +242,12 @@
             touch-action: none;
             cursor: pointer;
             display: block;
+            transition: opacity 0.5s ease;
+        }
+
+        #scratchCanvas.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         .scratch-progress {
@@ -231,11 +274,31 @@
             max-width: 260px;
             text-align: center;
             line-height: 1.6;
+            transition: var(--transition);
         }
 
         .scratch-desc i {
             color: var(--primary-neon);
             margin: 0 2px;
+        }
+
+        .scratch-desc .desc-revealed {
+            display: none;
+        }
+
+        .scratch-desc.revealed .desc-default {
+            display: none;
+        }
+
+        .scratch-desc.revealed .desc-revealed {
+            display: inline;
+        }
+
+        .scratch-desc .promo-code-text {
+            color: var(--primary-neon);
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
         }
 
         @media (max-width: 700px) {
@@ -264,7 +327,7 @@
                 <i class="fas fa-ticket-alt"></i>
                 Lucky Scratch Card
             </h3>
-            <span class="scratch-badge"><i class="fas fa-bolt"></i> ခဲခြစ်ပြီး ကံစမ်းပါ</span>
+            <span class="scratch-badge" id="scratchBadge"><i class="fas fa-bolt"></i> ခဲခြစ်ပြီး ကံစမ်းပါ</span>
         </div>
 
         <div class="scratch-card-wrapper">
@@ -274,16 +337,33 @@
                     <span class="promo-code" id="promoCodeDisplay">———</span>
                     <span class="promo-value" id="promoValueDisplay"><i class="fas fa-percent"></i> Loading...</span>
                     <span class="promo-expiry" id="promoExpiryDisplay"><i class="far fa-calendar-alt"></i> Expires: —</span>
+                    <span class="promo-uses" id="promoUsesDisplay">
+                        <i class="fas fa-users"></i> Uses: <span class="uses-number" id="usesCount">—</span>/<span id="maxUsesCount">—</span>
+                    </span>
                 </div>
                 <canvas id="scratchCanvas"></canvas>
                 <span class="scratch-progress" id="scratchProgress">0%</span>
             </div>
 
-            <div class="scratch-desc">
-                <i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i>
-                လက်ချောင်းနဲ့ ပွတ်ဆွဲပြီး ခဲခြစ်လိုက်ပါ။
-                <br>
-                <span style="font-size:0.65rem; color:var(--text-muted);">တစ်ကြိမ်သာ အသုံးပြုနိုင်သော ပရိုမိုကုဒ်</span>
+            <div class="scratch-desc" id="scratchDesc">
+                <span class="desc-default">
+                    <i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i>
+                    လက်ချောင်းနဲ့ ပွတ်ဆွဲပြီး ခဲခြစ်လိုက်ပါ။
+                    <br>
+                    <span style="font-size:0.65rem; color:var(--text-muted);">တစ်ကြိမ်သာ အသုံးပြုနိုင်သော ပရိုမိုကုဒ်</span>
+                </span>
+                <span class="desc-revealed">
+                    <i class="fas fa-check-circle" style="color:var(--primary-neon);"></i>
+                    သင့် Promo Code ကို ရရှိပြီးပါပြီ။
+                    <br>
+                    <span style="font-size:0.65rem; color:var(--text-muted);">
+                        Code: <strong class="promo-code-text" id="descPromoCode">———</strong>
+                    </span>
+                    <br>
+                    <span style="font-size:0.6rem; color:var(--text-muted);">
+                        <i class="fas fa-info-circle"></i> ကျေးဇူးပြု၍ ကူးယူပြီး အသုံးပြုပါ။
+                    </span>
+                </span>
             </div>
         </div>
     </div>
@@ -293,28 +373,76 @@
     
     <script>
         // ================================================================
-        // 🎟️ SCRATCH CARD LOGIC (Copied from flashgames_page.html)
+        // 🎟️ SCRATCH CARD LOGIC (Fully Working with localStorage)
+        // ================================================================
+
+        // ================================================================
+        // 1. PROMO CODES DATA
         // ================================================================
         const promoCodes = {
-            "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100, "used": 1 },
-            "BETA100": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF", "expiry": "2026-08-01", "max_uses": 10, "used": 1 },
-            "BETA50": { "type": "fixed", "value": 500, "label": "500 MMK OFF", "expiry": "2026-08-01", "max_uses": 10, "used": 1 },
-            "FLASH10": { "type": "fixed", "value": 10, "label": "10% OFF", "expiry": "2026-12-31", "max_uses": 100, "used": 1 },
-            "VIP1000": { "type": "fixed", "value": 1000, "label": "100% FREE", "expiry": "2026-07-31", "max_uses": 5, "used": 1 },
-            "GAMER25": { "type": "percent", "value": 25, "label": "25% OFF", "expiry": "2026-08-01", "max_uses": 10, "used": 1 },
-            "FLASH75": { "type": "percent", "value": 75, "label": "75% OFF", "expiry": "2026-12-31", "max_uses": 100, "used": 1 },
-            "ARCADE50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100, "used": 1 },
+            "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100 },
+            "BETA100": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF", "expiry": "2026-08-01", "max_uses": 10 },
+            "BETA50": { "type": "fixed", "value": 500, "label": "500 MMK OFF", "expiry": "2026-08-01", "max_uses": 10 },
+            "FLASH10": { "type": "fixed", "value": 10, "label": "10% OFF", "expiry": "2026-12-31", "max_uses": 100 },
+            "VIP1000": { "type": "fixed", "value": 1000, "label": "100% FREE", "expiry": "2026-07-31", "max_uses": 5 },
+            "GAMER25": { "type": "percent", "value": 25, "label": "25% OFF", "expiry": "2026-08-01", "max_uses": 10 },
+            "FLASH75": { "type": "percent", "value": 75, "label": "75% OFF", "expiry": "2026-12-31", "max_uses": 100 },
+            "ARCADE50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100 },
         };
 
+        // ================================================================
+        // 2. LOCALSTORAGE FUNCTIONS (No API needed)
+        // ================================================================
+        function getPromoUsage(code) {
+            const allData = localStorage.getItem('promo_usage_data');
+            let usageData = allData ? JSON.parse(allData) : {};
+            
+            if (!usageData[code]) {
+                usageData[code] = {
+                    used: 0,
+                    max_uses: promoCodes[code]?.max_uses || 100
+                };
+                localStorage.setItem('promo_usage_data', JSON.stringify(usageData));
+            }
+            
+            return usageData[code];
+        }
+
+        function updatePromoUsage(code) {
+            const allData = localStorage.getItem('promo_usage_data');
+            let usageData = allData ? JSON.parse(allData) : {};
+            
+            if (!usageData[code]) {
+                usageData[code] = {
+                    used: 0,
+                    max_uses: promoCodes[code]?.max_uses || 100
+                };
+            }
+            
+            // Don't increment if already fully used
+            if (usageData[code].used >= usageData[code].max_uses) {
+                console.warn('⚠️ Promo code already fully used!');
+                return usageData[code];
+            }
+            
+            usageData[code].used += 1;
+            localStorage.setItem('promo_usage_data', JSON.stringify(usageData));
+            return usageData[code];
+        }
+
+        // ================================================================
+        // 3. SELECT PROMO CODE
+        // ================================================================
         let selectedCode = localStorage.getItem('myPromoCode');
         if (!selectedCode || !promoCodes[selectedCode]) {
             const codes = Object.keys(promoCodes);
             selectedCode = codes[Math.floor(Math.random() * codes.length)];
             localStorage.setItem('myPromoCode', selectedCode);
         } else {
-            const codeData = promoCodes[selectedCode];
-            if (codeData.expiry) {
-                const expiryDate = new Date(codeData.expiry);
+            // Check if expired
+            const promo = promoCodes[selectedCode];
+            if (promo.expiry) {
+                const expiryDate = new Date(promo.expiry);
                 const today = new Date();
                 if (expiryDate < today) {
                     const codes = Object.keys(promoCodes);
@@ -332,21 +460,57 @@
             localStorage.setItem('myPromoCode', selectedCode);
         }
 
+        // ================================================================
+        // 4. DISPLAY PROMO INFO
+        // ================================================================
+        const usage = getPromoUsage(selectedCode);
+
         document.getElementById('promoCodeDisplay').textContent = selectedCode;
         document.getElementById('promoValueDisplay').innerHTML = `<i class="fas fa-gift"></i> ${promo.label}`;
+        document.getElementById('descPromoCode').textContent = selectedCode;
+
         if (promo.expiry) {
             document.getElementById('promoExpiryDisplay').innerHTML = `<i class="far fa-calendar-alt"></i> Expires: ${promo.expiry}`;
         } else {
             document.getElementById('promoExpiryDisplay').innerHTML = `<i class="far fa-calendar-alt"></i> No expiry`;
         }
 
-        // Canvas scratch engine
+        document.getElementById('usesCount').textContent = usage.used;
+        document.getElementById('maxUsesCount').textContent = usage.max_uses;
+
+        // Check if already fully used
+        if (usage.used >= usage.max_uses) {
+            document.getElementById('promoCodeDisplay').textContent = '❌ EXPIRED';
+            document.getElementById('promoCodeDisplay').classList.add('expired');
+            document.getElementById('promoValueDisplay').innerHTML = '<i class="fas fa-times-circle"></i> No longer available';
+            document.getElementById('scratchCard').classList.add('revealed');
+            document.getElementById('scratchBadge').innerHTML = '<i class="fas fa-times-circle"></i> ကုန်သွားပါပြီ';
+            document.getElementById('scratchBadge').classList.add('revealed');
+            document.getElementById('scratchDesc').classList.add('revealed');
+            document.querySelector('.desc-default').style.display = 'none';
+            document.querySelector('.desc-revealed').style.display = 'inline';
+            document.querySelector('.desc-revealed').innerHTML = `
+                <i class="fas fa-exclamation-circle" style="color:#ef4444;"></i>
+                ဤ Promo Code သည် အသုံးပြုပြီးပါပြီ။
+                <br>
+                <span style="font-size:0.65rem; color:var(--text-muted);">
+                    ကျေးဇူးပြု၍ အခြား Code တစ်ခုကို ရယူပါ။
+                </span>
+            `;
+            document.getElementById('scratchCard').style.opacity = '0.5';
+            document.getElementById('scratchCard').style.cursor = 'not-allowed';
+        }
+
+        // ================================================================
+        // 5. CANVAS SCRATCH ENGINE
+        // ================================================================
         const canvas = document.getElementById('scratchCanvas');
         const ctx = canvas.getContext('2d');
         const progressEl = document.getElementById('scratchProgress');
 
         let isDrawing = false;
         let isRevealed = false;
+        let hasUpdatedUsage = false;
         const RADIUS = 28;
         const REVEAL_THRESHOLD = 0.50;
 
@@ -358,7 +522,11 @@
             canvas.style.width = rect.width + 'px';
             canvas.style.height = rect.height + 'px';
             ctx.scale(dpr, dpr);
-            drawCover();
+            
+            // Don't draw cover if already revealed
+            if (!isRevealed && !(usage.used >= usage.max_uses)) {
+                drawCover();
+            }
         }
 
         function drawCover() {
@@ -428,6 +596,8 @@
 
         function scratch(x, y) {
             if (isRevealed) return;
+            if (usage.used >= usage.max_uses) return;
+            
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.save();
@@ -441,6 +611,8 @@
 
         function updateProgress() {
             if (isRevealed) return;
+            if (usage.used >= usage.max_uses) return;
+            
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             const imageData = ctx.getImageData(0, 0, w, h);
@@ -461,11 +633,57 @@
 
         function fullyReveal() {
             if (isRevealed) return;
+            if (usage.used >= usage.max_uses) return;
+            
             isRevealed = true;
+            
+            // Clear canvas
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.clearRect(0, 0, w, h);
             progressEl.classList.add('hidden');
+            canvas.classList.add('hidden');
+            
+            // Update usage (only once)
+            if (!hasUpdatedUsage) {
+                const updatedUsage = updatePromoUsage(selectedCode);
+                document.getElementById('usesCount').textContent = updatedUsage.used;
+                hasUpdatedUsage = true;
+                
+                // Check if fully used now
+                if (updatedUsage.used >= updatedUsage.max_uses) {
+                    document.getElementById('promoCodeDisplay').textContent = '❌ EXPIRED';
+                    document.getElementById('promoCodeDisplay').classList.add('expired');
+                    document.getElementById('promoValueDisplay').innerHTML = '<i class="fas fa-times-circle"></i> No longer available';
+                }
+            }
+            
+            // Update UI
+            document.getElementById('scratchCard').classList.add('revealed');
+            document.getElementById('scratchBadge').innerHTML = '<i class="fas fa-check-circle"></i> ခြစ်ပြီးပါပြီ';
+            document.getElementById('scratchBadge').classList.add('revealed');
+            document.getElementById('scratchDesc').classList.add('revealed');
+            
+            // Update description with promo code
+            document.querySelector('.desc-revealed').innerHTML = `
+                <i class="fas fa-check-circle" style="color:var(--primary-neon);"></i>
+                သင့် Promo Code ကို ရရှိပြီးပါပြီ။
+                <br>
+                <span style="font-size:0.65rem; color:var(--text-muted);">
+                    Code: <strong class="promo-code-text">${selectedCode}</strong>
+                </span>
+                <br>
+                <span style="font-size:0.6rem; color:var(--text-muted);">
+                    <i class="fas fa-info-circle"></i> ကျေးဇူးပြု၍ ကူးယူပြီး အသုံးပြုပါ။
+                </span>
+            `;
+            
+            // Animation
+            const card = document.getElementById('scratchCard');
+            card.style.transform = 'scale(1.02)';
+            setTimeout(() => { card.style.transform = ''; }, 300);
+            
+            // GA Event (if available)
             if (typeof gtag === 'function') {
                 gtag('event', 'scratch_reveal', {
                     'event_category': 'Promo',
@@ -474,9 +692,6 @@
                 });
                 console.log('✅ GA Event: Scratch Reveal - ' + selectedCode);
             }
-            const card = document.getElementById('scratchCard');
-            card.style.transform = 'scale(1.02)';
-            setTimeout(() => { card.style.transform = ''; }, 300);
         }
 
         function getPos(e) {
@@ -489,6 +704,7 @@
         function onStart(e) {
             e.preventDefault();
             if (isRevealed) return;
+            if (usage.used >= usage.max_uses) return;
             isDrawing = true;
             const pos = getPos(e);
             scratch(pos.x, pos.y);
@@ -497,6 +713,7 @@
         function onMove(e) {
             e.preventDefault();
             if (!isDrawing || isRevealed) return;
+            if (usage.used >= usage.max_uses) return;
             const pos = getPos(e);
             scratch(pos.x, pos.y);
         }
@@ -504,9 +721,12 @@
         function onEnd(e) {
             e.preventDefault();
             isDrawing = false;
-            if (!isRevealed) updateProgress();
+            if (!isRevealed && !(usage.used >= usage.max_uses)) updateProgress();
         }
 
+        // ================================================================
+        // 6. EVENT LISTENERS
+        // ================================================================
         canvas.addEventListener('mousedown', onStart);
         canvas.addEventListener('mousemove', onMove);
         canvas.addEventListener('mouseup', onEnd);
@@ -517,14 +737,30 @@
 
         window.addEventListener('resize', () => {
             resizeCanvas();
-            if (isRevealed) {
+            if (isRevealed || usage.used >= usage.max_uses) {
                 const w = canvas.width / (window.devicePixelRatio || 1);
                 const h = canvas.height / (window.devicePixelRatio || 1);
                 ctx.clearRect(0, 0, w, h);
             }
         });
 
-        resizeCanvas();
+        // ================================================================
+        // 7. INIT
+        // ================================================================
+        // If already fully used, don't draw cover
+        if (usage.used >= usage.max_uses) {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.clearRect(0, 0, w, h);
+            canvas.classList.add('hidden');
+            progressEl.classList.add('hidden');
+        } else {
+            resizeCanvas();
+        }
+
+        console.log('✅ Scratch Card ready!');
+        console.log('📦 Promo Code:', selectedCode);
+        console.log('📊 Usage:', usage.used + '/' + usage.max_uses);
     </script>
 </body>
 </html>
