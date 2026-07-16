@@ -119,24 +119,40 @@
         const db = firebase.database();
 
         // ================================================================
-        // 💾 DEVICE ID
+        // 💾 BROWSER FINGERPRINT (NOT stored in localStorage)
         // ================================================================
-        function getDeviceId() {
-            let deviceId = localStorage.getItem('deviceId');
-            if (!deviceId) {
-                deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('deviceId', deviceId);
+        function getBrowserFingerprint() {
+            // Combine multiple browser properties to create a unique ID
+            const components = [
+                navigator.userAgent,
+                navigator.language,
+                navigator.platform,
+                screen.colorDepth,
+                screen.width + 'x' + screen.height,
+                new Date().getTimezoneOffset(),
+                !!navigator.hardwareConcurrency,
+                navigator.deviceMemory || 'unknown'
+            ];
+            const fingerprint = components.join('|||');
+            // Simple hash to make it shorter
+            let hash = 0;
+            for (let i = 0; i < fingerprint.length; i++) {
+                const char = fingerprint.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
             }
-            return deviceId;
+            return 'fp_' + Math.abs(hash).toString(36) + '_' + fingerprint.length;
         }
-        const DEVICE_ID = getDeviceId();
+
+        const USER_ID = getBrowserFingerprint();
+        console.log('🔑 User Fingerprint:', USER_ID);
 
         // ================================================================
         // 💾 REVEAL STATUS (stored inside promoCodes/<code>/revealed)
         // ================================================================
         async function getRevealedStatus(code) {
             try {
-                const ref = db.ref('promoCodes/' + code + '/revealed/' + DEVICE_ID);
+                const ref = db.ref('promoCodes/' + code + '/revealed/' + USER_ID);
                 const snapshot = await ref.once('value');
                 return snapshot.val() === true;
             } catch (error) {
@@ -147,7 +163,7 @@
 
         async function setRevealedStatus(code, status) {
             try {
-                const ref = db.ref('promoCodes/' + code + '/revealed/' + DEVICE_ID);
+                const ref = db.ref('promoCodes/' + code + '/revealed/' + USER_ID);
                 await ref.set(status);
                 return true;
             } catch (error) {
@@ -292,6 +308,8 @@
                 return;
             }
 
+            // We still use localStorage to remember which code the user got,
+            // but the reveal status is tracked by fingerprint
             let storedCode = localStorage.getItem('myPromoCode');
             let usage = null, foundValid = false, rejectReason = '';
 
@@ -347,6 +365,7 @@
             else if (rejectReason === 'removed') statusMessage.innerHTML = '🔄 Your previous promo code is no longer available. Here is a new one!';
             else statusMessage.innerHTML = '<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.';
 
+            // 🔥 Check reveal status using fingerprint (NOT localStorage)
             isRevealed = await getRevealedStatus(selectedCode);
             if (isRevealed) { canvas.style.display = 'none'; progressEl.classList.add('hidden'); }
             else { canvas.style.display = 'block'; progressEl.classList.remove('hidden'); }
@@ -482,6 +501,7 @@
                 ctx.clearRect(0, 0, w, h); progressEl.classList.add('hidden');
                 let updatedUsage;
                 try { updatedUsage = await updatePromoUsageInRTDB(selectedCode); console.log('✅ DB updated:', updatedUsage); } catch (error) { console.error('❌ DB update failed, using localStorage:', error); updatedUsage = updatePromoUsageInLocal(selectedCode); }
+                // 🔥 Save reveal status using fingerprint
                 await setRevealedStatus(selectedCode, true);
                 isRevealed = true; canvas.style.display = 'none'; justClaimed = true;
                 displayPromoInfo(updatedUsage, true);
