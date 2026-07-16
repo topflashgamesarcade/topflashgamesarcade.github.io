@@ -3,468 +3,104 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Panel - Promo Codes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <title>Scratch Card · Expire & Copy</title>
     <style>
-        /* ===== RESET & BASE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ===== CSS (unchanged) ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-deep: #070b15; --bg-surface: #0f172a; --bg-card: #1a2338;
+            --bg-card-hover: #212d48; --border-subtle: rgba(255,255,255,0.05);
+            --border-glow: rgba(157,0,255,0.4); --primary-neon: #00f0ff;
+            --secondary-neon: #ff007f; --accent-purple: #9d00ff;
+            --accent-gradient: linear-gradient(135deg, var(--secondary-neon), var(--primary-neon));
+            --text-primary: #f1f5f9; --text-secondary: #94a3b8; --text-muted: #475569;
+            --shadow-card: 0 8px 32px rgba(0,0,0,0.6);
+            --shadow-glow: 0 0 40px rgba(0,240,255,0.15);
+            --radius-lg: 16px; --radius-md: 10px; --radius-sm: 6px;
+            --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0a0e17;
-            color: #e2e8f0;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        #appContent {
-            display: none;
-            animation: fadeIn 0.6s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid rgba(0, 240, 255, 0.1);
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ff007f, #00f0ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .header h1 i { -webkit-text-fill-color: initial; color: #00f0ff; }
-        .header .badge {
-            background: rgba(0, 240, 255, 0.1);
-            padding: 8px 20px;
-            border-radius: 30px;
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            font-size: 0.8rem;
-            color: #00f0ff;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: rgba(21, 27, 41, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-        }
-        .stat-card .number { font-size: 2rem; font-weight: 800; color: #00f0ff; }
-        .stat-card .label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
-        .table-container {
-            background: rgba(21, 27, 41, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .table-header h2 { font-size: 1.1rem; font-weight: 700; color: #fff; }
-        .table-header h2 i { color: #00f0ff; margin-right: 8px; }
-        .btn-add {
-            background: linear-gradient(135deg, #00f0ff, #9d00ff);
-            border: none;
-            color: #fff;
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-add:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 240, 255, 0.3); }
-        .btn-reset-all {
-            background: linear-gradient(135deg, #feca57, #ff9f43);
-            border: none;
-            color: #2f3542;
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-reset-all:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(254, 202, 87, 0.3); }
-        table { width: 100%; border-collapse: collapse; }
-        thead { background: rgba(10, 14, 23, 0.5); }
-        th { padding: 12px 16px; text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; font-weight: 600; }
-        td { padding: 12px 16px; border-top: 1px solid rgba(255, 255, 255, 0.03); font-size: 0.85rem; }
-        td .code-name { font-weight: 700; color: #00f0ff; font-family: monospace; }
-        .type-badge {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 0.65rem;
-            font-weight: 600;
-        }
-        .type-badge.percent { background: rgba(0, 240, 255, 0.15); color: #00f0ff; }
-        .type-badge.fixed { background: rgba(255, 0, 127, 0.15); color: #ff007f; }
-        .status-badge {
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .status-badge.active { background: rgba(0, 240, 255, 0.15); color: #00f0ff; }
-        .status-badge.expired { background: rgba(255, 0, 127, 0.15); color: #ff007f; }
-        .status-badge.full { background: rgba(255, 165, 0, 0.15); color: #ffa500; }
-        .btn-action {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #94a3b8;
-            padding: 4px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            transition: all 0.3s ease;
-            margin: 0 3px;
-        }
-        .btn-action:hover { border-color: #00f0ff; color: #00f0ff; }
-        .btn-action.danger:hover { border-color: #ff007f; color: #ff007f; }
-        .btn-action.reset:hover { border-color: #feca57; color: #feca57; }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(6, 9, 15, 0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(8px);
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: #151b29;
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-content h2 { font-size: 1.3rem; margin-bottom: 5px; }
-        .modal-content p.sub { color: #94a3b8; font-size: 0.85rem; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 5px; }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px 14px;
-            background: rgba(10, 14, 23, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-family: inherit;
-            font-size: 0.9rem;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-        .form-group input:focus, .form-group select:focus { border-color: #00f0ff; }
-        .form-group select option { background: #151b29; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-actions button { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; }
-        .btn-save { background: linear-gradient(135deg, #00f0ff, #9d00ff); color: #fff; }
-        .btn-save:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(0, 240, 255, 0.2); }
-        .btn-cancel { background: rgba(255, 255, 255, 0.05); color: #94a3b8; }
-        .btn-cancel:hover { background: rgba(255, 255, 255, 0.1); }
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(0, 240, 255, 0.1);
-            border-top: 2px solid #00f0ff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+        body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; background: transparent; color: var(--text-primary); min-height: auto; padding: 0; margin: 0; }
+        .scratch-section { padding: 24px 20px 28px; background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); position: relative; overflow: hidden; transition: var(--transition); }
+        .scratch-section::before { content: ''; position: absolute; top: -1px; left: -1px; right: -1px; height: 2px; background: var(--accent-gradient); opacity: 0.6; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+        .scratch-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+        .scratch-header h3 { font-size: 1.1rem; font-weight: 700; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.3px; display: flex; align-items: center; gap: 10px; }
+        .scratch-header h3 i { -webkit-text-fill-color: initial; color: var(--primary-neon); font-size: 1.2rem; }
+        .scratch-badge { background: rgba(255,0,127,0.12); border: 1px solid rgba(255,0,127,0.2); padding: 3px 14px; border-radius: 40px; font-size: 0.55rem; font-weight: 600; color: var(--secondary-neon); text-transform: uppercase; letter-spacing: 0.8px; }
+        .scratch-card-wrapper { display: flex; justify-content: center; align-items: center; gap: 24px; flex-wrap: wrap; }
+        .scratch-card { position: relative; width: 340px; height: 140px; border-radius: var(--radius-md); overflow: hidden; cursor: pointer; box-shadow: 0 0 30px rgba(0,240,255,0.06), inset 0 0 30px rgba(0,240,255,0.02); border: 2px solid var(--border-subtle); transition: var(--transition); flex-shrink: 0; background: var(--bg-card); user-select: none; -webkit-user-select: none; touch-action: none; }
+        .scratch-card:hover { border-color: var(--primary-neon); box-shadow: 0 0 40px rgba(0,240,255,0.12), inset 0 0 40px rgba(0,240,255,0.03); transform: scale(1.01); }
+        .promo-result { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-card); padding: 16px; z-index: 1; text-align: center; }
+        .promo-result .promo-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 2px; font-weight: 500; }
+        .promo-result .promo-code { font-size: 1.9rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 2px; line-height: 1.2; text-shadow: 0 0 40px rgba(0,240,255,0.15); }
+        .promo-result .promo-code.expired-status { background: none; -webkit-text-fill-color: #f87171; color: #f87171; background-clip: unset; }
+        .promo-result .promo-code.full-status { background: none; -webkit-text-fill-color: #fbbf24; color: #fbbf24; background-clip: unset; }
+        .promo-result .promo-code.revealed-expired { background: none; -webkit-text-fill-color: #fbbf24; color: #fbbf24; background-clip: unset; }
+        .promo-result .promo-value { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; font-weight: 500; }
+        .promo-result .promo-value i { color: var(--secondary-neon); margin-right: 4px; }
+        .promo-result .promo-expiry { font-size: 0.55rem; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.3px; }
+        .promo-result .promo-expiry i { color: var(--primary-neon); margin-right: 4px; }
+        .promo-uses { font-size: 0.55rem; color: var(--text-muted); margin-top: 2px; letter-spacing: 0.3px; }
+        .promo-uses i { color: var(--secondary-neon); margin-right: 4px; }
+        .copy-wrapper { margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .copy-btn { background: rgba(0,240,255,0.08); border: 1px solid rgba(0,240,255,0.2); border-radius: 30px; padding: 3px 14px 3px 10px; font-size: 0.6rem; font-weight: 600; color: var(--primary-neon); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: var(--transition); backdrop-filter: blur(4px); letter-spacing: 0.3px; font-family: inherit; }
+        .copy-btn i { font-size: 0.7rem; }
+        .copy-btn:hover { background: rgba(0,240,255,0.18); border-color: var(--primary-neon); box-shadow: 0 0 12px rgba(0,240,255,0.2); }
+        .copy-btn.copied { border-color: #4caf50; color: #4caf50; background: rgba(76,175,80,0.12); }
+        .copy-btn.copied i { color: #4caf50; }
+        .copy-btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        #scratchCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3; border-radius: var(--radius-md); touch-action: none; cursor: pointer; display: block; }
+        .scratch-progress { position: absolute; bottom: 8px; right: 10px; z-index: 4; font-size: 0.55rem; color: rgba(255,255,255,0.2); font-weight: 500; letter-spacing: 0.5px; pointer-events: none; transition: opacity 0.6s ease; font-variant-numeric: tabular-nums; }
+        .scratch-progress.hidden { opacity: 0; }
+        .scratch-desc { font-size: 0.75rem; color: var(--text-muted); max-width: 260px; text-align: center; line-height: 1.6; }
+        .scratch-desc i { color: var(--primary-neon); margin: 0 2px; }
+        .loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; border-radius: var(--radius-md); }
+        .loading-overlay .spinner { width: 40px; height: 40px; border: 3px solid var(--border-subtle); border-top: 3px solid var(--primary-neon); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .loading-overlay p { margin-top: 10px; font-size: 0.75rem; color: var(--text-muted); }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #151b29;
-            border: 1px solid #00f0ff;
-            padding: 15px 25px;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 0.9rem;
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.5s ease;
-            z-index: 2000;
-        }
-        .toast.show { transform: translateY(0); opacity: 1; }
-        .price-hint {
-            background: rgba(0, 240, 255, 0.05);
-            border-left: 3px solid #00f0ff;
-            padding: 8px 14px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-top: 5px;
-        }
-        .price-hint strong { color: #fff; }
-
-        /* ===== IN-PAGE LOGIN OVERLAY ===== */
-        #loginOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #0a0e17;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 20px;
-        }
-        .login-card {
-            background: rgba(21, 27, 41, 0.9);
-            border: 1px solid rgba(0, 240, 255, 0.15);
-            border-radius: 24px;
-            padding: 40px 35px;
-            max-width: 420px;
-            width: 100%;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 240, 255, 0.03);
-            text-align: center;
-            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px) scale(0.96); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .login-card .lock-icon {
-            font-size: 48px;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #ff007f, #00f0ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .login-card h2 { font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 6px; letter-spacing: -0.5px; }
-        .login-card .sub-text { color: #94a3b8; font-size: 0.9rem; margin-bottom: 25px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 18px; }
-        .login-card .input-group { position: relative; margin-bottom: 20px; }
-        .login-card .input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #475569; font-size: 1.1rem; transition: color 0.3s ease; }
-        .login-card .input-group input {
-            width: 100%;
-            padding: 14px 16px 14px 48px;
-            background: rgba(10, 14, 23, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            color: #fff;
-            font-size: 1rem;
-            font-family: inherit;
-            outline: none;
-            transition: all 0.3s ease;
-            letter-spacing: 2px;
-        }
-        .login-card .input-group input:focus { border-color: #00f0ff; background: rgba(10, 14, 23, 0.8); box-shadow: 0 0 25px rgba(0, 240, 255, 0.05); }
-        .login-card .input-group input:focus+i { color: #00f0ff; }
-        .login-card .input-group input::placeholder { letter-spacing: 0px; color: #475569; font-weight: 400; }
-        .login-card .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #00f0ff, #9d00ff);
-            border: none;
-            border-radius: 14px;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-            letter-spacing: 0.5px;
-            margin-top: 6px;
-        }
-        .login-card .login-btn:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(0, 240, 255, 0.2); }
-        .login-card .login-btn:active { transform: scale(0.98); }
-        .login-card .error-msg {
-            color: #ff6b6b;
-            font-size: 0.85rem;
-            font-weight: 600;
-            min-height: 24px;
-            margin: 6px 0 8px 0;
-            background: rgba(255, 0, 0, 0.05);
-            padding: 6px 12px;
-            border-radius: 8px;
-            border-left: 3px solid #ff6b6b;
-            display: none;
-        }
-        .login-card .error-msg.show { display: block; }
-        .login-card .footer-note { margin-top: 18px; font-size: 0.7rem; color: #475569; letter-spacing: 0.3px; }
-        .login-card .footer-note i { color: #00f0ff; }
-
-        @media (max-width: 700px) {
-            .login-card { padding: 30px 20px; }
-            .login-card h2 { font-size: 1.3rem; }
-            .form-row { grid-template-columns: 1fr; }
-            .table-container { overflow-x: auto; }
-            table { font-size: 0.75rem; }
-            th, td { padding: 8px 10px; }
-            .header h1 { font-size: 1.3rem; }
-        }
+        @media (max-width: 700px) { .scratch-section { padding: 18px 14px 22px; } .scratch-header h3 { font-size: 0.95rem; } .scratch-card { width: 280px; height: 120px; } .promo-result .promo-code { font-size: 1.5rem; } .scratch-badge { font-size: 0.45rem; padding: 2px 10px; } .scratch-desc { font-size: 0.65rem; max-width: 200px; } .scratch-progress { font-size: 0.45rem; bottom: 4px; right: 6px; } }
+        @media (max-width: 420px) { .scratch-card { width: 230px; height: 105px; } .promo-result .promo-code { font-size: 1.2rem; } .promo-result .promo-label { font-size: 0.45rem; } .promo-result .promo-value { font-size: 0.6rem; } .scratch-desc { font-size: 0.6rem; max-width: 170px; } }
     </style>
 </head>
 <body>
 
-    <!-- ===== IN-PAGE LOGIN OVERLAY ===== -->
-    <div id="loginOverlay">
-        <div class="login-card">
-            <div class="lock-icon"><i class="fas fa-shield-alt"></i></div>
-            <h2>Admin Access</h2>
-            <p class="sub-text"><i class="fas fa-crown" style="color:#feca57; margin-right:6px;"></i>Enter your password to manage promo codes</p>
-            <div class="input-group">
-                <i class="fas fa-key"></i>
-                <input type="password" id="loginPassword" placeholder="Enter password..." autocomplete="off" />
-            </div>
-            <div id="loginError" class="error-msg">
-                <i class="fas fa-exclamation-circle" style="margin-right:6px;"></i> Incorrect password. Please try again.
-            </div>
-            <button class="login-btn" id="loginBtn">
-                <i class="fas fa-unlock-alt" style="margin-right:8px;"></i> Unlock Panel
-            </button>
-            <div class="footer-note"><i class="fas fa-lock"></i> Secure • Admin Only</div>
+    <div class="scratch-section">
+        <div class="scratch-header">
+            <h3><i class="fas fa-ticket-alt"></i> Lucky Scratch Card</h3>
+            <span class="scratch-badge"><i class="fas fa-bolt"></i> Scratch & Win</span>
         </div>
-    </div>
-
-    <!-- ===== APP CONTENT ===== -->
-    <div id="appContent">
-        <div class="container">
-            <div class="header">
-                <h1><i class="fas fa-crown"></i> Promo Admin Panel</h1>
-                <span class="badge"><i class="fas fa-database"></i> Firebase Realtime DB</span>
-            </div>
-
-            <div class="stats-grid" id="statsGrid">
-                <div class="stat-card"><div class="number" id="totalCodes">0</div><div class="label">Total Codes</div></div>
-                <div class="stat-card"><div class="number" id="totalUses">0</div><div class="label">Total Uses</div></div>
-                <div class="stat-card"><div class="number" id="activeCodes">0</div><div class="label">Active Codes</div></div>
-                <div class="stat-card"><div class="number" id="expiredCodes">0</div><div class="label">Expired / Full</div></div>
-                <div class="stat-card"><div class="number" id="totalReveals">0</div><div class="label">Total Reveals</div></div>
-            </div>
-
-            <div class="table-container">
-                <div class="table-header">
-                    <h2><i class="fas fa-list"></i> Promo Codes</h2>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button class="btn-reset-all" onclick="resetAllReveals()"><i class="fas fa-undo-alt"></i> Reset All Reveals</button>
-                        <button class="btn-add" onclick="openAddModal()"><i class="fas fa-plus"></i> Add New</button>
+        <div class="scratch-card-wrapper">
+            <div class="scratch-card" id="scratchCard">
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <p>Loading promo...</p>
+                </div>
+                <div class="promo-result" id="promoResult">
+                    <span class="promo-label"><i class="fas fa-gift"></i> Your Promo Code</span>
+                    <span class="promo-code" id="promoCodeDisplay">———</span>
+                    <span class="promo-value" id="promoValueDisplay"><i class="fas fa-percent"></i> Loading...</span>
+                    <span class="promo-uses" id="promoUsesDisplay">
+                        <i class="fas fa-users"></i> Uses: <span id="usesCount">—</span>/<span id="maxUsesCount">—</span>
+                    </span>
+                    <span class="promo-expiry" id="promoExpiryDisplay"><i class="far fa-calendar-alt"></i> Expires: —</span>
+                    <div class="copy-wrapper" id="copyWrapper">
+                        <button class="copy-btn" id="copyBtn"><i class="fas fa-copy"></i> Copy</button>
                     </div>
                 </div>
-                <table>
-                    <thead>
-                        <tr><th>Code</th><th>Label</th><th>Type</th><th>Value</th><th>Uses</th><th>Max</th><th>Expiry</th><th>Reveals</th><th>Status</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody id="codesTableBody">
-                        <tr><td colspan="10" style="text-align:center; padding:30px; color:#475569;"><div class="loading-spinner"></div> Loading...</td></tr>
-                    </tbody>
-                </table>
+                <canvas id="scratchCanvas"></canvas>
+                <span class="scratch-progress" id="scratchProgress">0%</span>
+            </div>
+            <div class="scratch-desc" id="statusMessage">
+                <i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i>
+                Swipe with your finger to scratch and reveal your promo code.
+                <br />
+                <span style="font-size:0.65rem; color:var(--text-muted);">Single-use promo code.</span>
             </div>
         </div>
     </div>
 
-    <!-- ===== MODAL ===== -->
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle">Add New Promo Code</h2>
-            <p class="sub" id="modalSub">Fill in the details below to create a new promo code.</p>
-            <form id="codeForm" onsubmit="saveCode(event)">
-                <input type="hidden" id="editCode" value="" />
-                <div class="form-group">
-                    <label>Code Name</label>
-                    <input type="text" id="codeName" placeholder="e.g. SUMMER50" required />
-                </div>
-                <div class="form-group">
-                    <label>Label (Display)</label>
-                    <input type="text" id="codeLabel" placeholder="e.g. 50% OFF" required />
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Discount Type</label>
-                        <select id="codeType">
-                            <option value="percent">Percent (%)</option>
-                            <option value="fixed">Fixed (MMK)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Value</label>
-                        <input type="number" id="codeValue" placeholder="e.g. 50 or 1000" min="1" required />
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Used Count</label>
-                        <input type="number" id="codeUsed" value="0" min="0" />
-                    </div>
-                    <div class="form-group">
-                        <label>Max Uses</label>
-                        <input type="number" id="codeMaxUses" placeholder="e.g. 100" min="1" required />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Expiry Date (YYYY-MM-DD)</label>
-                    <input type="date" id="codeExpiry" required />
-                </div>
-                <div class="price-hint">
-                    <i class="fas fa-tag" style="color:#00f0ff;"></i> Original price: <strong>1,500 MMK</strong>
-                    <span id="discountPreview"> → No discount</span>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn-save" id="saveBtn">Save Code</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ===== TOAST ===== -->
-    <div class="toast" id="toast"></div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
         // ================================================================
@@ -483,277 +119,444 @@
         const db = firebase.database();
 
         // ================================================================
-        // 🔐 LOGIN
+        // 💾 DEVICE ID
         // ================================================================
-        const ADMIN_PASSWORD = '1985';
-        const loginOverlay = document.getElementById('loginOverlay');
-        const appContent = document.getElementById('appContent');
-        const loginPassword = document.getElementById('loginPassword');
-        const loginBtn = document.getElementById('loginBtn');
-        const loginError = document.getElementById('loginError');
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('deviceId');
+            if (!deviceId) {
+                deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('deviceId', deviceId);
+            }
+            return deviceId;
+        }
+        const DEVICE_ID = getDeviceId();
 
-        function handleLogin() {
-            const pass = loginPassword.value.trim();
-            if (pass === ADMIN_PASSWORD) {
-                loginOverlay.style.display = 'none';
-                appContent.style.display = 'block';
-                loginError.classList.remove('show');
-                loadCodes();
-            } else {
-                loginError.classList.add('show');
-                loginPassword.value = '';
-                loginPassword.focus();
-                loginPassword.style.borderColor = '#ff6b6b';
-                setTimeout(() => { loginPassword.style.borderColor = ''; }, 800);
+        // ================================================================
+        // 💾 REVEAL STATUS (stored inside promoCodes/<code>/revealed)
+        // ================================================================
+        async function getRevealedStatus(code) {
+            try {
+                const ref = db.ref('promoCodes/' + code + '/revealed/' + DEVICE_ID);
+                const snapshot = await ref.once('value');
+                return snapshot.val() === true;
+            } catch (error) {
+                console.error('❌ Error checking reveal status:', error);
+                return false;
             }
         }
-        loginBtn.addEventListener('click', handleLogin);
-        loginPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); handleLogin(); } });
-        loginPassword.addEventListener('input', () => { loginError.classList.remove('show'); loginPassword.style.borderColor = ''; });
 
-        // ================================================================
-        // 🎯 PRICE PREVIEW
-        // ================================================================
-        const ORIGINAL_PRICE = 1500;
-        function updatePricePreview() {
-            const type = document.getElementById('codeType').value;
-            const value = parseInt(document.getElementById('codeValue').value) || 0;
-            const preview = document.getElementById('discountPreview');
-            if (value <= 0) { preview.textContent = ' → No discount'; return; }
-            let discounted = ORIGINAL_PRICE;
-            if (type === 'percent') discounted = ORIGINAL_PRICE * (1 - value / 100);
-            else discounted = ORIGINAL_PRICE - value;
-            if (discounted < 0) discounted = 0;
-            const savings = ORIGINAL_PRICE - discounted;
-            preview.innerHTML = ` → <strong style="color:#00f0ff;">${Math.round(discounted)} MMK</strong> (save ${Math.round(savings)} MMK)`;
-        }
-        document.getElementById('codeType').addEventListener('change', updatePricePreview);
-        document.getElementById('codeValue').addEventListener('input', updatePricePreview);
-
-        // ================================================================
-        // 🎯 MAIN FUNCTIONS
-        // ================================================================
-
-        // Count reveals per code from promoCodes/<code>/revealed
-        function getRevealCount(code, data) {
-            if (data && data[code] && data[code].revealed) {
-                return Object.keys(data[code].revealed).length;
+        async function setRevealedStatus(code, status) {
+            try {
+                const ref = db.ref('promoCodes/' + code + '/revealed/' + DEVICE_ID);
+                await ref.set(status);
+                return true;
+            } catch (error) {
+                console.error('❌ Error setting reveal status:', error);
+                return false;
             }
-            return 0;
         }
 
-        function renderTable(data) {
-            const tbody = document.getElementById('codesTableBody');
-            if (!data) {
-                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:30px; color:#475569;"><i class="fas fa-inbox" style="font-size:1.5rem; display:block; margin-bottom:8px;"></i>No promo codes found. Add one!</td></tr>`;
-                return;
-            }
-            const codes = Object.keys(data);
-            let html = '';
-            let totalReveals = 0;
-            codes.forEach(code => {
-                const item = data[code];
-                const used = item.used || 0;
-                const max = item.max_uses || 100;
-                const expiry = item.expiry || 'No expiry';
-                const type = item.type || 'percent';
-                const value = item.value || 0;
-                const isExpired = used >= max;
-                const isDateExpired = expiry !== 'No expiry' && new Date(expiry) < new Date();
-                const isActive = !isExpired && !isDateExpired;
-                let status = 'active', statusLabel = 'Active';
-                if (isDateExpired) { status = 'expired'; statusLabel = 'Expired'; }
-                else if (isExpired) { status = 'full'; statusLabel = 'Full'; }
-                const typeLabel = type === 'percent' ? '%' : 'MMK';
-                const typeClass = type === 'percent' ? 'percent' : 'fixed';
-                const revealCount = getRevealCount(code, data);
-                totalReveals += revealCount;
-                html += `
-                    <tr>
-                        <td><span class="code-name">${code}</span></td>
-                        <td>${item.label || '—'}</td>
-                        <td><span class="type-badge ${typeClass}">${type.toUpperCase()}</span></td>
-                        <td>${value} ${typeLabel}</td>
-                        <td>${used}</td>
-                        <td>${max}</td>
-                        <td>${expiry}</td>
-                        <td><span style="color:#feca57; font-weight:600;">${revealCount}</span></td>
-                        <td><span class="status-badge ${status}">${statusLabel}</span></td>
-                        <td>
-                            <button class="btn-action" onclick="editCode('${code}')"><i class="fas fa-edit"></i></button>
-                            <button class="btn-action reset" onclick="resetReveals('${code}')" title="Reset Reveal Status"><i class="fas fa-undo-alt"></i></button>
-                            <button class="btn-action danger" onclick="deleteCode('${code}')"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-            document.getElementById('totalReveals').textContent = totalReveals;
-            tbody.innerHTML = html;
-        }
+        // ================================================================
+        // DOM refs
+        // ================================================================
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const promoCodeDisplay = document.getElementById('promoCodeDisplay');
+        const promoValueDisplay = document.getElementById('promoValueDisplay');
+        const promoExpiryDisplay = document.getElementById('promoExpiryDisplay');
+        const usesCount = document.getElementById('usesCount');
+        const maxUsesCount = document.getElementById('maxUsesCount');
+        const copyBtn = document.getElementById('copyBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        const progressEl = document.getElementById('scratchProgress');
+        const cardEl = document.getElementById('scratchCard');
 
-        function renderStats(data) {
-            if (!data) {
-                document.getElementById('totalCodes').textContent = '0';
-                document.getElementById('totalUses').textContent = '0';
-                document.getElementById('activeCodes').textContent = '0';
-                document.getElementById('expiredCodes').textContent = '0';
-                return;
-            }
-            const codes = Object.keys(data);
-            let totalUses = 0, active = 0, expired = 0;
-            codes.forEach(code => {
-                const item = data[code];
-                const used = item.used || 0;
-                const max = item.max_uses || 100;
-                const expiry = item.expiry;
-                const isDateExpired = expiry && new Date(expiry) < new Date();
-                const isFull = used >= max;
-                totalUses += used;
-                if (isDateExpired || isFull) expired++;
-                else active++;
-            });
-            document.getElementById('totalCodes').textContent = codes.length;
-            document.getElementById('totalUses').textContent = totalUses;
-            document.getElementById('activeCodes').textContent = active;
-            document.getElementById('expiredCodes').textContent = expired;
-        }
+        // ================================================================
+        // State
+        // ================================================================
+        let selectedCode = null;
+        let promo = null;
+        let promoCodes = {};
+        let isDrawing = false;
+        let isRevealed = false;
+        let isUpdating = false;
+        let isDateExpired = false;
+        let isUsageExhausted = false;
+        let justClaimed = false;
+        const RADIUS = 28;
+        const REVEAL_THRESHOLD = 0.50;
 
-        function loadCodes() {
-            const ref = db.ref('promoCodes');
-            ref.on('value', (snapshot) => {
+        // ================================================================
+        // 📡 REALTIME DATABASE FUNCTIONS
+        // ================================================================
+        async function fetchPromoCodesFromFirebase() {
+            try {
+                const snapshot = await db.ref('promoCodes').once('value');
                 const data = snapshot.val();
-                renderTable(data);
-                renderStats(data);
-            });
+                if (data && typeof data === 'object') {
+                    for (const code in data) {
+                        const item = data[code];
+                        if (!item.label) item.label = code;
+                        if (!item.type) item.type = 'percent';
+                        if (!item.value) item.value = 0;
+                        if (!item.expiry) item.expiry = '';
+                        if (!item.max_uses) item.max_uses = 100;
+                        if (item.used === undefined) item.used = 0;
+                    }
+                    return data;
+                } else return {};
+            } catch (error) {
+                console.error('❌ Error fetching promo codes:', error);
+                return {};
+            }
         }
 
-        // ================================================================
-        // 🛠️ REVEAL STATUS CONTROL (Now inside promoCodes)
-        // ================================================================
-
-        function resetReveals(code) {
-            if (!confirm(`Are you sure you want to reset the reveal status for "${code}"?\n\nThis will allow ALL users to scratch this code again.`)) return;
-            const ref = db.ref('promoCodes/' + code + '/revealed');
-            ref.remove()
-                .then(() => { showToast(`🔄 Reveal status for "${code}" has been reset!`); })
-                .catch((error) => { showToast('❌ Error resetting: ' + error.message); });
-        }
-
-        function resetAllReveals() {
-            if (!confirm(`⚠️ Are you sure you want to reset reveal status for ALL promo codes?\n\nThis cannot be undone!`)) return;
-            const ref = db.ref('promoCodes');
-            ref.once('value', (snapshot) => {
-                const data = snapshot.val();
-                if (!data) { showToast('No codes to reset.'); return; }
-                const updates = {};
-                Object.keys(data).forEach(code => {
-                    updates[code + '/revealed'] = null;
-                });
-                ref.update(updates)
-                    .then(() => { showToast(`🔄 All reveal statuses have been reset!`); })
-                    .catch((error) => { showToast('❌ Error resetting: ' + error.message); });
-            });
-        }
-
-        // ================================================================
-        // 📝 CRUD FUNCTIONS
-        // ================================================================
-
-        function openAddModal() {
-            document.getElementById('modalTitle').textContent = 'Add New Promo Code';
-            document.getElementById('modalSub').textContent = 'Fill in the details below to create a new promo code.';
-            document.getElementById('editCode').value = '';
-            document.getElementById('codeName').value = '';
-            document.getElementById('codeName').disabled = false;
-            document.getElementById('codeLabel').value = '';
-            document.getElementById('codeType').value = 'percent';
-            document.getElementById('codeValue').value = '';
-            document.getElementById('codeUsed').value = '0';
-            document.getElementById('codeMaxUses').value = '';
-            document.getElementById('codeExpiry').value = '';
-            document.getElementById('saveBtn').textContent = 'Save Code';
-            document.getElementById('modal').classList.add('active');
-            updatePricePreview();
-        }
-
-        function editCode(code) {
-            const ref = db.ref('promoCodes/' + code);
-            ref.once('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    document.getElementById('modalTitle').textContent = 'Edit Promo Code';
-                    document.getElementById('modalSub').textContent = 'Update the details below.';
-                    document.getElementById('editCode').value = code;
-                    document.getElementById('codeName').value = code;
-                    document.getElementById('codeName').disabled = true;
-                    document.getElementById('codeLabel').value = data.label || '';
-                    document.getElementById('codeType').value = data.type || 'percent';
-                    document.getElementById('codeValue').value = data.value || '';
-                    document.getElementById('codeUsed').value = data.used || 0;
-                    document.getElementById('codeMaxUses').value = data.max_uses || '';
-                    document.getElementById('codeExpiry').value = data.expiry || '';
-                    document.getElementById('saveBtn').textContent = 'Update Code';
-                    document.getElementById('modal').classList.add('active');
-                    updatePricePreview();
+        async function getPromoUsageFromRTDB(code) {
+            try {
+                const ref = db.ref('promoCodes/' + code);
+                const snapshot = await ref.once('value');
+                if (snapshot.exists()) return snapshot.val();
+                else {
+                    const newData = { used: 0, max_uses: promoCodes[code]?.max_uses || 100, createdAt: Date.now() };
+                    await ref.set(newData);
+                    return newData;
                 }
-            });
+            } catch (error) {
+                console.error('❌ Error getting promo usage:', error);
+                return getPromoUsageFromLocal(code);
+            }
         }
 
-        function saveCode(e) {
-            e.preventDefault();
-            const editCode = document.getElementById('editCode').value;
-            const codeName = document.getElementById('codeName').value.toUpperCase().trim();
-            const label = document.getElementById('codeLabel').value.trim();
-            const type = document.getElementById('codeType').value;
-            const value = parseInt(document.getElementById('codeValue').value);
-            const used = parseInt(document.getElementById('codeUsed').value) || 0;
-            const maxUses = parseInt(document.getElementById('codeMaxUses').value);
-            const expiry = document.getElementById('codeExpiry').value;
-            if (!codeName) { showToast('❌ Please enter a code name'); return; }
-            if (!value || value < 1) { showToast('❌ Please enter a valid value'); return; }
-            if (!maxUses || maxUses < 1) { showToast('❌ Max uses must be at least 1'); return; }
-            if (!expiry) { showToast('❌ Please select an expiry date'); return; }
-            const data = {
-                label: label || 'Special Offer',
-                type: type,
-                value: value,
-                used: used,
-                max_uses: maxUses,
-                expiry: expiry,
-                updatedAt: Date.now()
-            };
-            const ref = db.ref('promoCodes/' + codeName);
-            ref.set(data).then(() => {
-                showToast('✅ Code saved successfully!');
-                closeModal();
-            }).catch((error) => { showToast('❌ Error saving: ' + error.message); });
+        async function updatePromoUsageInRTDB(code) {
+            try {
+                const ref = db.ref('promoCodes/' + code);
+                const snapshot = await ref.once('value');
+                let currentData = snapshot.val();
+                if (!currentData) currentData = { used: 0, max_uses: promoCodes[code]?.max_uses || 100, createdAt: Date.now() };
+                const newUsed = (currentData.used || 0) + 1;
+                currentData.used = newUsed;
+                currentData.updatedAt = Date.now();
+                await ref.set(currentData);
+                return { used: newUsed, max_uses: currentData.max_uses };
+            } catch (error) {
+                console.error('❌ Error updating promo usage:', error);
+                return updatePromoUsageInLocal(code);
+            }
         }
 
-        function deleteCode(code) {
-            if (!confirm(`Are you sure you want to delete "${code}"?`)) return;
-            const ref = db.ref('promoCodes/' + code);
-            ref.remove().then(() => {
-                showToast('🗑️ Code deleted successfully!');
-            }).catch((error) => { showToast('❌ Error deleting: ' + error.message); });
+        function getPromoUsageFromLocal(code) {
+            const allData = localStorage.getItem('promo_usage_data');
+            let usageData = allData ? JSON.parse(allData) : {};
+            if (!usageData[code]) {
+                usageData[code] = { used: 0, max_uses: promoCodes[code]?.max_uses || 100 };
+                localStorage.setItem('promo_usage_data', JSON.stringify(usageData));
+            }
+            return usageData[code];
         }
 
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-            document.getElementById('codeName').disabled = false;
-            document.getElementById('editCode').value = '';
+        function updatePromoUsageInLocal(code) {
+            const allData = localStorage.getItem('promo_usage_data');
+            let usageData = allData ? JSON.parse(allData) : {};
+            if (!usageData[code]) usageData[code] = { used: 0, max_uses: promoCodes[code]?.max_uses || 100 };
+            usageData[code].used += 1;
+            localStorage.setItem('promo_usage_data', JSON.stringify(usageData));
+            return usageData[code];
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            clearTimeout(toast._timeout);
-            toast._timeout = setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        // ================================================================
+        // 🧭 Helper: is code expired?
+        // ================================================================
+        function isCodeExpired(code) {
+            const p = promoCodes[code];
+            if (!p || !p.expiry) return false;
+            return new Date(p.expiry) <= new Date();
         }
 
-        document.getElementById('modal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
+        // ================================================================
+        // 🎯 MAIN LOGIC
+        // ================================================================
+        async function loadPromoCode() {
+            loadingOverlay.style.display = 'flex';
+            justClaimed = false;
+            promoCodes = await fetchPromoCodesFromFirebase();
+            const codeKeys = Object.keys(promoCodes);
+            if (codeKeys.length === 0) {
+                selectedCode = null; promo = null; isRevealed = false;
+                canvas.style.display = 'none'; progressEl.classList.add('hidden');
+                promoCodeDisplay.textContent = '🚫 NO CODES';
+                promoValueDisplay.innerHTML = '<i class="fas fa-times-circle"></i> No promo codes found.';
+                statusMessage.innerHTML = 'Please contact admin to add codes.';
+                copyBtn.style.display = 'none';
+                loadingOverlay.style.display = 'none';
+                return;
+            }
+
+            let storedCode = localStorage.getItem('myPromoCode');
+            let usage = null, foundValid = false, rejectReason = '';
+
+            if (storedCode) {
+                const p = promoCodes[storedCode];
+                if (!p) rejectReason = 'removed';
+                else if (p.expiry && new Date(p.expiry) <= new Date()) rejectReason = 'expired';
+                else {
+                    let u;
+                    try { u = await getPromoUsageFromRTDB(storedCode); } catch (e) { u = getPromoUsageFromLocal(storedCode); }
+                    if (u) {
+                        const used = u.used || 0, max = u.max_uses || p.max_uses || 100;
+                        if (used >= max) rejectReason = 'full';
+                        else { usage = u; foundValid = true; selectedCode = storedCode; }
+                    } else rejectReason = 'removed';
+                }
+            }
+
+            if (!foundValid) {
+                const shuffled = codeKeys.sort(() => Math.random() - 0.5);
+                for (const c of shuffled) {
+                    if (c === storedCode) continue;
+                    const p = promoCodes[c];
+                    if (!p) continue;
+                    if (p.expiry && new Date(p.expiry) <= new Date()) continue;
+                    let u;
+                    try { u = await getPromoUsageFromRTDB(c); } catch (e) { u = getPromoUsageFromLocal(c); }
+                    if (u) {
+                        const used = u.used || 0, max = u.max_uses || p.max_uses || 100;
+                        if (used < max) {
+                            selectedCode = c; usage = u; foundValid = true;
+                            localStorage.setItem('myPromoCode', selectedCode);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!foundValid || !usage) {
+                selectedCode = null; promo = null; isRevealed = false;
+                canvas.style.display = 'none'; progressEl.classList.add('hidden');
+                promoCodeDisplay.textContent = '🚫 NO CODES';
+                promoValueDisplay.innerHTML = '<i class="fas fa-times-circle"></i> All promo codes are fully used or expired.';
+                statusMessage.innerHTML = 'Please contact admin to add more codes.';
+                copyBtn.style.display = 'none';
+                loadingOverlay.style.display = 'none';
+                return;
+            }
+
+            promo = promoCodes[selectedCode];
+            if (rejectReason === 'expired') statusMessage.innerHTML = '⏰ Your previous promo code expired. A new code has been assigned to you!';
+            else if (rejectReason === 'full') statusMessage.innerHTML = '🚫 Your previous promo code was fully used. A new code has been assigned to you!';
+            else if (rejectReason === 'removed') statusMessage.innerHTML = '🔄 Your previous promo code is no longer available. Here is a new one!';
+            else statusMessage.innerHTML = '<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.';
+
+            isRevealed = await getRevealedStatus(selectedCode);
+            if (isRevealed) { canvas.style.display = 'none'; progressEl.classList.add('hidden'); }
+            else { canvas.style.display = 'block'; progressEl.classList.remove('hidden'); }
+
+            displayPromoInfo(usage, false);
+            loadingOverlay.style.display = 'none';
+        }
+
+        function displayPromoInfo(usage, claimedByUser = false) {
+            const used = usage.used || 0;
+            const maxU = usage.max_uses || promo.max_uses || 100;
+            promoExpiryDisplay.innerHTML = promo.expiry ? `<i class="far fa-calendar-alt"></i> Expires: ${promo.expiry}` : `<i class="far fa-calendar-alt"></i> No expiry`;
+            usesCount.textContent = used;
+            maxUsesCount.textContent = maxU;
+            const expiryDate = promo.expiry ? new Date(promo.expiry) : null;
+            const today = new Date();
+            isDateExpired = expiryDate ? expiryDate <= today : false;
+            isUsageExhausted = used >= maxU;
+            promoCodeDisplay.classList.remove('expired-status', 'full-status', 'revealed-expired');
+
+            let codeDisplay = '', valueDisplay = '', statusHtml = '', showCopy = false, copyDisabled = false;
+            if (claimedByUser) {
+                codeDisplay = selectedCode;
+                valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
+                statusHtml = `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
+                showCopy = true; copyDisabled = false;
+                if (isDateExpired) { promoCodeDisplay.classList.add('revealed-expired'); statusHtml = `<i class="fas fa-exclamation-triangle" style="color:#fbbf24;"></i> This promo has expired, but you already revealed it.`; }
+            } else if (isDateExpired) {
+                codeDisplay = '⛔ EXPIRED';
+                valueDisplay = '<i class="fas fa-exclamation-triangle"></i> This promo has expired.';
+                statusHtml = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo code has expired. Please try another card.`;
+                promoCodeDisplay.classList.add('expired-status'); showCopy = false; copyDisabled = true;
+            } else if (isUsageExhausted) {
+                codeDisplay = '⛔ FULLY USED';
+                valueDisplay = '<i class="fas fa-users-slash"></i> All slots are taken.';
+                statusHtml = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo code has reached its usage limit. Please try another card.`;
+                promoCodeDisplay.classList.add('full-status'); showCopy = false; copyDisabled = true;
+            } else {
+                if (isRevealed) {
+                    codeDisplay = selectedCode;
+                    valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
+                    statusHtml = `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
+                    showCopy = true; copyDisabled = false;
+                } else {
+                    codeDisplay = '???';
+                    valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
+                    statusHtml = `<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.`;
+                    showCopy = false; copyDisabled = true;
+                }
+            }
+            promoCodeDisplay.textContent = codeDisplay;
+            promoValueDisplay.innerHTML = valueDisplay;
+            if (claimedByUser || isDateExpired || isUsageExhausted || isRevealed) statusMessage.innerHTML = statusHtml;
+            if (showCopy) { copyBtn.style.display = 'inline-flex'; copyBtn.disabled = false; copyBtn.classList.remove('copied'); copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }
+            else { copyBtn.style.display = 'none'; copyBtn.disabled = true; }
+        }
+
+        // ================================================================
+        // 🖌️ CANVAS SCRATCH ENGINE
+        // ================================================================
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            ctx.scale(dpr, dpr);
+            drawCover();
+        }
+        function drawCover() {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.clearRect(0, 0, w, h);
+            const grad = ctx.createLinearGradient(0, 0, w, h);
+            grad.addColorStop(0, '#1a2338'); grad.addColorStop(0.5, '#0f172a'); grad.addColorStop(1, '#1a2338');
+            ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)'; ctx.lineWidth = 1;
+            const step = 20;
+            for (let x = 0; x < w; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+            for (let y = 0; y < h; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.font = '600 1.2rem "Inter", sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.fillText('🎟️ Scratch me', w / 2, h / 2 - 8);
+            ctx.font = '400 0.6rem "Inter", sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+            ctx.fillText('scratch to reveal', w / 2, h / 2 + 22);
+            const cornerLen = 18; const cornerColor = 'rgba(0, 240, 255, 0.15)';
+            ctx.strokeStyle = cornerColor; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(10, 10 + cornerLen); ctx.lineTo(10, 10); ctx.lineTo(10 + cornerLen, 10); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(w - 10 - cornerLen, 10); ctx.lineTo(w - 10, 10); ctx.lineTo(w - 10, 10 + cornerLen); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(10, h - 10 - cornerLen); ctx.lineTo(10, h - 10); ctx.lineTo(10 + cornerLen, h - 10); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(w - 10 - cornerLen, h - 10); ctx.lineTo(w - 10, h - 10); ctx.lineTo(w - 10, h - 10 - cornerLen); ctx.stroke();
+        }
+        function scratch(x, y) {
+            if (isRevealed || isUpdating) return;
+            if (isDateExpired) { statusMessage.innerHTML = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired. Cannot scratch.`; return; }
+            if (isUsageExhausted && !justClaimed) { statusMessage.innerHTML = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used. Cannot scratch.`; return; }
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.save(); ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(x, y, RADIUS, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+            updateProgress();
+        }
+        function updateProgress() {
+            if (isRevealed || isUpdating) return;
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            const imageData = ctx.getImageData(0, 0, w, h);
+            const data = imageData.data;
+            let transparent = 0; const total = data.length / 4; const step = 4;
+            for (let i = 3; i < data.length; i += 4 * step) { if (data[i] < 128) transparent++; }
+            const ratio = transparent / (total / step);
+            const percent = Math.min(100, Math.round(ratio * 100));
+            progressEl.textContent = percent + '%';
+            if (percent >= REVEAL_THRESHOLD * 100 && !isRevealed && !isUpdating) fullyReveal();
+        }
+
+        // ================================================================
+        // 🎉 FULLY REVEAL
+        // ================================================================
+        async function fullyReveal() {
+            if (isRevealed || isUpdating) return;
+            if (isDateExpired) { statusMessage.innerHTML = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired.`; return; }
+            isUpdating = true;
+            try {
+                let latestUsage;
+                try { latestUsage = await getPromoUsageFromRTDB(selectedCode); } catch (e) { latestUsage = getPromoUsageFromLocal(selectedCode); }
+                const used = latestUsage.used || 0, maxU = latestUsage.max_uses || promo.max_uses || 100;
+                if (used >= maxU) { isUsageExhausted = true; displayPromoInfo(latestUsage, false); statusMessage.innerHTML = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used. Cannot scratch.`; isUpdating = false; return; }
+                const w = canvas.width / (window.devicePixelRatio || 1);
+                const h = canvas.height / (window.devicePixelRatio || 1);
+                ctx.clearRect(0, 0, w, h); progressEl.classList.add('hidden');
+                let updatedUsage;
+                try { updatedUsage = await updatePromoUsageInRTDB(selectedCode); console.log('✅ DB updated:', updatedUsage); } catch (error) { console.error('❌ DB update failed, using localStorage:', error); updatedUsage = updatePromoUsageInLocal(selectedCode); }
+                await setRevealedStatus(selectedCode, true);
+                isRevealed = true; canvas.style.display = 'none'; justClaimed = true;
+                displayPromoInfo(updatedUsage, true);
+                if (typeof gtag === 'function') { gtag('event', 'scratch_reveal', { 'event_category': 'Promo', 'event_label': selectedCode, 'value': promo.value }); }
+                cardEl.style.transform = 'scale(1.02)'; setTimeout(() => { cardEl.style.transform = ''; }, 300);
+            } catch (error) { console.error('❌ Error in fullyReveal:', error); } finally { isUpdating = false; }
+        }
+
+        // ================================================================
+        // 📋 COPY
+        // ================================================================
+        copyBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (copyBtn.disabled) return;
+            const code = selectedCode || '';
+            if (!code) return;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(code).then(() => {
+                    copyBtn.classList.add('copied'); copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => { copyBtn.classList.remove('copied'); copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2500);
+                }).catch(() => fallbackCopy(code));
+            } else fallbackCopy(code);
         });
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text; document.body.appendChild(textarea); textarea.select(); document.execCommand('copy'); document.body.removeChild(textarea);
+            copyBtn.classList.add('copied'); copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => { copyBtn.classList.remove('copied'); copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2500);
+        }
+
+        // ================================================================
+        // 🖱️ EVENT LISTENERS
+        // ================================================================
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+        function onStart(e) {
+            e.preventDefault();
+            if (isRevealed || isUpdating) return;
+            if (isDateExpired) { statusMessage.innerHTML = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired.`; return; }
+            if (isUsageExhausted && !justClaimed) { statusMessage.innerHTML = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used.`; return; }
+            isDrawing = true; const pos = getPos(e); scratch(pos.x, pos.y);
+        }
+        function onMove(e) {
+            e.preventDefault();
+            if (!isDrawing || isRevealed || isUpdating) return;
+            const pos = getPos(e); scratch(pos.x, pos.y);
+        }
+        function onEnd(e) {
+            e.preventDefault(); isDrawing = false;
+            if (!isRevealed && !isUpdating) updateProgress();
+        }
+        canvas.addEventListener('mousedown', onStart);
+        canvas.addEventListener('mousemove', onMove);
+        canvas.addEventListener('mouseup', onEnd);
+        canvas.addEventListener('mouseleave', onEnd);
+        canvas.addEventListener('touchstart', onStart, { passive: false });
+        canvas.addEventListener('touchmove', onMove, { passive: false });
+        canvas.addEventListener('touchend', onEnd, { passive: false });
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            if (isRevealed) { const w = canvas.width / (window.devicePixelRatio || 1); const h = canvas.height / (window.devicePixelRatio || 1); ctx.clearRect(0, 0, w, h); }
+        });
+
+        // ================================================================
+        // 🚀 INIT
+        // ================================================================
+        async function init() {
+            await loadPromoCode();
+            resizeCanvas();
+        }
+        init();
     </script>
 </body>
 </html>
