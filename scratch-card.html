@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scratch Card · Expire & Copy</title>
     <style>
         /* ===== CSS ===== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
             --bg-deep: #070b15;
@@ -181,6 +185,12 @@
             color: #fbbf24;
             background-clip: unset;
         }
+        .promo-result .promo-code.revealed-expired {
+            background: none;
+            -webkit-text-fill-color: #fbbf24;
+            color: #fbbf24;
+            background-clip: unset;
+        }
 
         .promo-result .promo-value {
             font-size: 0.75rem;
@@ -259,6 +269,11 @@
         .copy-btn.copied i {
             color: #4caf50;
         }
+        .copy-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
 
         #scratchCanvas {
             position: absolute;
@@ -310,7 +325,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.85);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -335,30 +350,66 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         @media (max-width: 700px) {
-            .scratch-section { padding: 18px 14px 22px; }
-            .scratch-header h3 { font-size: 0.95rem; }
-            .scratch-card { width: 280px; height: 120px; }
-            .promo-result .promo-code { font-size: 1.5rem; }
-            .scratch-badge { font-size: 0.45rem; padding: 2px 10px; }
-            .scratch-desc { font-size: 0.65rem; max-width: 200px; }
-            .scratch-progress { font-size: 0.45rem; bottom: 4px; right: 6px; }
+            .scratch-section {
+                padding: 18px 14px 22px;
+            }
+            .scratch-header h3 {
+                font-size: 0.95rem;
+            }
+            .scratch-card {
+                width: 280px;
+                height: 120px;
+            }
+            .promo-result .promo-code {
+                font-size: 1.5rem;
+            }
+            .scratch-badge {
+                font-size: 0.45rem;
+                padding: 2px 10px;
+            }
+            .scratch-desc {
+                font-size: 0.65rem;
+                max-width: 200px;
+            }
+            .scratch-progress {
+                font-size: 0.45rem;
+                bottom: 4px;
+                right: 6px;
+            }
         }
 
         @media (max-width: 420px) {
-            .scratch-card { width: 230px; height: 105px; }
-            .promo-result .promo-code { font-size: 1.2rem; }
-            .promo-result .promo-label { font-size: 0.45rem; }
-            .promo-result .promo-value { font-size: 0.6rem; }
-            .scratch-desc { font-size: 0.6rem; max-width: 170px; }
+            .scratch-card {
+                width: 230px;
+                height: 105px;
+            }
+            .promo-result .promo-code {
+                font-size: 1.2rem;
+            }
+            .promo-result .promo-label {
+                font-size: 0.45rem;
+            }
+            .promo-result .promo-value {
+                font-size: 0.6rem;
+            }
+            .scratch-desc {
+                font-size: 0.6rem;
+                max-width: 170px;
+            }
         }
     </style>
 </head>
 <body>
+
     <div class="scratch-section">
         <div class="scratch-header">
             <h3>
@@ -370,12 +421,14 @@
 
         <div class="scratch-card-wrapper">
             <div class="scratch-card" id="scratchCard">
+
                 <!-- Loading Overlay -->
                 <div class="loading-overlay" id="loadingOverlay">
                     <div class="spinner"></div>
                     <p>Loading promo...</p>
                 </div>
 
+                <!-- Result area (behind scratch layer) -->
                 <div class="promo-result" id="promoResult">
                     <span class="promo-label"><i class="fas fa-gift"></i> Your Promo Code</span>
                     <span class="promo-code" id="promoCodeDisplay">———</span>
@@ -384,11 +437,12 @@
                         <i class="fas fa-users"></i> Uses: <span id="usesCount">—</span>/<span id="maxUsesCount">—</span>
                     </span>
                     <span class="promo-expiry" id="promoExpiryDisplay"><i class="far fa-calendar-alt"></i> Expires: —</span>
-                    
                     <div class="copy-wrapper" id="copyWrapper">
                         <button class="copy-btn" id="copyBtn"><i class="fas fa-copy"></i> Copy</button>
                     </div>
                 </div>
+
+                <!-- Scratch canvas -->
                 <canvas id="scratchCanvas"></canvas>
                 <span class="scratch-progress" id="scratchProgress">0%</span>
             </div>
@@ -396,18 +450,20 @@
             <div class="scratch-desc" id="statusMessage">
                 <i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i>
                 Swipe with your finger to scratch and reveal your promo code.
-                <br>
-                <span style="font-size:0.65rem; color:var(--text-muted);">Single-use promo code.</span>  
+                <br />
+                <span style="font-size:0.65rem; color:var(--text-muted);">Single-use promo code.</span>
             </div>
         </div>
     </div>
 
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js">
+    </script>
 
     <script>
         // ================================================================
@@ -427,18 +483,26 @@
         const db = firebase.database();
 
         // ================================================================
-        // 🎟️ PROMO CODES
+        // 🎟️ PROMO CODES  (FIXED: VIP1000 label)
         // ================================================================
         const promoCodes = {
-            "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100 },
-            "BETA100": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF", "expiry": "2026-08-01", "max_uses": 10 },
-            "BETA50": { "type": "fixed", "value": 500, "label": "500 MMK OFF", "expiry": "2026-08-01", "max_uses": 10 },
-            // 🔽 FIXED: FLASH10 ကို percent အဖြစ် ပြောင်းထား
-            "FLASH10": { "type": "percent", "value": 10, "label": "10% OFF", "expiry": "2026-12-31", "max_uses": 100 },
-            "VIP1000": { "type": "fixed", "value": 1000, "label": "100% FREE", "expiry": "2026-07-31", "max_uses": 5 },
-            "GAMER25": { "type": "percent", "value": 25, "label": "25% OFF", "expiry": "2026-08-01", "max_uses": 10 },
-            "FLASH75": { "type": "percent", "value": 75, "label": "75% OFF", "expiry": "2026-12-31", "max_uses": 100 },
-            "ARCADE50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100 },
+            "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31",
+            "max_uses": 100 },
+            "BETA100": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF", "expiry": "2026-08-01",
+            "max_uses": 10 },
+            "BETA50": { "type": "fixed", "value": 500, "label": "500 MMK OFF", "expiry": "2026-08-01",
+            "max_uses": 10 },
+            "FLASH10": { "type": "percent", "value": 10, "label": "10% OFF", "expiry": "2026-12-31",
+            "max_uses": 100 },
+            // ✅ FIXED: "100% FREE" → "1000 MMK OFF" (since type=fixed, value=1000)
+            "VIP1000": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF", "expiry": "2026-07-31",
+            "max_uses": 5 },
+            "GAMER25": { "type": "percent", "value": 25, "label": "25% OFF", "expiry": "2026-08-01",
+            "max_uses": 10 },
+            "FLASH75": { "type": "percent", "value": 75, "label": "75% OFF", "expiry": "2026-12-31",
+            "max_uses": 100 },
+            "ARCADE50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31",
+            "max_uses": 100 },
         };
 
         // ================================================================
@@ -455,7 +519,9 @@
             localStorage.setItem(key, status ? 'true' : 'false');
         }
 
-        // DOM Elements
+        // ================================================================
+        // DOM refs
+        // ================================================================
         const loadingOverlay = document.getElementById('loadingOverlay');
         const promoCodeDisplay = document.getElementById('promoCodeDisplay');
         const promoValueDisplay = document.getElementById('promoValueDisplay');
@@ -464,12 +530,14 @@
         const maxUsesCount = document.getElementById('maxUsesCount');
         const copyBtn = document.getElementById('copyBtn');
         const statusMessage = document.getElementById('statusMessage');
-
-        // Canvas Elements
         const canvas = document.getElementById('scratchCanvas');
         const ctx = canvas.getContext('2d');
         const progressEl = document.getElementById('scratchProgress');
+        const cardEl = document.getElementById('scratchCard');
 
+        // ================================================================
+        // State
+        // ================================================================
         let selectedCode = null;
         let promo = null;
         let isDrawing = false;
@@ -524,7 +592,8 @@
                         return currentData;
                     }, (error, committed, snapshot) => {
                         if (error) { reject(error); return; }
-                        if (!committed) { reject(new Error('Transaction not committed')); return; }
+                        if (!committed) { reject(new Error('Transaction not committed'));
+                            return; }
                         const data = snapshot.val();
                         resolve({
                             used: data?.used || 1,
@@ -566,48 +635,62 @@
         }
 
         // ================================================================
+        // 🧭 Helper: is code expired?
+        // ================================================================
+        function isCodeExpired(code) {
+            const p = promoCodes[code];
+            if (!p || !p.expiry) return false;
+            const expiryDate = new Date(p.expiry);
+            const today = new Date();
+            // today is considered expired (<=)
+            return expiryDate <= today;
+        }
+
+        // ================================================================
         // 🎯 MAIN LOGIC
         // ================================================================
 
         async function loadPromoCode() {
             loadingOverlay.style.display = 'flex';
             justClaimed = false;
-            
+
             let code = localStorage.getItem('myPromoCode');
+
+            // If no stored code, or it's invalid, pick a random valid one
             if (!code || !promoCodes[code]) {
-                const codes = Object.keys(promoCodes);
-                code = codes[Math.floor(Math.random() * codes.length)];
+                code = pickValidCode();
                 localStorage.setItem('myPromoCode', code);
             } else {
-                const codeData = promoCodes[code];
-                if (codeData && codeData.expiry) {
-                    const expiryDate = new Date(codeData.expiry);
-                    const today = new Date();
-                    // 🔽 FIXED: <= သုံးထားပြီး ယနေ့ရက်ပါ expired အဖြစ် သတ်မှတ်
-                    if (expiryDate <= today) {
-                        const codes = Object.keys(promoCodes);
-                        code = codes[Math.floor(Math.random() * codes.length)];
+                // If stored code is expired, pick a new valid one
+                if (isCodeExpired(code)) {
+                    const newCode = pickValidCode();
+                    if (newCode) {
+                        code = newCode;
                         localStorage.setItem('myPromoCode', code);
                     }
+                    // if no valid code found, keep the expired one (will show "EXPIRED")
                 }
             }
-            
+
             selectedCode = code;
             promo = promoCodes[selectedCode];
             if (!promo) {
+                // fallback: pick first
                 const codes = Object.keys(promoCodes);
                 selectedCode = codes[0];
                 promo = promoCodes[selectedCode];
                 localStorage.setItem('myPromoCode', selectedCode);
             }
-            
+
+            // Read usage
             let usage;
             try {
                 usage = await getPromoUsageFromRTDB(selectedCode);
             } catch (e) {
                 usage = getPromoUsageFromLocal(selectedCode);
             }
-            
+
+            // Reveal status
             if (getRevealedStatus(selectedCode)) {
                 isRevealed = true;
                 canvas.style.display = 'none';
@@ -617,76 +700,123 @@
                 canvas.style.display = 'block';
                 progressEl.classList.remove('hidden');
             }
-            
+
             displayPromoInfo(usage, false);
             loadingOverlay.style.display = 'none';
         }
 
+        /**
+         * Pick a random promo code that is NOT expired.
+         * Returns null if all codes are expired.
+         */
+        function pickValidCode() {
+            const codes = Object.keys(promoCodes);
+            // Shuffle and find first non-expired
+            const shuffled = [...codes].sort(() => Math.random() - 0.5);
+            for (const c of shuffled) {
+                if (!isCodeExpired(c)) {
+                    return c;
+                }
+            }
+            return null; // all expired
+        }
+
+        // ================================================================
+        // 🖼️ DISPLAY PROMO INFO
+        // ================================================================
+
         function displayPromoInfo(usage, claimedByUser = false) {
             const used = usage.used || 0;
             const maxU = usage.max_uses || promo.max_uses || 100;
-            
-            promoExpiryDisplay.innerHTML = promo.expiry 
-                ? `<i class="far fa-calendar-alt"></i> Expires: ${promo.expiry}`
-                : `<i class="far fa-calendar-alt"></i> No expiry`;
-            
+
+            promoExpiryDisplay.innerHTML = promo.expiry ?
+                `<i class="far fa-calendar-alt"></i> Expires: ${promo.expiry}` :
+                `<i class="far fa-calendar-alt"></i> No expiry`;
+
             usesCount.textContent = used;
             maxUsesCount.textContent = maxU;
 
+            // -- Compute states --
             const expiryDate = promo.expiry ? new Date(promo.expiry) : null;
             const today = new Date();
-            // 🔽 FIXED: <= သုံးထား
             isDateExpired = expiryDate ? expiryDate <= today : false;
             isUsageExhausted = used >= maxU;
-            
-            promoCodeDisplay.classList.remove('expired-status', 'full-status');
 
-            let codeDisplay = selectedCode;
-            let valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
+            // Reset classes
+            promoCodeDisplay.classList.remove('expired-status', 'full-status', 'revealed-expired');
+
+            let codeDisplay = '';
+            let valueDisplay = '';
             let statusHtml = '';
             let showCopy = false;
+            let copyDisabled = false;
 
-            if (isDateExpired) {
-                codeDisplay = '⛔ EXPIRED';
-                valueDisplay = '<i class="fas fa-exclamation-triangle"></i> This promo has expired.';
-                statusHtml = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo code has expired. Please try another card.`;
-                promoCodeDisplay.classList.add('expired-status');
-                showCopy = false;
-            } 
-            else if (claimedByUser) {
+            // --- Priority: if user just claimed, show code (even if expired) ---
+            if (claimedByUser) {
                 codeDisplay = selectedCode;
                 valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
                 statusHtml = `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
                 showCopy = true;
+                copyDisabled = false;
+                if (isDateExpired) {
+                    promoCodeDisplay.classList.add('revealed-expired');
+                    statusHtml =
+                    `<i class="fas fa-exclamation-triangle" style="color:#fbbf24;"></i> This promo has expired, but you already revealed it.`;
+                }
             }
+            // --- Expired (and not just claimed) ---
+            else if (isDateExpired) {
+                codeDisplay = '⛔ EXPIRED';
+                valueDisplay = '<i class="fas fa-exclamation-triangle"></i> This promo has expired.';
+                statusHtml =
+                    `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo code has expired. Please try another card.`;
+                promoCodeDisplay.classList.add('expired-status');
+                showCopy = false;
+                copyDisabled = true;
+            }
+            // --- Fully used (and not just claimed) ---
             else if (isUsageExhausted) {
                 codeDisplay = '⛔ FULLY USED';
                 valueDisplay = '<i class="fas fa-users-slash"></i> All slots are taken.';
-                statusHtml = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo code has reached its usage limit. Please try another card.`;
+                statusHtml =
+                    `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo code has reached its usage limit. Please try another card.`;
                 promoCodeDisplay.classList.add('full-status');
                 showCopy = false;
-            } 
+                copyDisabled = true;
+            }
+            // --- Valid, not expired, not exhausted ---
             else {
                 if (isRevealed) {
                     codeDisplay = selectedCode;
                     valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
-                    statusHtml = `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
+                    statusHtml =
+                    `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
                     showCopy = true;
+                    copyDisabled = false;
                 } else {
                     codeDisplay = '???';
                     valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
-                    statusHtml = `<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.<br><span style="font-size:0.65rem; color:var(--text-muted);">Single-use promo code.</span>`;
+                    statusHtml =
+                        `<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.<br><span style="font-size:0.65rem; color:var(--text-muted);">Single-use promo code.</span>`;
                     showCopy = false;
+                    copyDisabled = true;
                 }
             }
 
+            // Apply
             promoCodeDisplay.textContent = codeDisplay;
             promoValueDisplay.innerHTML = valueDisplay;
             statusMessage.innerHTML = statusHtml;
-            copyBtn.style.display = showCopy ? 'inline-flex' : 'none';
+
+            // Copy button
             if (showCopy) {
+                copyBtn.style.display = 'inline-flex';
+                copyBtn.disabled = false;
                 copyBtn.classList.remove('copied');
                 copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            } else {
+                copyBtn.style.display = 'none';
+                copyBtn.disabled = true;
             }
         }
 
@@ -771,11 +901,13 @@
         function scratch(x, y) {
             if (isRevealed || isUpdating) return;
             if (isDateExpired) {
-                statusMessage.innerHTML = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired. Cannot scratch.`;
+                statusMessage.innerHTML =
+                    `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired. Cannot scratch.`;
                 return;
             }
             if (isUsageExhausted && !justClaimed) {
-                statusMessage.innerHTML = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used. Cannot scratch.`;
+                statusMessage.innerHTML =
+                    `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used. Cannot scratch.`;
                 return;
             }
 
@@ -810,17 +942,25 @@
             }
         }
 
+        // ================================================================
+        // 🎉 FULLY REVEAL
+        // ================================================================
+
         async function fullyReveal() {
             if (isRevealed || isUpdating) return;
+
+            // Double-check expiry
             if (isDateExpired) {
-                statusMessage.innerHTML = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired.`;
+                statusMessage.innerHTML =
+                    `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired.`;
                 return;
             }
 
+            // Fetch latest usage from DB to be safe
             let latestUsage;
             try {
                 latestUsage = await getPromoUsageFromRTDB(selectedCode);
-            } catch(e) {
+            } catch (e) {
                 latestUsage = getPromoUsageFromLocal(selectedCode);
             }
             const used = latestUsage.used || 0;
@@ -828,20 +968,20 @@
             if (used >= maxU) {
                 isUsageExhausted = true;
                 displayPromoInfo(latestUsage, false);
-                statusMessage.innerHTML = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used. Cannot scratch.`;
+                statusMessage.innerHTML =
+                    `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used. Cannot scratch.`;
                 return;
             }
 
             isUpdating = true;
-            isRevealed = true;
-            
-            // Clear canvas immediately (visual feedback)
+
+            // Clear canvas (visual feedback)
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.clearRect(0, 0, w, h);
             progressEl.classList.add('hidden');
-            
-            // Update DB
+
+            // Update usage in Firebase (with fallback)
             let updatedUsage;
             try {
                 updatedUsage = await updatePromoUsageInRTDB(selectedCode);
@@ -850,14 +990,17 @@
                 console.error('❌ DB update failed, using localStorage:', error);
                 updatedUsage = updatePromoUsageInLocal(selectedCode);
             }
-            
-            // 🔽 FIXED: DB update ပြီးမှ reveal status နဲ့ canvas ကို ဖျောက်ပါ
+
+            // Mark as revealed
             setRevealedStatus(selectedCode, true);
+            isRevealed = true;
             canvas.style.display = 'none';
-            
             justClaimed = true;
+
+            // Show the code
             displayPromoInfo(updatedUsage, true);
-            
+
+            // Analytics
             if (typeof gtag === 'function') {
                 gtag('event', 'scratch_reveal', {
                     'event_category': 'Promo',
@@ -865,25 +1008,24 @@
                     'value': promo.value
                 });
             }
-            
-            const card = document.getElementById('scratchCard');
-            card.style.transform = 'scale(1.02)';
-            setTimeout(() => { card.style.transform = ''; }, 300);
-            
+
+            // Pop animation
+            cardEl.style.transform = 'scale(1.02)';
+            setTimeout(() => { cardEl.style.transform = ''; }, 300);
+
             isUpdating = false;
         }
 
         // ================================================================
         // 📋 COPY
         // ================================================================
+
         copyBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (isDateExpired || (isUsageExhausted && !justClaimed)) {
-                return;
-            }
+            if (copyBtn.disabled) return;
             const code = selectedCode || '';
             if (!code) return;
-            
+
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(code).then(() => {
                     copyBtn.classList.add('copied');
@@ -930,11 +1072,13 @@
             e.preventDefault();
             if (isRevealed || isUpdating) return;
             if (isDateExpired) {
-                statusMessage.innerHTML = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired.`;
+                statusMessage.innerHTML =
+                    `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired.`;
                 return;
             }
             if (isUsageExhausted && !justClaimed) {
-                statusMessage.innerHTML = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used.`;
+                statusMessage.innerHTML =
+                    `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used.`;
                 return;
             }
             isDrawing = true;
@@ -973,7 +1117,7 @@
         });
 
         // ================================================================
-        // 🚀 INITIALIZE
+        // 🚀 INIT
         // ================================================================
 
         async function init() {
@@ -983,5 +1127,6 @@
 
         init();
     </script>
+
 </body>
 </html>
