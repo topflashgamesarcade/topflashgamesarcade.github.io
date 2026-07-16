@@ -169,7 +169,6 @@
             line-height: 1.2;
             text-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
         }
-        /* Override for expired/full status */
         .promo-result .promo-code.expired-status {
             background: none;
             -webkit-text-fill-color: #f87171;
@@ -219,7 +218,6 @@
             margin-right: 4px;
         }
 
-        /* copy button */
         .copy-wrapper {
             margin-top: 6px;
             display: flex;
@@ -387,7 +385,6 @@
                     </span>
                     <span class="promo-expiry" id="promoExpiryDisplay"><i class="far fa-calendar-alt"></i> Expires: —</span>
                     
-                    <!-- COPY / STATUS  -->
                     <div class="copy-wrapper" id="copyWrapper">
                         <button class="copy-btn" id="copyBtn"><i class="fas fa-copy"></i> Copy</button>
                     </div>
@@ -436,7 +433,8 @@
             "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100 },
             "BETA100": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF", "expiry": "2026-08-01", "max_uses": 10 },
             "BETA50": { "type": "fixed", "value": 500, "label": "500 MMK OFF", "expiry": "2026-08-01", "max_uses": 10 },
-            "FLASH10": { "type": "fixed", "value": 10, "label": "10% OFF", "expiry": "2026-12-31", "max_uses": 100 },
+            // 🔽 FIXED: FLASH10 ကို percent အဖြစ် ပြောင်းထား
+            "FLASH10": { "type": "percent", "value": 10, "label": "10% OFF", "expiry": "2026-12-31", "max_uses": 100 },
             "VIP1000": { "type": "fixed", "value": 1000, "label": "100% FREE", "expiry": "2026-07-31", "max_uses": 5 },
             "GAMER25": { "type": "percent", "value": 25, "label": "25% OFF", "expiry": "2026-08-01", "max_uses": 10 },
             "FLASH75": { "type": "percent", "value": 75, "label": "75% OFF", "expiry": "2026-12-31", "max_uses": 100 },
@@ -479,7 +477,7 @@
         let isUpdating = false;
         let isDateExpired = false;
         let isUsageExhausted = false;
-        let justClaimed = false;  // Flag to indicate current user just claimed the last slot
+        let justClaimed = false;
         const RADIUS = 28;
         const REVEAL_THRESHOLD = 0.50;
 
@@ -573,7 +571,7 @@
 
         async function loadPromoCode() {
             loadingOverlay.style.display = 'flex';
-            justClaimed = false; // Reset on load
+            justClaimed = false;
             
             let code = localStorage.getItem('myPromoCode');
             if (!code || !promoCodes[code]) {
@@ -582,10 +580,11 @@
                 localStorage.setItem('myPromoCode', code);
             } else {
                 const codeData = promoCodes[code];
-                if (codeData.expiry) {
+                if (codeData && codeData.expiry) {
                     const expiryDate = new Date(codeData.expiry);
                     const today = new Date();
-                    if (expiryDate < today) {
+                    // 🔽 FIXED: <= သုံးထားပြီး ယနေ့ရက်ပါ expired အဖြစ် သတ်မှတ်
+                    if (expiryDate <= today) {
                         const codes = Object.keys(promoCodes);
                         code = codes[Math.floor(Math.random() * codes.length)];
                         localStorage.setItem('myPromoCode', code);
@@ -602,7 +601,6 @@
                 localStorage.setItem('myPromoCode', selectedCode);
             }
             
-            // get usage
             let usage;
             try {
                 usage = await getPromoUsageFromRTDB(selectedCode);
@@ -610,7 +608,6 @@
                 usage = getPromoUsageFromLocal(selectedCode);
             }
             
-            // check if already revealed
             if (getRevealedStatus(selectedCode)) {
                 isRevealed = true;
                 canvas.style.display = 'none';
@@ -629,7 +626,6 @@
             const used = usage.used || 0;
             const maxU = usage.max_uses || promo.max_uses || 100;
             
-            // Update basic fields always
             promoExpiryDisplay.innerHTML = promo.expiry 
                 ? `<i class="far fa-calendar-alt"></i> Expires: ${promo.expiry}`
                 : `<i class="far fa-calendar-alt"></i> No expiry`;
@@ -637,13 +633,12 @@
             usesCount.textContent = used;
             maxUsesCount.textContent = maxU;
 
-            // Determine status
             const expiryDate = promo.expiry ? new Date(promo.expiry) : null;
             const today = new Date();
-            isDateExpired = expiryDate ? expiryDate < today : false;
+            // 🔽 FIXED: <= သုံးထား
+            isDateExpired = expiryDate ? expiryDate <= today : false;
             isUsageExhausted = used >= maxU;
             
-            // Reset class
             promoCodeDisplay.classList.remove('expired-status', 'full-status');
 
             let codeDisplay = selectedCode;
@@ -651,7 +646,6 @@
             let statusHtml = '';
             let showCopy = false;
 
-            // PRIORITY 1: Date Expired
             if (isDateExpired) {
                 codeDisplay = '⛔ EXPIRED';
                 valueDisplay = '<i class="fas fa-exclamation-triangle"></i> This promo has expired.';
@@ -659,15 +653,12 @@
                 promoCodeDisplay.classList.add('expired-status');
                 showCopy = false;
             } 
-            // PRIORITY 2: User just claimed this card (even if it's now full, they are the one who filled it)
             else if (claimedByUser) {
-                // They successfully claimed it. Show the code and let them copy.
                 codeDisplay = selectedCode;
                 valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
                 statusHtml = `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
                 showCopy = true;
             }
-            // PRIORITY 3: Usage exhausted (but user didn't just claim it, i.e., they are late)
             else if (isUsageExhausted) {
                 codeDisplay = '⛔ FULLY USED';
                 valueDisplay = '<i class="fas fa-users-slash"></i> All slots are taken.';
@@ -675,17 +666,13 @@
                 promoCodeDisplay.classList.add('full-status');
                 showCopy = false;
             } 
-            // PRIORITY 4: Active (available slots, user hasn't claimed yet)
             else {
-                // Active promo
                 if (isRevealed) {
-                    // Already revealed previously, but still has slots
                     codeDisplay = selectedCode;
                     valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
                     statusHtml = `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
                     showCopy = true;
                 } else {
-                    // Not revealed yet
                     codeDisplay = '???';
                     valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
                     statusHtml = `<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.<br><span style="font-size:0.65rem; color:var(--text-muted);">Single-use promo code.</span>`;
@@ -693,7 +680,6 @@
                 }
             }
 
-            // Apply to DOM
             promoCodeDisplay.textContent = codeDisplay;
             promoValueDisplay.innerHTML = valueDisplay;
             statusMessage.innerHTML = statusHtml;
@@ -783,14 +769,11 @@
         }
 
         function scratch(x, y) {
-            // Prevent scratching if already revealed, updating, or card is expired
             if (isRevealed || isUpdating) return;
             if (isDateExpired) {
-                // If expired, show message and don't scratch
                 statusMessage.innerHTML = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired. Cannot scratch.`;
                 return;
             }
-            // If usage is exhausted and user didn't just claim it (should not happen, but safety)
             if (isUsageExhausted && !justClaimed) {
                 statusMessage.innerHTML = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used. Cannot scratch.`;
                 return;
@@ -829,12 +812,11 @@
 
         async function fullyReveal() {
             if (isRevealed || isUpdating) return;
-            // Double check if expired or fully used before claiming
             if (isDateExpired) {
                 statusMessage.innerHTML = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired.`;
                 return;
             }
-            // Fetch latest usage to avoid race condition (though transaction handles it)
+
             let latestUsage;
             try {
                 latestUsage = await getPromoUsageFromRTDB(selectedCode);
@@ -844,7 +826,6 @@
             const used = latestUsage.used || 0;
             const maxU = latestUsage.max_uses || promo.max_uses || 100;
             if (used >= maxU) {
-                // If already full before we even scratch, show message and block
                 isUsageExhausted = true;
                 displayPromoInfo(latestUsage, false);
                 statusMessage.innerHTML = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used. Cannot scratch.`;
@@ -854,16 +835,13 @@
             isUpdating = true;
             isRevealed = true;
             
+            // Clear canvas immediately (visual feedback)
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.clearRect(0, 0, w, h);
             progressEl.classList.add('hidden');
             
-            // Save reveal status
-            canvas.style.display = 'none';
-            setRevealedStatus(selectedCode, true);
-            
-            // Update usage in DB
+            // Update DB
             let updatedUsage;
             try {
                 updatedUsage = await updatePromoUsageInRTDB(selectedCode);
@@ -873,13 +851,13 @@
                 updatedUsage = updatePromoUsageInLocal(selectedCode);
             }
             
-            // Set flag that this user just claimed successfully
-            justClaimed = true;
+            // 🔽 FIXED: DB update ပြီးမှ reveal status နဲ့ canvas ကို ဖျောက်ပါ
+            setRevealedStatus(selectedCode, true);
+            canvas.style.display = 'none';
             
-            // Refresh UI with new usage data, passing true for claimedByUser
+            justClaimed = true;
             displayPromoInfo(updatedUsage, true);
             
-            // gtag
             if (typeof gtag === 'function') {
                 gtag('event', 'scratch_reveal', {
                     'event_category': 'Promo',
@@ -900,7 +878,6 @@
         // ================================================================
         copyBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            // If expired or fully used, do nothing (button should be hidden anyway)
             if (isDateExpired || (isUsageExhausted && !justClaimed)) {
                 return;
             }
@@ -952,7 +929,6 @@
         function onStart(e) {
             e.preventDefault();
             if (isRevealed || isUpdating) return;
-            // Check if expired or full before allowing scratch
             if (isDateExpired) {
                 statusMessage.innerHTML = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired.`;
                 return;
