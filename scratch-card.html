@@ -576,35 +576,39 @@
             }
         }
 
+        // 🔥 FIXED: Simple increment - no transaction, just read + write
         async function updatePromoUsageInRTDB(code) {
             try {
                 const ref = db.ref('promoCodes/' + code);
-                return new Promise((resolve, reject) => {
-                    ref.transaction((currentData) => {
-                        if (currentData === null) {
-                            return {
-                                used: 1,
-                                max_uses: promoCodes[code]?.max_uses || 100,
-                                createdAt: Date.now()
-                            };
-                        }
-                        const newUsed = (currentData.used || 0) + 1;
-                        currentData.used = newUsed;
-                        currentData.updatedAt = Date.now();
-                        return currentData;
-                    }, (error, committed, snapshot) => {
-                        if (error) { reject(error); return; }
-                        if (!committed) { reject(new Error('Transaction not committed'));
-                            return; }
-                        const data = snapshot.val();
-                        resolve({
-                            used: data?.used || 1,
-                            max_uses: data?.max_uses || promoCodes[code]?.max_uses || 100
-                        });
-                    });
-                });
+
+                // 1. Read current data
+                const snapshot = await ref.once('value');
+                let currentData = snapshot.val();
+
+                // 2. If no data, create new
+                if (!currentData) {
+                    currentData = {
+                        used: 0,
+                        max_uses: promoCodes[code]?.max_uses || 100,
+                        createdAt: Date.now()
+                    };
+                }
+
+                // 3. Increment by exactly 1
+                const newUsed = (currentData.used || 0) + 1;
+                currentData.used = newUsed;
+                currentData.updatedAt = Date.now();
+
+                // 4. Write back to Firebase
+                await ref.set(currentData);
+
+                return {
+                    used: newUsed,
+                    max_uses: currentData.max_uses
+                };
             } catch (error) {
                 console.error('❌ Error updating promo usage:', error);
+                // Fallback to localStorage
                 return updatePromoUsageInLocal(code);
             }
         }
@@ -648,7 +652,7 @@
         }
 
         // ================================================================
-        // 🎯 MAIN LOGIC (UPDATED with clear rejection reasons)
+        // 🎯 MAIN LOGIC
         // ================================================================
 
         async function loadPromoCode() {
@@ -678,17 +682,15 @@
             let foundValid = false;
             let rejectReason = ''; // 'expired', 'full', 'removed', ''
 
-            // 2. Check stored code and determine why it's invalid (if it is)
+            // 2. Check stored code
             if (storedCode) {
                 const p = promoCodes[storedCode];
                 if (!p) {
                     rejectReason = 'removed';
                 } else {
-                    // Check expiry
                     if (p.expiry && new Date(p.expiry) <= new Date()) {
                         rejectReason = 'expired';
                     } else {
-                        // Check usage
                         let u;
                         try {
                             u = await getPromoUsageFromRTDB(storedCode);
@@ -712,16 +714,14 @@
                 }
             }
 
-            // 3. If stored code is invalid, find a new one
+            // 3. If invalid, find new one
             if (!foundValid) {
                 const shuffled = codeKeys.sort(() => Math.random() - 0.5);
                 for (const c of shuffled) {
                     if (c === storedCode) continue;
                     const p = promoCodes[c];
                     if (!p) continue;
-                    // Check expiry
                     if (p.expiry && new Date(p.expiry) <= new Date()) continue;
-                    // Check usage
                     let u;
                     try {
                         u = await getPromoUsageFromRTDB(c);
@@ -742,7 +742,7 @@
                 }
             }
 
-            // 4. If still no valid code, show error
+            // 4. No valid code found
             if (!foundValid || !usage) {
                 selectedCode = null;
                 promo = null;
@@ -757,10 +757,10 @@
                 return;
             }
 
-            // 5. Set promo and check reveal status
+            // 5. Set promo
             promo = promoCodes[selectedCode];
 
-            // 🟢 Show a clear message if the code was replaced due to expiry/full
+            // Show reason message if code was replaced
             if (rejectReason === 'expired') {
                 statusMessage.innerHTML =
                     '⏰ Your previous promo code expired. A new code has been assigned to you!';
@@ -775,6 +775,7 @@
                     '<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.';
             }
 
+            // Check reveal status
             isRevealed = getRevealedStatus(selectedCode);
             if (isRevealed) {
                 canvas.style.display = 'none';
@@ -784,7 +785,7 @@
                 progressEl.classList.remove('hidden');
             }
 
-            // 6. Display the info
+            // Display
             displayPromoInfo(usage, false);
             loadingOverlay.style.display = 'none';
         }
@@ -864,11 +865,8 @@
 
             promoCodeDisplay.textContent = codeDisplay;
             promoValueDisplay.innerHTML = valueDisplay;
-            // Only update status message if it's not already showing a specific info (like replaced code)
-            // But we will let the statusMessage be overwritten here if it's a standard state.
-            // Actually, we want to keep the "replaced" message if it was set, but status messages
-            // like "Expired" or "Full" are more important.
-            // We'll update it to keep the specific message.
+
+            // Update status message only for specific states
             if (claimedByUser || isDateExpired || isUsageExhausted || isRevealed) {
                 statusMessage.innerHTML = statusHtml;
             }
@@ -1001,16 +999,17 @@
             const ratio = transparent / (total / step);
             const percent = Math.min(100, Math.round(ratio * 100));
             progressEl.textContent = percent + '%';
-            if (percent >= REVEAL_THRESHOLD * 100 && !isRevealed) {
+            if (percent >= REVEAL_THRESHOLD * 100 && !isRevealed && !isUpdating) {
                 fullyReveal();
             }
         }
 
         // ================================================================
-        // 🎉 FULLY REVEAL
+        // 🎉 FULLY REVEAL (FIXED: prevents double increment)
         // ================================================================
 
         async function fullyReveal() {
+            // 🔒 Prevent multiple calls
             if (isRevealed || isUpdating) return;
 
             if (isDateExpired) {
@@ -1019,57 +1018,73 @@
                 return;
             }
 
-            let latestUsage;
-            try {
-                latestUsage = await getPromoUsageFromRTDB(selectedCode);
-            } catch (e) {
-                latestUsage = getPromoUsageFromLocal(selectedCode);
-            }
-            const used = latestUsage.used || 0;
-            const maxU = latestUsage.max_uses || promo.max_uses || 100;
-            if (used >= maxU) {
-                isUsageExhausted = true;
-                displayPromoInfo(latestUsage, false);
-                statusMessage.innerHTML =
-                    `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used. Cannot scratch.`;
-                return;
-            }
-
+            // 🔒 Lock immediately to prevent double calls
             isUpdating = true;
 
-            const w = canvas.width / (window.devicePixelRatio || 1);
-            const h = canvas.height / (window.devicePixelRatio || 1);
-            ctx.clearRect(0, 0, w, h);
-            progressEl.classList.add('hidden');
-
-            let updatedUsage;
             try {
-                updatedUsage = await updatePromoUsageInRTDB(selectedCode);
-                console.log('✅ DB updated:', updatedUsage);
+                // Fetch latest usage
+                let latestUsage;
+                try {
+                    latestUsage = await getPromoUsageFromRTDB(selectedCode);
+                } catch (e) {
+                    latestUsage = getPromoUsageFromLocal(selectedCode);
+                }
+
+                const used = latestUsage.used || 0;
+                const maxU = latestUsage.max_uses || promo.max_uses || 100;
+
+                if (used >= maxU) {
+                    isUsageExhausted = true;
+                    displayPromoInfo(latestUsage, false);
+                    statusMessage.innerHTML =
+                        `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo is fully used. Cannot scratch.`;
+                    isUpdating = false;
+                    return;
+                }
+
+                // Clear canvas (visual feedback)
+                const w = canvas.width / (window.devicePixelRatio || 1);
+                const h = canvas.height / (window.devicePixelRatio || 1);
+                ctx.clearRect(0, 0, w, h);
+                progressEl.classList.add('hidden');
+
+                // ✅ Update usage (increments by 1 only)
+                let updatedUsage;
+                try {
+                    updatedUsage = await updatePromoUsageInRTDB(selectedCode);
+                    console.log('✅ DB updated:', updatedUsage);
+                } catch (error) {
+                    console.error('❌ DB update failed, using localStorage:', error);
+                    updatedUsage = updatePromoUsageInLocal(selectedCode);
+                }
+
+                // Mark as revealed
+                setRevealedStatus(selectedCode, true);
+                isRevealed = true;
+                canvas.style.display = 'none';
+                justClaimed = true;
+
+                // Show the code
+                displayPromoInfo(updatedUsage, true);
+
+                // Analytics
+                if (typeof gtag === 'function') {
+                    gtag('event', 'scratch_reveal', {
+                        'event_category': 'Promo',
+                        'event_label': selectedCode,
+                        'value': promo.value
+                    });
+                }
+
+                // Pop animation
+                cardEl.style.transform = 'scale(1.02)';
+                setTimeout(() => { cardEl.style.transform = ''; }, 300);
+
             } catch (error) {
-                console.error('❌ DB update failed, using localStorage:', error);
-                updatedUsage = updatePromoUsageInLocal(selectedCode);
+                console.error('❌ Error in fullyReveal:', error);
+            } finally {
+                isUpdating = false;
             }
-
-            setRevealedStatus(selectedCode, true);
-            isRevealed = true;
-            canvas.style.display = 'none';
-            justClaimed = true;
-
-            displayPromoInfo(updatedUsage, true);
-
-            if (typeof gtag === 'function') {
-                gtag('event', 'scratch_reveal', {
-                    'event_category': 'Promo',
-                    'event_label': selectedCode,
-                    'value': promo.value
-                });
-            }
-
-            cardEl.style.transform = 'scale(1.02)';
-            setTimeout(() => { cardEl.style.transform = ''; }, 300);
-
-            isUpdating = false;
         }
 
         // ================================================================
