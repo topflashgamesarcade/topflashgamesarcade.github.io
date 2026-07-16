@@ -651,59 +651,91 @@
         // ================================================================
 
         async function loadPromoCode() {
-            loadingOverlay.style.display = 'flex';
-            justClaimed = false;
+    loadingOverlay.style.display = 'flex';
+    justClaimed = false;
 
-            let code = localStorage.getItem('myPromoCode');
+    let code = localStorage.getItem('myPromoCode');
 
-            // If no stored code, or it's invalid, pick a random valid one
-            if (!code || !promoCodes[code]) {
-                code = pickValidCode();
-                localStorage.setItem('myPromoCode', code);
-            } else {
-                // If stored code is expired, pick a new valid one
-                if (isCodeExpired(code)) {
-                    const newCode = pickValidCode();
-                    if (newCode) {
-                        code = newCode;
-                        localStorage.setItem('myPromoCode', code);
-                    }
-                    // if no valid code found, keep the expired one (will show "EXPIRED")
-                }
-            }
+    // ----- Helper: ဒီ Code က သုံးလို့ရနေသေးလား စစ်တဲ့ Function -----
+    async function getValidCodeInfo(code) {
+        if (!code || !promoCodes[code]) return null; // Code မရှိရင် null ပြန်
 
-            selectedCode = code;
-            promo = promoCodes[selectedCode];
-            if (!promo) {
-                // fallback: pick first
-                const codes = Object.keys(promoCodes);
-                selectedCode = codes[0];
-                promo = promoCodes[selectedCode];
-                localStorage.setItem('myPromoCode', selectedCode);
-            }
+        const promo = promoCodes[code];
+        // ၁။ သက်တမ်းကုန်ပြီလား စစ်ပါ
+        const expiryDate = promo.expiry ? new Date(promo.expiry) : null;
+        const today = new Date();
+        if (expiryDate && expiryDate <= today) return null;
 
-            // Read usage
-            let usage;
-            try {
-                usage = await getPromoUsageFromRTDB(selectedCode);
-            } catch (e) {
-                usage = getPromoUsageFromLocal(selectedCode);
-            }
-
-            // Reveal status
-            if (getRevealedStatus(selectedCode)) {
-                isRevealed = true;
-                canvas.style.display = 'none';
-                progressEl.classList.add('hidden');
-            } else {
-                isRevealed = false;
-                canvas.style.display = 'block';
-                progressEl.classList.remove('hidden');
-            }
-
-            displayPromoInfo(usage, false);
-            loadingOverlay.style.display = 'none';
+        // ၂။ အသုံးပြုမှု အပြည့်ရောက်ပြီလား စစ်ပါ (Firebase ကနေ လတ်တလော အခြေအနေ ယူပါ)
+        let usage;
+        try {
+            usage = await getPromoUsageFromRTDB(code);
+        } catch (e) {
+            usage = getPromoUsageFromLocal(code);
         }
+        const used = usage.used || 0;
+        const max = usage.max_uses || promo.max_uses || 100;
+        if (used >= max) return null;
+
+        // အဆင်ပြေရင် usage data ကို ပြန်ပေးပါ
+        return usage;
+    }
+
+    // ၃။ လက်ရှိ localStorage ထဲက Code ကို စစ်ပါ
+    let usage = await getValidCodeInfo(code);
+
+    // ၄။ လက်ရှိ Code က မရတော့ဘူး (Expired/Full) ဆိုရင် အသစ်ရှာပါ
+    if (!usage) {
+        const allCodes = Object.keys(promoCodes);
+        let found = false;
+        for (const c of allCodes) {
+            if (c === code) continue; // ကုတ်ဟောင်းကို ကျော်ပါ
+            const u = await getValidCodeInfo(c);
+            if (u) {
+                code = c;
+                usage = u;
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            // အသစ်တွေ့ရင် localStorage မှာ သိမ်းထားပါ
+            localStorage.setItem('myPromoCode', code);
+        } else {
+            // အားလုံးက မရတော့ဘူးဆိုရင် Error ပြပါ
+            selectedCode = 'NONE';
+            promo = null;
+            isRevealed = false;
+            canvas.style.display = 'none';
+            progressEl.classList.add('hidden');
+            promoCodeDisplay.textContent = '🚫 NO CODES';
+            promoValueDisplay.innerHTML = '<i class="fas fa-times-circle"></i> All promo codes are fully used or expired.';
+            statusMessage.innerHTML = 'Please contact admin to add more codes.';
+            copyBtn.style.display = 'none';
+            loadingOverlay.style.display = 'none';
+            return;
+        }
+    }
+
+    // ၅။ ရပြီဆိုရင် ဒီ Code ကို ပြသပါ
+    selectedCode = code;
+    promo = promoCodes[selectedCode];
+
+    // ဒီ Code ကို အရင်က ခြစ်ပြီးသားလား စစ်ပါ
+    isRevealed = getRevealedStatus(selectedCode);
+    if (isRevealed) {
+        canvas.style.display = 'none';
+        progressEl.classList.add('hidden');
+    } else {
+        canvas.style.display = 'block';
+        progressEl.classList.remove('hidden');
+    }
+
+    // UI ပေါ်မှာ ပြသပါ
+    displayPromoInfo(usage, false);
+    loadingOverlay.style.display = 'none';
+}
 
         /**
          * Pick a random promo code that is NOT expired.
