@@ -6,7 +6,11 @@
     <title>Scratch Card</title>
     <style>
         /* ===== CSS ===== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
             --bg-deep: #070b15;
@@ -170,6 +174,13 @@
             text-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
         }
 
+        .promo-result .promo-code.expired {
+            background: #ff4444;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         .promo-result .promo-value {
             font-size: 0.75rem;
             color: var(--text-secondary);
@@ -237,19 +248,146 @@
             opacity: 0;
         }
 
+        /* ===== DESCRIPTION ===== */
         .scratch-desc {
-            font-size: 0.75rem;
-            color: var(--text-muted);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
             max-width: 260px;
             text-align: center;
-            line-height: 1.6;
+            line-height: 1.7;
+            background: rgba(0, 240, 255, 0.04);
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(0, 240, 255, 0.08);
+            transition: var(--transition);
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .scratch-desc i {
+        .scratch-desc .desc-icon {
+            font-size: 1.3rem;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .scratch-desc .desc-main {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.8rem;
+        }
+
+        .scratch-desc .desc-divider {
+            width: 24px;
+            height: 2px;
+            background: var(--accent-gradient);
+            border-radius: 4px;
+            margin: 4px auto;
+            opacity: 0.5;
+        }
+
+        .scratch-desc .desc-sub {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .scratch-desc .desc-sub i {
+            color: var(--secondary-neon);
+            margin-right: 4px;
+        }
+
+        /* ===== SUCCESS STATE ===== */
+        .scratch-desc .desc-success {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .scratch-desc .desc-success.show {
+            display: flex;
+        }
+
+        .scratch-desc .desc-success .success-text {
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .scratch-desc .desc-success .success-text.expired {
+            background: #ff4444;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .scratch-desc .desc-success .success-sub {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+        }
+
+        .scratch-desc .desc-success .success-sub i {
             color: var(--primary-neon);
-            margin: 0 2px;
+            margin-right: 4px;
         }
 
+        /* ===== COPY BUTTON ===== */
+        .copy-btn {
+            margin-top: 6px;
+            padding: 5px 18px;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 20px rgba(157, 0, 255, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 30px rgba(157, 0, 255, 0.4);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #00c851, #007e33);
+        }
+
+        .copy-btn.hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== LOADING ===== */
         .loading-overlay {
             position: absolute;
             top: 0;
@@ -281,26 +419,73 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 700px) {
-            .scratch-section { padding: 18px 14px 22px; }
-            .scratch-header h3 { font-size: 0.95rem; }
-            .scratch-card { width: 280px; height: 120px; }
-            .promo-result .promo-code { font-size: 1.5rem; }
-            .scratch-badge { font-size: 0.45rem; padding: 2px 10px; }
-            .scratch-desc { font-size: 0.65rem; max-width: 200px; }
-            .scratch-progress { font-size: 0.45rem; bottom: 4px; right: 6px; }
+            .scratch-section {
+                padding: 18px 14px 22px;
+            }
+            .scratch-header h3 {
+                font-size: 0.95rem;
+            }
+            .scratch-card {
+                width: 280px;
+                height: 120px;
+            }
+            .promo-result .promo-code {
+                font-size: 1.5rem;
+            }
+            .scratch-badge {
+                font-size: 0.45rem;
+                padding: 2px 10px;
+            }
+            .scratch-desc {
+                font-size: 0.7rem;
+                max-width: 200px;
+                padding: 12px 14px;
+                min-height: 90px;
+            }
+            .scratch-progress {
+                font-size: 0.45rem;
+                bottom: 4px;
+                right: 6px;
+            }
         }
 
         @media (max-width: 420px) {
-            .scratch-card { width: 230px; height: 105px; }
-            .promo-result .promo-code { font-size: 1.2rem; }
-            .promo-result .promo-label { font-size: 0.45rem; }
-            .promo-result .promo-value { font-size: 0.6rem; }
-            .scratch-desc { font-size: 0.6rem; max-width: 170px; }
+            .scratch-card {
+                width: 230px;
+                height: 105px;
+            }
+            .promo-result .promo-code {
+                font-size: 1.2rem;
+            }
+            .promo-result .promo-label {
+                font-size: 0.45rem;
+            }
+            .promo-result .promo-value {
+                font-size: 0.6rem;
+            }
+            .scratch-desc {
+                font-size: 0.6rem;
+                max-width: 170px;
+                padding: 10px 12px;
+                min-height: 80px;
+            }
+            .scratch-desc .desc-success .success-text {
+                font-size: 0.65rem;
+            }
+            .copy-btn {
+                font-size: 0.5rem;
+                padding: 4px 14px;
+            }
         }
     </style>
 </head>
@@ -335,11 +520,27 @@
                 <span class="scratch-progress" id="scratchProgress">0%</span>
             </div>
 
-            <div class="scratch-desc">
-                <i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i>
-                လက်ချောင်းနဲ့ ပွတ်ဆွဲပြီး ခဲခြစ်လိုက်ပါ။
-                <br>
-                <span style="font-size:0.65rem; color:var(--text-muted);">တစ်ကြိမ်သာ အသုံးပြုနိုင်သော ပရိုမိုကုဒ်</span>  
+            <!-- ===== DESCRIPTION ===== -->
+            <div class="scratch-desc" id="scratchDesc">
+                <!-- Default State -->
+                <div id="descDefault">
+                    <span class="desc-icon">👇</span>
+                    <span class="desc-main">လက်ချောင်းနဲ့ ပွတ်ဆွဲပြီး ခဲခြစ်လိုက်ပါ</span>
+                    <span class="desc-divider"></span>
+                    <span class="desc-sub">
+                        <i class="fas fa-info-circle"></i>
+                        တစ်ကြိမ်သာ အသုံးပြုနိုင်သော ပရိုမိုကုဒ်
+                    </span>
+                </div>
+
+                <!-- Success State -->
+                <div class="desc-success" id="descSuccess">
+                    <span class="success-text" id="successText">🎉 Promo Code ရပါပြီ!</span>
+                    <span class="success-sub" id="successSub"><i class="fas fa-copy"></i> ကူးယူအသုံးပြုပါ</span>
+                    <button class="copy-btn" id="copyBtn">
+                        <i class="fas fa-copy"></i> ကူယူမည်
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -348,8 +549,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js">
+    </script>
 
     <script>
         // ================================================================
@@ -372,8 +575,10 @@
         // 🎟️ PROMO CODES
         // ================================================================
         const promoCodes = {
-            "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31", "max_uses": 100 },
-            "BETA100": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF", "expiry": "2026-08-01", "max_uses": 10 },
+            "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF", "expiry": "2026-12-31",
+            "max_uses": 100 },
+            "BETA100": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF", "expiry": "2026-08-01",
+            "max_uses": 10 },
             "BETA50": { "type": "fixed", "value": 500, "label": "500 MMK OFF", "expiry": "2026-08-01", "max_uses": 10 },
             "FLASH10": { "type": "fixed", "value": 10, "label": "10% OFF", "expiry": "2026-12-31", "max_uses": 100 },
             "VIP1000": { "type": "fixed", "value": 1000, "label": "100% FREE", "expiry": "2026-07-31", "max_uses": 5 },
@@ -383,50 +588,23 @@
         };
 
         // ================================================================
-        // 💾 REVEAL STATUS FUNCTIONS
+        // 💾 REVEAL STATUS
         // ================================================================
-
         function getRevealedStatus(code) {
-            const key = 'scratch_revealed_' + code;
-            return localStorage.getItem(key) === 'true';
+            return localStorage.getItem('scratch_revealed_' + code) === 'true';
         }
 
         function setRevealedStatus(code, status) {
-            const key = 'scratch_revealed_' + code;
-            localStorage.setItem(key, status ? 'true' : 'false');
+            localStorage.setItem('scratch_revealed_' + code, status ? 'true' : 'false');
         }
 
-        // DOM Elements
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const promoCodeDisplay = document.getElementById('promoCodeDisplay');
-        const promoValueDisplay = document.getElementById('promoValueDisplay');
-        const promoExpiryDisplay = document.getElementById('promoExpiryDisplay');
-        const usesCount = document.getElementById('usesCount');
-        const maxUsesCount = document.getElementById('maxUsesCount');
-
-        // Canvas Elements
-        const canvas = document.getElementById('scratchCanvas');
-        const ctx = canvas.getContext('2d');
-        const progressEl = document.getElementById('scratchProgress');
-
-        let selectedCode = null;
-        let promo = null;
-        let isDrawing = false;
-        let isRevealed = false;
-        let isUpdating = false;
-        const RADIUS = 28;
-        const REVEAL_THRESHOLD = 0.50;
-
         // ================================================================
-        // 📡 REALTIME DATABASE FUNCTIONS
+        // 📡 REALTIME DATABASE
         // ================================================================
-
-        // 🔹 Get promo usage from Realtime Database
         async function getPromoUsageFromRTDB(code) {
             try {
                 const ref = db.ref('promoCodes/' + code);
                 const snapshot = await ref.once('value');
-                
                 if (snapshot.exists()) {
                     return snapshot.val();
                 } else {
@@ -444,11 +622,9 @@
             }
         }
 
-        // 🔹 Update promo usage in Realtime Database
         async function updatePromoUsageInRTDB(code) {
             try {
                 const ref = db.ref('promoCodes/' + code);
-                
                 return new Promise((resolve, reject) => {
                     ref.transaction((currentData) => {
                         if (currentData === null) {
@@ -458,47 +634,31 @@
                                 createdAt: Date.now()
                             };
                         }
-                        
-                        const newUsed = (currentData.used || 0) + 1;
-                        currentData.used = newUsed;
+                        currentData.used = (currentData.used || 0) + 1;
                         currentData.updatedAt = Date.now();
-                        
                         return currentData;
-                        
                     }, (error, committed, snapshot) => {
-                        if (error) {
-                            console.error('❌ Transaction error:', error);
-                            reject(error);
-                            return;
-                        }
-                        
-                        if (!committed) {
-                            console.warn('⚠️ Transaction not committed');
-                            reject(new Error('Transaction not committed'));
-                            return;
-                        }
-                        
+                        if (error) { reject(error); return; }
+                        if (!committed) { reject(new Error('Transaction not committed')); return; }
                         const data = snapshot.val();
-                        console.log('✅ Transaction committed! Data:', data);
-                        
                         resolve({
                             used: data?.used || 1,
                             max_uses: data?.max_uses || promoCodes[code]?.max_uses || 100
                         });
                     });
                 });
-                
             } catch (error) {
                 console.error('❌ Error updating promo usage:', error);
                 return updatePromoUsageInLocal(code);
             }
         }
 
-        // 🔹 LocalStorage fallback
+        // ================================================================
+        // 💾 LOCAL STORAGE FALLBACK
+        // ================================================================
         function getPromoUsageFromLocal(code) {
             const allData = localStorage.getItem('promo_usage_data');
             let usageData = allData ? JSON.parse(allData) : {};
-            
             if (!usageData[code]) {
                 usageData[code] = {
                     used: 0,
@@ -506,33 +666,57 @@
                 };
                 localStorage.setItem('promo_usage_data', JSON.stringify(usageData));
             }
-            
             return usageData[code];
         }
 
         function updatePromoUsageInLocal(code) {
             const allData = localStorage.getItem('promo_usage_data');
             let usageData = allData ? JSON.parse(allData) : {};
-            
             if (!usageData[code]) {
                 usageData[code] = {
                     used: 0,
                     max_uses: promoCodes[code]?.max_uses || 100
                 };
             }
-            
             usageData[code].used += 1;
             localStorage.setItem('promo_usage_data', JSON.stringify(usageData));
             return usageData[code];
         }
 
         // ================================================================
-        // 🎯 MAIN LOGIC
+        // 🎯 DOM REFS
         // ================================================================
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const promoCodeDisplay = document.getElementById('promoCodeDisplay');
+        const promoValueDisplay = document.getElementById('promoValueDisplay');
+        const promoExpiryDisplay = document.getElementById('promoExpiryDisplay');
+        const usesCount = document.getElementById('usesCount');
+        const maxUsesCount = document.getElementById('maxUsesCount');
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        const progressEl = document.getElementById('scratchProgress');
+        const card = document.getElementById('scratchCard');
+        const descDefault = document.getElementById('descDefault');
+        const descSuccess = document.getElementById('descSuccess');
+        const successText = document.getElementById('successText');
+        const successSub = document.getElementById('successSub');
+        const copyBtn = document.getElementById('copyBtn');
 
+        let selectedCode = null;
+        let promo = null;
+        let isDrawing = false;
+        let isRevealed = false;
+        let isUpdating = false;
+        let isExpired = false;
+        const RADIUS = 28;
+        const REVEAL_THRESHOLD = 0.50;
+
+        // ================================================================
+        // 🎯 LOAD PROMO
+        // ================================================================
         async function loadPromoCode() {
             loadingOverlay.style.display = 'flex';
-            
+
             let code = localStorage.getItem('myPromoCode');
             if (!code || !promoCodes[code]) {
                 const codes = Object.keys(promoCodes);
@@ -550,17 +734,17 @@
                     }
                 }
             }
-            
+
             selectedCode = code;
             promo = promoCodes[selectedCode];
-            
+
             if (!promo) {
                 const codes = Object.keys(promoCodes);
                 selectedCode = codes[0];
                 promo = promoCodes[selectedCode];
                 localStorage.setItem('myPromoCode', selectedCode);
             }
-            
+
             try {
                 const usage = await getPromoUsageFromRTDB(selectedCode);
                 displayPromoInfo(usage);
@@ -568,42 +752,62 @@
                 const usage = getPromoUsageFromLocal(selectedCode);
                 displayPromoInfo(usage);
             }
-            
-            // ✅ Check if already revealed
+
+            // Check if already revealed
             if (getRevealedStatus(selectedCode)) {
                 isRevealed = true;
                 canvas.style.display = 'none';
                 progressEl.classList.add('hidden');
+                showSuccessState();
             }
-            
+
             loadingOverlay.style.display = 'none';
         }
 
+        // ================================================================
+        // 📋 DISPLAY PROMO INFO
+        // ================================================================
         function displayPromoInfo(usage) {
+            const used = usage.used || 0;
+            const maxUses = usage.max_uses || promo.max_uses || 100;
+
             promoCodeDisplay.textContent = selectedCode;
             promoValueDisplay.innerHTML = `<i class="fas fa-gift"></i> ${promo.label}`;
-            
+
             if (promo.expiry) {
                 promoExpiryDisplay.innerHTML = `<i class="far fa-calendar-alt"></i> Expires: ${promo.expiry}`;
             } else {
                 promoExpiryDisplay.innerHTML = `<i class="far fa-calendar-alt"></i> No expiry`;
             }
-            
-            usesCount.textContent = usage.used || 0;
-            maxUsesCount.textContent = usage.max_uses || promo.max_uses || '∞';
-            
-            if ((usage.used || 0) >= (usage.max_uses || promo.max_uses || 100)) {
+
+            usesCount.textContent = used;
+            maxUsesCount.textContent = maxUses;
+
+            // ✅ Check expired
+            const expiryDate = promo.expiry ? new Date(promo.expiry) : null;
+            const today = new Date();
+
+            if (expiryDate && expiryDate < today) {
+                isExpired = true;
                 promoCodeDisplay.textContent = '❌ EXPIRED';
-                promoValueDisplay.innerHTML = '<i class="fas fa-times-circle"></i> No more uses left';
+                promoCodeDisplay.classList.add('expired');
+                promoValueDisplay.innerHTML = '<i class="fas fa-times-circle" style="color:#ff4444;"></i> Promo expired';
+            } else if (used >= maxUses) {
+                isExpired = true;
+                promoCodeDisplay.textContent = '❌ EXPIRED';
+                promoCodeDisplay.classList.add('expired');
+                promoValueDisplay.innerHTML = '<i class="fas fa-times-circle" style="color:#ff4444;"></i> No more uses left';
+            } else {
+                isExpired = false;
+                promoCodeDisplay.classList.remove('expired');
             }
         }
 
         // ================================================================
-        // 🖌️ CANVAS SCRATCH ENGINE
+        // 🖌️ CANVAS ENGINE
         // ================================================================
-
         function resizeCanvas() {
-            const rect = canvas.parentElement.getBoundingClientRect();
+            const rect = card.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
@@ -654,30 +858,23 @@
             const cornerColor = 'rgba(0, 240, 255, 0.15)';
             ctx.strokeStyle = cornerColor;
             ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(10, 10 + cornerLen);
-            ctx.lineTo(10, 10);
-            ctx.lineTo(10 + cornerLen, 10);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(w - 10 - cornerLen, 10);
-            ctx.lineTo(w - 10, 10);
-            ctx.lineTo(w - 10, 10 + cornerLen);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(10, h - 10 - cornerLen);
-            ctx.lineTo(10, h - 10);
-            ctx.lineTo(10 + cornerLen, h - 10);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(w - 10 - cornerLen, h - 10);
-            ctx.lineTo(w - 10, h - 10);
-            ctx.lineTo(w - 10, h - 10 - cornerLen);
-            ctx.stroke();
+            const corners = [
+                [10, 10, 1, 1],
+                [w - 10, 10, -1, 1],
+                [10, h - 10, 1, -1],
+                [w - 10, h - 10, -1, -1]
+            ];
+            corners.forEach(([x, y, dx, dy]) => {
+                ctx.beginPath();
+                ctx.moveTo(x + dx * cornerLen, y);
+                ctx.lineTo(x, y);
+                ctx.lineTo(x, y + dy * cornerLen);
+                ctx.stroke();
+            });
         }
 
         function scratch(x, y) {
-            if (isRevealed || isUpdating) return;
+            if (isRevealed || isUpdating || isExpired) return;
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.save();
@@ -709,30 +906,35 @@
             }
         }
 
+        // ================================================================
+        // 🎉 FULLY REVEAL
+        // ================================================================
         async function fullyReveal() {
-            if (isRevealed || isUpdating) return;
+            if (isRevealed || isUpdating || isExpired) return;
             isUpdating = true;
             isRevealed = true;
-            
+
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.clearRect(0, 0, w, h);
             progressEl.classList.add('hidden');
-            
-            // ✅ Save reveal status and hide canvas
+
             canvas.style.display = 'none';
             setRevealedStatus(selectedCode, true);
-            
+
             try {
                 const updatedUsage = await updatePromoUsageInRTDB(selectedCode);
                 displayPromoInfo(updatedUsage);
-                console.log('✅ Realtime DB updated: ' + selectedCode + ' - used: ' + updatedUsage.used);
             } catch (error) {
-                console.error('❌ Realtime DB update failed, using localStorage:', error);
                 const updatedUsage = updatePromoUsageInLocal(selectedCode);
                 displayPromoInfo(updatedUsage);
             }
-            
+
+            showSuccessState();
+
+            card.style.transform = 'scale(1.02)';
+            setTimeout(() => { card.style.transform = ''; }, 300);
+
             if (typeof gtag === 'function') {
                 gtag('event', 'scratch_reveal', {
                     'event_category': 'Promo',
@@ -740,18 +942,65 @@
                     'value': promo.value
                 });
             }
-            
-            const card = document.getElementById('scratchCard');
-            card.style.transform = 'scale(1.02)';
-            setTimeout(() => { card.style.transform = ''; }, 300);
-            
+
             isUpdating = false;
         }
 
         // ================================================================
+        // 🎊 SHOW SUCCESS STATE
+        // ================================================================
+        function showSuccessState() {
+            descDefault.style.display = 'none';
+            descSuccess.classList.add('show');
+
+            if (isExpired) {
+                // ❌ Expired - Hide copy button
+                successText.textContent = '❌ Promo Code သက်တမ်းကုန်သွားပါပြီ';
+                successText.className = 'success-text expired';
+                successSub.innerHTML = '<i class="fas fa-times-circle"></i> ကျေးဇူးပြု၍ အခြားကတ်တစ်ခု စမ်းကြည့်ပါ';
+                copyBtn.classList.add('hidden');
+            } else {
+                // ✅ Valid - Show copy button
+                successText.textContent = '🎉 Promo Code ရပါပြီ!';
+                successText.className = 'success-text';
+                successSub.innerHTML = '<i class="fas fa-copy"></i> ကူးယူအသုံးပြုပါ';
+                copyBtn.classList.remove('hidden');
+            }
+        }
+
+        // ================================================================
+        // 📋 COPY BUTTON
+        // ================================================================
+        copyBtn.addEventListener('click', async () => {
+            if (isExpired) return;
+            const code = selectedCode;
+            try {
+                await navigator.clipboard.writeText(code);
+                copyBtn.innerHTML = '<i class="fas fa-check-circle"></i> ကူးပြီးပါပြီ!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> ကူယူမည်';
+                    copyBtn.classList.remove('copied');
+                }, 2500);
+            } catch (err) {
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                textArea.remove();
+                copyBtn.innerHTML = '<i class="fas fa-check-circle"></i> ကူးပြီးပါပြီ!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> ကူယူမည်';
+                    copyBtn.classList.remove('copied');
+                }, 2500);
+            }
+        });
+
+        // ================================================================
         // 🖱️ EVENT LISTENERS
         // ================================================================
-
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -761,7 +1010,7 @@
 
         function onStart(e) {
             e.preventDefault();
-            if (isRevealed || isUpdating) return;
+            if (isRevealed || isUpdating || isExpired) return;
             isDrawing = true;
             const pos = getPos(e);
             scratch(pos.x, pos.y);
@@ -769,7 +1018,7 @@
 
         function onMove(e) {
             e.preventDefault();
-            if (!isDrawing || isRevealed || isUpdating) return;
+            if (!isDrawing || isRevealed || isUpdating || isExpired) return;
             const pos = getPos(e);
             scratch(pos.x, pos.y);
         }
@@ -798,9 +1047,8 @@
         });
 
         // ================================================================
-        // 🚀 INITIALIZE
+        // 🚀 INIT
         // ================================================================
-
         async function init() {
             await loadPromoCode();
             resizeCanvas();
