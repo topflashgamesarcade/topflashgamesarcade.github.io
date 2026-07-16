@@ -517,7 +517,7 @@
         // ================================================================
         let selectedCode = null;
         let promo = null;
-        let promoCodes = {}; // will be fetched from Firebase
+        let promoCodes = {};
         let isDrawing = false;
         let isRevealed = false;
         let isUpdating = false;
@@ -531,19 +531,14 @@
         // 📡 REALTIME DATABASE FUNCTIONS
         // ================================================================
 
-        /**
-         * Fetch all promo codes from Firebase
-         */
         async function fetchPromoCodesFromFirebase() {
             try {
                 const snapshot = await db.ref('promoCodes').once('value');
                 const data = snapshot.val();
                 if (data && typeof data === 'object') {
-                    // convert to our expected format: each node should have type, value, label, expiry, max_uses, used
-                    // But we also need to ensure that missing fields have defaults.
                     for (const code in data) {
                         const item = data[code];
-                        if (!item.label) item.label = code; // fallback
+                        if (!item.label) item.label = code;
                         if (!item.type) item.type = 'percent';
                         if (!item.value) item.value = 0;
                         if (!item.expiry) item.expiry = '';
@@ -649,12 +644,11 @@
             if (!p || !p.expiry) return false;
             const expiryDate = new Date(p.expiry);
             const today = new Date();
-            // today is considered expired (<=)
             return expiryDate <= today;
         }
 
         // ================================================================
-        // 🎯 MAIN LOGIC
+        // 🎯 MAIN LOGIC (UPDATED with clear rejection reasons)
         // ================================================================
 
         async function loadPromoCode() {
@@ -664,8 +658,8 @@
             // 1. Fetch codes from Firebase
             promoCodes = await fetchPromoCodesFromFirebase();
             const codeKeys = Object.keys(promoCodes);
+
             if (codeKeys.length === 0) {
-                // No codes at all
                 selectedCode = null;
                 promo = null;
                 isRevealed = false;
@@ -682,53 +676,68 @@
             let storedCode = localStorage.getItem('myPromoCode');
             let usage = null;
             let foundValid = false;
+            let rejectReason = ''; // 'expired', 'full', 'removed', ''
 
-            // Helper to check if a code is valid (not expired, not full)
-            async function checkCodeValidity(code) {
-                if (!code || !promoCodes[code]) return null;
-                const p = promoCodes[code];
-                // Expiry check
-                if (p.expiry) {
-                    const exp = new Date(p.expiry);
-                    if (exp <= new Date()) return null;
-                }
-                // Usage check
-                let u;
-                try {
-                    u = await getPromoUsageFromRTDB(code);
-                } catch (e) {
-                    u = getPromoUsageFromLocal(code);
-                }
-                if (!u) return null;
-                const used = u.used || 0;
-                const max = u.max_uses || p.max_uses || 100;
-                if (used >= max) return null;
-                return u;
-            }
-
-            // 2. Check stored code first
+            // 2. Check stored code and determine why it's invalid (if it is)
             if (storedCode) {
-                usage = await checkCodeValidity(storedCode);
-                if (usage) {
-                    foundValid = true;
-                    selectedCode = storedCode;
+                const p = promoCodes[storedCode];
+                if (!p) {
+                    rejectReason = 'removed';
+                } else {
+                    // Check expiry
+                    if (p.expiry && new Date(p.expiry) <= new Date()) {
+                        rejectReason = 'expired';
+                    } else {
+                        // Check usage
+                        let u;
+                        try {
+                            u = await getPromoUsageFromRTDB(storedCode);
+                        } catch (e) {
+                            u = getPromoUsageFromLocal(storedCode);
+                        }
+                        if (u) {
+                            const used = u.used || 0;
+                            const max = u.max_uses || p.max_uses || 100;
+                            if (used >= max) {
+                                rejectReason = 'full';
+                            } else {
+                                usage = u;
+                                foundValid = true;
+                                selectedCode = storedCode;
+                            }
+                        } else {
+                            rejectReason = 'removed';
+                        }
+                    }
                 }
             }
 
-            // 3. If not valid, find another valid code
+            // 3. If stored code is invalid, find a new one
             if (!foundValid) {
-                // Shuffle to randomize
                 const shuffled = codeKeys.sort(() => Math.random() - 0.5);
                 for (const c of shuffled) {
                     if (c === storedCode) continue;
-                    const u = await checkCodeValidity(c);
+                    const p = promoCodes[c];
+                    if (!p) continue;
+                    // Check expiry
+                    if (p.expiry && new Date(p.expiry) <= new Date()) continue;
+                    // Check usage
+                    let u;
+                    try {
+                        u = await getPromoUsageFromRTDB(c);
+                    } catch (e) {
+                        u = getPromoUsageFromLocal(c);
+                    }
                     if (u) {
-                        selectedCode = c;
-                        usage = u;
-                        foundValid = true;
-                        // Store new code in localStorage
-                        localStorage.setItem('myPromoCode', selectedCode);
-                        break;
+                        const used = u.used || 0;
+                        const max = u.max_uses || p.max_uses || 100;
+                        if (used < max) {
+                            selectedCode = c;
+                            usage = u;
+                            foundValid = true;
+                            localStorage.setItem('myPromoCode', selectedCode);
+                            break;
+                        }
                     }
                 }
             }
@@ -750,7 +759,22 @@
 
             // 5. Set promo and check reveal status
             promo = promoCodes[selectedCode];
-            // Check if this code was already revealed
+
+            // 🟢 Show a clear message if the code was replaced due to expiry/full
+            if (rejectReason === 'expired') {
+                statusMessage.innerHTML =
+                    '⏰ Your previous promo code expired. A new code has been assigned to you!';
+            } else if (rejectReason === 'full') {
+                statusMessage.innerHTML =
+                    '🚫 Your previous promo code was fully used. A new code has been assigned to you!';
+            } else if (rejectReason === 'removed') {
+                statusMessage.innerHTML =
+                    '🔄 Your previous promo code is no longer available. Here is a new one!';
+            } else {
+                statusMessage.innerHTML =
+                    '<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.';
+            }
+
             isRevealed = getRevealedStatus(selectedCode);
             if (isRevealed) {
                 canvas.style.display = 'none';
@@ -760,25 +784,9 @@
                 progressEl.classList.remove('hidden');
             }
 
-            // 6. Display
+            // 6. Display the info
             displayPromoInfo(usage, false);
             loadingOverlay.style.display = 'none';
-        }
-
-        /**
-         * Pick a random promo code that is NOT expired.
-         * Returns null if all codes are expired.
-         */
-        function pickValidCode() {
-            const codes = Object.keys(promoCodes);
-            // Shuffle and find first non-expired
-            const shuffled = [...codes].sort(() => Math.random() - 0.5);
-            for (const c of shuffled) {
-                if (!isCodeExpired(c)) {
-                    return c;
-                }
-            }
-            return null; // all expired
         }
 
         // ================================================================
@@ -796,13 +804,11 @@
             usesCount.textContent = used;
             maxUsesCount.textContent = maxU;
 
-            // -- Compute states --
             const expiryDate = promo.expiry ? new Date(promo.expiry) : null;
             const today = new Date();
             isDateExpired = expiryDate ? expiryDate <= today : false;
             isUsageExhausted = used >= maxU;
 
-            // Reset classes
             promoCodeDisplay.classList.remove('expired-status', 'full-status', 'revealed-expired');
 
             let codeDisplay = '';
@@ -811,7 +817,6 @@
             let showCopy = false;
             let copyDisabled = false;
 
-            // --- Priority: if user just claimed, show code (even if expired) ---
             if (claimedByUser) {
                 codeDisplay = selectedCode;
                 valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
@@ -823,9 +828,7 @@
                     statusHtml =
                         `<i class="fas fa-exclamation-triangle" style="color:#fbbf24;"></i> This promo has expired, but you already revealed it.`;
                 }
-            }
-            // --- Expired (and not just claimed) ---
-            else if (isDateExpired) {
+            } else if (isDateExpired) {
                 codeDisplay = '⛔ EXPIRED';
                 valueDisplay = '<i class="fas fa-exclamation-triangle"></i> This promo has expired.';
                 statusHtml =
@@ -833,9 +836,7 @@
                 promoCodeDisplay.classList.add('expired-status');
                 showCopy = false;
                 copyDisabled = true;
-            }
-            // --- Fully used (and not just claimed) ---
-            else if (isUsageExhausted) {
+            } else if (isUsageExhausted) {
                 codeDisplay = '⛔ FULLY USED';
                 valueDisplay = '<i class="fas fa-users-slash"></i> All slots are taken.';
                 statusHtml =
@@ -843,9 +844,7 @@
                 promoCodeDisplay.classList.add('full-status');
                 showCopy = false;
                 copyDisabled = true;
-            }
-            // --- Valid, not expired, not exhausted ---
-            else {
+            } else {
                 if (isRevealed) {
                     codeDisplay = selectedCode;
                     valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
@@ -857,18 +856,23 @@
                     codeDisplay = '???';
                     valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
                     statusHtml =
-                        `<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.<br><span style="font-size:0.65rem; color:var(--text-muted);">Single-use promo code.</span>`;
+                        `<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.`;
                     showCopy = false;
                     copyDisabled = true;
                 }
             }
 
-            // Apply
             promoCodeDisplay.textContent = codeDisplay;
             promoValueDisplay.innerHTML = valueDisplay;
-            statusMessage.innerHTML = statusHtml;
+            // Only update status message if it's not already showing a specific info (like replaced code)
+            // But we will let the statusMessage be overwritten here if it's a standard state.
+            // Actually, we want to keep the "replaced" message if it was set, but status messages
+            // like "Expired" or "Full" are more important.
+            // We'll update it to keep the specific message.
+            if (claimedByUser || isDateExpired || isUsageExhausted || isRevealed) {
+                statusMessage.innerHTML = statusHtml;
+            }
 
-            // Copy button
             if (showCopy) {
                 copyBtn.style.display = 'inline-flex';
                 copyBtn.disabled = false;
@@ -1009,14 +1013,12 @@
         async function fullyReveal() {
             if (isRevealed || isUpdating) return;
 
-            // Double-check expiry
             if (isDateExpired) {
                 statusMessage.innerHTML =
                     `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo has expired.`;
                 return;
             }
 
-            // Fetch latest usage from DB to be safe
             let latestUsage;
             try {
                 latestUsage = await getPromoUsageFromRTDB(selectedCode);
@@ -1035,13 +1037,11 @@
 
             isUpdating = true;
 
-            // Clear canvas (visual feedback)
             const w = canvas.width / (window.devicePixelRatio || 1);
             const h = canvas.height / (window.devicePixelRatio || 1);
             ctx.clearRect(0, 0, w, h);
             progressEl.classList.add('hidden');
 
-            // Update usage in Firebase (with fallback)
             let updatedUsage;
             try {
                 updatedUsage = await updatePromoUsageInRTDB(selectedCode);
@@ -1051,16 +1051,13 @@
                 updatedUsage = updatePromoUsageInLocal(selectedCode);
             }
 
-            // Mark as revealed
             setRevealedStatus(selectedCode, true);
             isRevealed = true;
             canvas.style.display = 'none';
             justClaimed = true;
 
-            // Show the code
             displayPromoInfo(updatedUsage, true);
 
-            // Analytics
             if (typeof gtag === 'function') {
                 gtag('event', 'scratch_reveal', {
                     'event_category': 'Promo',
@@ -1069,7 +1066,6 @@
                 });
             }
 
-            // Pop animation
             cardEl.style.transform = 'scale(1.02)';
             setTimeout(() => { cardEl.style.transform = ''; }, 300);
 
