@@ -8,19 +8,15 @@
     <meta name="description" content="Download 300+ classic Flash games for free. Play nostalgic retro games offline on Windows PC. Curated by Top Flash Games Arcade.">
     <meta name="keywords" content="Flash Games, Arcade, Download SWF, Retro Games, Offline Games, Top Flash Games Arcade">
 
-    <!-- ============================================================
-    🟢 GOOGLE ANALYTICS (GA4) TRACKING CODE - ဒီနေရာမှာ ထည့်ထားပါတယ်
-    ============================================================ -->
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1N5H0EXPRC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1N5H0EXPRC"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
 
-  gtag('config', 'G-1N5H0EXPRC');
-</script>
-    <!-- ============================================================ -->
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-1N5H0EXPRC');
+    </script>
 
     <!-- Google Fonts + FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,7 +26,7 @@
 
     <style>
         /* =========================================================
-                   1. RESET & VARIABLES (Updated to match CyberVerse Theme)
+                   1. RESET & VARIABLES (CyberVerse Theme)
                    ========================================================= */
         * {
             margin: 0;
@@ -46,13 +42,12 @@
             --border-subtle: rgba(255, 255, 255, 0.05);
             --border-glow: rgba(157, 0, 255, 0.4);
 
-            /* CyberVerse Theme Colors */
             --primary-neon: #00f0ff;
             --secondary-neon: #ff007f;
             --accent-purple: #9d00ff;
             --accent-cyan: #00f0ff;
             --accent-pink: #ff007f;
-            
+
             --accent-gradient: linear-gradient(135deg, var(--secondary-neon), var(--primary-neon));
 
             --text-primary: #f1f5f9;
@@ -170,7 +165,6 @@
             text-transform: uppercase;
         }
 
-        /* Breadcrumb */
         .breadcrumb {
             padding: 12px 0 8px;
             font-size: 0.75rem;
@@ -289,7 +283,288 @@
         }
 
         /* =========================================================
-                   4. GAME GRID — 8 COLUMNS (Compact)
+                   4. SCRATCH CARD — REAL SCRATCH (Canvas-based)
+                   ========================================================= */
+        .scratch-section {
+            margin: 32px 0 20px;
+            padding: 24px 20px 28px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .scratch-section::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            height: 2px;
+            background: var(--accent-gradient);
+            opacity: 0.6;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .scratch-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-neon), transparent);
+            opacity: 0.1;
+        }
+
+        .scratch-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .scratch-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scratch-header h3 i {
+            -webkit-text-fill-color: initial;
+            color: var(--primary-neon);
+            font-size: 1.2rem;
+        }
+
+        .scratch-badge {
+            background: rgba(255, 0, 127, 0.12);
+            border: 1px solid rgba(255, 0, 127, 0.2);
+            padding: 3px 14px;
+            border-radius: 40px;
+            font-size: 0.55rem;
+            font-weight: 600;
+            color: var(--secondary-neon);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .scratch-card-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* ----- 刮卡容器 ----- */
+        .scratch-card {
+            position: relative;
+            width: 340px;
+            height: 140px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.06), inset 0 0 30px rgba(0, 240, 255, 0.02);
+            border: 2px solid var(--border-subtle);
+            transition: var(--transition);
+            flex-shrink: 0;
+            background: var(--bg-card);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        .scratch-card:hover {
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.12), inset 0 0 40px rgba(0, 240, 255, 0.03);
+            transform: scale(1.01);
+        }
+
+        .scratch-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: var(--radius-md);
+            padding: 2px;
+            background: var(--accent-gradient);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.25;
+            transition: var(--transition);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .scratch-card:hover::before {
+            opacity: 0.6;
+        }
+
+        /* ----- 底层：促销码结果 ----- */
+        .promo-result {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            padding: 16px;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .promo-result .promo-label {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+
+        .promo-result .promo-code {
+            font-size: 1.9rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            text-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+        }
+
+        .promo-result .promo-value {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .promo-result .promo-value i {
+            color: var(--secondary-neon);
+            margin-right: 4px;
+        }
+
+        /* ----- Canvas 覆盖层 (刮擦层) ----- */
+        #scratchCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            border-radius: var(--radius-md);
+            touch-action: none;
+            cursor: pointer;
+            display: block;
+        }
+
+        /* ----- 刮开百分比指示器 (小彩蛋) ----- */
+        .scratch-progress {
+            position: absolute;
+            bottom: 8px;
+            right: 10px;
+            z-index: 4;
+            font-size: 0.55rem;
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .scratch-progress.hidden {
+            opacity: 0;
+        }
+
+        /* ----- 刮卡描述文字 ----- */
+        .scratch-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            max-width: 260px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .scratch-desc i {
+            color: var(--primary-neon);
+            margin: 0 2px;
+        }
+
+        /* ----- 响应式 ----- */
+        @media (max-width: 700px) {
+            .scratch-section {
+                padding: 18px 14px 22px;
+                margin: 24px 0 16px;
+            }
+            .scratch-header h3 {
+                font-size: 0.95rem;
+            }
+            .scratch-card {
+                width: 280px;
+                height: 120px;
+            }
+            .promo-result .promo-code {
+                font-size: 1.5rem;
+            }
+            .scratch-badge {
+                font-size: 0.45rem;
+                padding: 2px 10px;
+            }
+            .scratch-desc {
+                font-size: 0.65rem;
+                max-width: 200px;
+            }
+            .scratch-progress {
+                font-size: 0.45rem;
+                bottom: 4px;
+                right: 6px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .scratch-card {
+                width: 230px;
+                height: 105px;
+            }
+            .promo-result .promo-code {
+                font-size: 1.2rem;
+            }
+            .promo-result .promo-label {
+                font-size: 0.45rem;
+            }
+            .promo-result .promo-value {
+                font-size: 0.6rem;
+            }
+            .scratch-desc {
+                font-size: 0.6rem;
+                max-width: 170px;
+            }
+        }
+
+        /* =========================================================
+                   5. GAME GRID — 8 COLUMNS (Compact)
                    ========================================================= */
         .games-section {
             margin-top: 28px;
@@ -302,9 +577,6 @@
             gap: 14px;
         }
 
-        /* =========================================================
-                   5. GAME CARD (Download Only)
-                   ========================================================= */
         .game-card {
             background: var(--bg-card);
             border-radius: var(--radius-md);
@@ -446,7 +718,6 @@
             cursor: default;
         }
 
-        /* ---- Download Button (Classic) ---- */
         .btn-download {
             background: var(--accent-gradient);
             border: none;
@@ -502,8 +773,25 @@
             left: 100%;
         }
 
+        .no-result {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .no-result i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--primary-neon);
+            opacity: 0.4;
+        }
+
         /* =========================================================
-                   6. FOOTER (Updated to match Index)
+                   6. FOOTER
                    ========================================================= */
         .footer {
             text-align: left;
@@ -539,79 +827,164 @@
             width: 16px;
         }
 
-        .no-result {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        .no-result i {
-            font-size: 2rem;
-            display: block;
-            margin-bottom: 10px;
-            color: var(--primary-neon);
-            opacity: 0.4;
-        }
-
         /* =========================================================
                    7. RESPONSIVE
                    ========================================================= */
         @media (max-width: 1280px) {
-            .game-grid { grid-template-columns: repeat(8, 1fr); gap: 12px; }
+            .game-grid {
+                grid-template-columns: repeat(8, 1fr);
+                gap: 12px;
+            }
         }
         @media (max-width: 1200px) {
-            .game-grid { grid-template-columns: repeat(7, 1fr); gap: 12px; }
+            .game-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 12px;
+            }
         }
         @media (max-width: 1024px) {
-            .game-grid { grid-template-columns: repeat(6, 1fr); gap: 12px; }
-            .hero h1 { font-size: 2.2rem; }
+            .game-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 12px;
+            }
+            .hero h1 {
+                font-size: 2.2rem;
+            }
         }
         @media (max-width: 900px) {
-            .game-grid { grid-template-columns: repeat(5, 1fr); gap: 12px; }
-            .game-info { padding: 8px 10px 12px; }
-            .game-name { font-size: 0.7rem; }
-            .btn-download { font-size: 0.65rem; padding: 8px 0; }
-            .game-thumb .fallback .emoji { font-size: 2.2rem; }
+            .game-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 12px;
+            }
+            .game-info {
+                padding: 8px 10px 12px;
+            }
+            .game-name {
+                font-size: 0.7rem;
+            }
+            .btn-download {
+                font-size: 0.65rem;
+                padding: 8px 0;
+            }
+            .game-thumb .fallback .emoji {
+                font-size: 2.2rem;
+            }
         }
         @media (max-width: 700px) {
-            .game-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
-            .hero h1 { font-size: 1.8rem; }
-            .hero p { font-size: 0.85rem; }
-            .container { padding: 0 14px; }
-            .nav-home span { display: none; }
-            .nav-home { padding: 6px 10px; }
-            .logo { font-size: 1rem; }
-            .nav-badge { font-size: 0.5rem; padding: 3px 10px; }
-            .game-info { padding: 6px 8px 10px; }
-            .game-name { font-size: 0.65rem; }
-            .game-meta .file-name { max-width: 60px; font-size: 0.45rem; }
-            .btn-download { font-size: 0.6rem; padding: 7px 0; border-radius: 4px; }
-            .game-thumb .type-badge { font-size: 0.4rem; padding: 1px 8px; bottom: 5px; left: 5px; }
-            .game-thumb .fallback .emoji { font-size: 1.8rem; }
-            .game-thumb .fallback .letter { font-size: 0.9rem; }
-            .footer .footer-flex { flex-direction: column; align-items: center; text-align: center; }
-            .footer .footer-flex .right { text-align: center; }
+            .game-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .hero p {
+                font-size: 0.85rem;
+            }
+            .container {
+                padding: 0 14px;
+            }
+            .nav-home span {
+                display: none;
+            }
+            .nav-home {
+                padding: 6px 10px;
+            }
+            .logo {
+                font-size: 1rem;
+            }
+            .nav-badge {
+                font-size: 0.5rem;
+                padding: 3px 10px;
+            }
+            .game-info {
+                padding: 6px 8px 10px;
+            }
+            .game-name {
+                font-size: 0.65rem;
+            }
+            .game-meta .file-name {
+                max-width: 60px;
+                font-size: 0.45rem;
+            }
+            .btn-download {
+                font-size: 0.6rem;
+                padding: 7px 0;
+                border-radius: 4px;
+            }
+            .game-thumb .type-badge {
+                font-size: 0.4rem;
+                padding: 1px 8px;
+                bottom: 5px;
+                left: 5px;
+            }
+            .game-thumb .fallback .emoji {
+                font-size: 1.8rem;
+            }
+            .game-thumb .fallback .letter {
+                font-size: 0.9rem;
+            }
+            .footer .footer-flex {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .footer .footer-flex .right {
+                text-align: center;
+            }
         }
         @media (max-width: 550px) {
-            .game-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-            .hero h1 { font-size: 1.5rem; }
-            .hero-stats { gap: 12px; font-size: 0.65rem; }
-            .search-wrapper input { padding: 10px 14px 10px 40px; font-size: 0.8rem; }
+            .game-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+            .hero-stats {
+                gap: 12px;
+                font-size: 0.65rem;
+            }
+            .search-wrapper input {
+                padding: 10px 14px 10px 40px;
+                font-size: 0.8rem;
+            }
         }
         @media (max-width: 420px) {
-            .game-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-            .hero h1 { font-size: 1.3rem; }
-            .hero p { font-size: 0.75rem; }
-            .game-info { padding: 4px 6px 8px; }
-            .game-name { font-size: 0.6rem; }
-            .btn-download { font-size: 0.5rem; padding: 6px 0; }
-            .game-meta .file-name { max-width: 45px; font-size: 0.4rem; }
-            .game-thumb .fallback .emoji { font-size: 1.4rem; }
-            .game-thumb .fallback .letter { font-size: 0.7rem; }
-            .game-thumb .type-badge { font-size: 0.35rem; padding: 1px 6px; }
+            .game-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .hero h1 {
+                font-size: 1.3rem;
+            }
+            .hero p {
+                font-size: 0.75rem;
+            }
+            .game-info {
+                padding: 4px 6px 8px;
+            }
+            .game-name {
+                font-size: 0.6rem;
+            }
+            .btn-download {
+                font-size: 0.5rem;
+                padding: 6px 0;
+            }
+            .game-meta .file-name {
+                max-width: 45px;
+                font-size: 0.4rem;
+            }
+            .game-thumb .fallback .emoji {
+                font-size: 1.4rem;
+            }
+            .game-thumb .fallback .letter {
+                font-size: 0.7rem;
+            }
+            .game-thumb .type-badge {
+                font-size: 0.35rem;
+                padding: 1px 6px;
+            }
         }
     </style>
 </head>
@@ -666,6 +1039,43 @@
         </section>
 
         <!-- ============================================================
+        SCRATCH CARD — REAL SCRATCH (Canvas)
+        ============================================================ -->
+        <section class="scratch-section" id="scratchSection">
+            <div class="scratch-header">
+                <h3>
+                    <i class="fas fa-ticket-alt"></i>
+                    Lucky Scratch Card
+                </h3>
+                <span class="scratch-badge"><i class="fas fa-bolt"></i> ခဲခြစ်ပြီး ကံစမ်းပါ</span>
+            </div>
+
+            <div class="scratch-card-wrapper">
+                <div class="scratch-card" id="scratchCard">
+                    <!-- 底层：促销码结果 -->
+                    <div class="promo-result" id="promoResult">
+                        <span class="promo-label"><i class="fas fa-gift"></i> Your Promo Code</span>
+                        <span class="promo-code" id="promoCodeDisplay">———</span>
+                        <span class="promo-value" id="promoValueDisplay"><i class="fas fa-percent"></i> Loading...</span>
+                    </div>
+
+                    <!-- Canvas 刮擦层 -->
+                    <canvas id="scratchCanvas"></canvas>
+
+                    <!-- 刮开进度 (小彩蛋) -->
+                    <span class="scratch-progress" id="scratchProgress">0%</span>
+                </div>
+
+                <div class="scratch-desc">
+                    <i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i>
+                    လက်ချောင်းနဲ့ ပွတ်ဆွဲပြီး ခဲခြစ်လိုက်ပါ။
+                    <br>
+                    <span style="font-size:0.65rem; color:var(--text-muted);">တစ်ကြိမ်သာ အသုံးပြုနိုင်သော ပရိုမိုကုဒ်</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================
         GAME GRID
         ============================================================ -->
         <section class="games-section">
@@ -673,7 +1083,7 @@
         </section>
 
         <!-- ============================================================
-        FOOTER (Updated)
+        FOOTER
         ============================================================ -->
         <footer class="footer">
             <div class="footer-flex">
@@ -696,11 +1106,11 @@
     </div>
 
     <!-- ============================================================
-    SCRIPT (Game Data + Render Engine + GA Download Tracking)
+    SCRIPT (Game Data + Render Engine + Scratch Card Logic)
     ============================================================ -->
     <script>
         // ================================================================
-        // 🎮 GAME LIST (Full list)
+        // 🎮 GAME LIST (Full list — trimmed for brevity, full included)
         // ================================================================
         const games = [
     {
@@ -1826,6 +2236,30 @@
         "emoji": "🎮"
     },
     {
+        "name": "Elephantquest Public Secure 1.11",
+        "file": "https://archive.org/download/my_flash_games_arcade/ElephantQuest-Public_secure_1.11.swf",
+        "thumb": "",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Epic Battle Fantasy 2",
+        "file": "https://archive.org/download/my_flash_games_arcade/Epic Battle Fantasy 2.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Epic Battle Fantasy 2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Epic Battle Fantasy 4",
+        "file": "https://archive.org/download/my_flash_games_arcade/Epic Battle Fantasy 4.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Epic Battle Fantasy 4.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Epic Battle Fantasy 3 Secure",
+        "file": "https://archive.org/download/my_flash_games_arcade/Epic_Battle_Fantasy_3_secure.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Epic_Battle_Fantasy_3_secure.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Epic Battle Fantasy 5",
         "file": "https://archive.org/download/my_flash_games_arcade/Epic_Battle_Fantasy_5.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Epic_Battle_Fantasy_5.png",
@@ -2576,6 +3010,12 @@
         "emoji": "🎮"
     },
     {
+        "name": "Sonny2Kong",
+        "file": "https://archive.org/download/my_flash_games_arcade/Sonny2Kong.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/Sonny2Kong.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Squares2",
         "file": "https://archive.org/download/my_flash_games_arcade/Squares2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Squares2.png",
@@ -2618,6 +3058,12 @@
         "emoji": "🎮"
     },
     {
+        "name": "Sunnypatch3Kong",
+        "file": "https://archive.org/download/my_flash_games_arcade/SunnyPatch3Kong.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/SunnyPatch3Kong.png",
+        "emoji": "🎮"
+    },
+    {
         "name": "Super Mario Flash 3",
         "file": "https://archive.org/download/my_flash_games_arcade/SUPER MARIO FLASH 3.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/SUPER MARIO FLASH 3.png",
@@ -2633,6 +3079,12 @@
         "name": "Superbattlecity2",
         "file": "https://archive.org/download/my_flash_games_arcade/superbattlecity2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/superbattlecity2.png",
+        "emoji": "🎮"
+    },
+    {
+        "name": "Supermario63 D",
+        "file": "https://archive.org/download/my_flash_games_arcade/supermario63_d.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/supermario63_d.png",
         "emoji": "🎮"
     },
     {
@@ -2916,7 +3368,6 @@
                 const card = document.createElement('div');
                 card.className = 'game-card';
 
-                // ---- Thumbnail ----
                 const thumb = document.createElement('div');
                 thumb.className = 'game-thumb';
                 thumb.style.background = getFallbackColor(game.name);
@@ -2947,13 +3398,11 @@
                     thumb.appendChild(fallback);
                 }
 
-                // Badge
                 const badge = document.createElement('span');
                 badge.className = 'type-badge';
                 badge.textContent = 'SWF';
                 thumb.appendChild(badge);
 
-                // ---- Info ----
                 const info = document.createElement('div');
                 info.className = 'game-info';
 
@@ -2992,36 +3441,273 @@
         }
 
         // ================================================================
-        // 🟢 GOOGLE ANALYTICS DOWNLOAD TRACKING (Event Listener)
+        // 🟢 GOOGLE ANALYTICS DOWNLOAD TRACKING
         // ================================================================
-        // ဒီနေရာမှာ Dynamic ဖြစ်နေတဲ့ Download ခလုတ်တွေကို 
-        // Event Delegation နည်းလမ်းနဲ့ ခြေရာခံထားပါတယ်။
         document.getElementById('gameGrid').addEventListener('click', function(e) {
-            // နှိပ်လိုက်တဲ့ နေရာက .btn-download ဖြစ်မဖြစ် စစ်ပါ
             const btn = e.target.closest('.btn-download');
             if (btn) {
-                // သက်ဆိုင်ရာ Game Card ထဲက Game Name ကို ထုတ်ယူပါ
                 const card = btn.closest('.game-card');
                 if (card) {
                     const nameEl = card.querySelector('.game-name');
                     if (nameEl) {
                         const gameName = nameEl.textContent;
-                        
-                        // GA4 Event ပို့ပါ
                         if (typeof gtag === 'function') {
                             gtag('event', 'download', {
                                 'event_category': 'Flash Games',
                                 'event_label': gameName,
                                 'value': 1
                             });
-                            console.log('✅ GA Event Sent: Download - ' + gameName); // Browser Console မှာ စမ်းကြည့်လို့ရပါတယ်
-                        } else {
-                            console.warn('⚠️ gtag function not found. Make sure GA is loaded.');
+                            console.log('✅ GA Event Sent: Download - ' + gameName);
                         }
                     }
                 }
             }
         });
+
+        // ================================================================
+        // 🎟️ SCRATCH CARD — REAL SCRATCH WITH CANVAS
+        // ================================================================
+        const promoCodes = {
+            "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF" },
+            "VIP1000": { "type": "percent", "value": 100, "label": "100% FREE" },
+            "BETA100": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF" },
+            "GAMER25": { "type": "percent", "value": 25, "label": "25% OFF" },
+            "FLASH75": { "type": "percent", "value": 75, "label": "75% OFF" },
+            "ARCADE50": { "type": "percent", "value": 50, "label": "50% OFF" }
+        };
+
+        // 从 localStorage 获取或生成新的促销码
+        let selectedCode = localStorage.getItem('myPromoCode');
+        if (!selectedCode || !promoCodes[selectedCode]) {
+            const codes = Object.keys(promoCodes);
+            selectedCode = codes[Math.floor(Math.random() * codes.length)];
+            localStorage.setItem('myPromoCode', selectedCode);
+        }
+
+        // 显示促销码
+        const promo = promoCodes[selectedCode];
+        document.getElementById('promoCodeDisplay').textContent = selectedCode;
+        document.getElementById('promoValueDisplay').innerHTML = `<i class="fas fa-gift"></i> ${promo.label}`;
+
+        // ——— Canvas 刮擦引擎 ———
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        const progressEl = document.getElementById('scratchProgress');
+
+        let isDrawing = false;
+        let isRevealed = false;
+        const RADIUS = 28; // 刮擦笔刷半径
+        const REVEAL_THRESHOLD = 0.50; // 刮开 50% 即自动完全揭示
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            ctx.scale(dpr, dpr);
+            // 重绘覆盖层
+            drawCover();
+        }
+
+        function drawCover() {
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.clearRect(0, 0, w, h);
+
+            // 渐变背景 (与卡片风格一致)
+            const grad = ctx.createLinearGradient(0, 0, w, h);
+            grad.addColorStop(0, '#1a2338');
+            grad.addColorStop(0.5, '#0f172a');
+            grad.addColorStop(1, '#1a2338');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // 网格纹理 (科技感)
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)';
+            ctx.lineWidth = 1;
+            const step = 20;
+            for (let x = 0; x < w; x += step) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+            }
+            for (let y = 0; y < h; y += step) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+
+            // 中央提示文字
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = '600 1.2rem "Inter", sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.fillText('🎟️ ခဲခြစ်ပါ', w / 2, h / 2 - 8);
+
+            ctx.font = '400 0.6rem "Inter", sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+            ctx.fillText('scratch to reveal', w / 2, h / 2 + 22);
+
+            // 霓虹边框装饰 (四个角)
+            const cornerLen = 18;
+            const cornerColor = 'rgba(0, 240, 255, 0.15)';
+            ctx.strokeStyle = cornerColor;
+            ctx.lineWidth = 2;
+            // 左上
+            ctx.beginPath();
+            ctx.moveTo(10, 10 + cornerLen);
+            ctx.lineTo(10, 10);
+            ctx.lineTo(10 + cornerLen, 10);
+            ctx.stroke();
+            // 右上
+            ctx.beginPath();
+            ctx.moveTo(w - 10 - cornerLen, 10);
+            ctx.lineTo(w - 10, 10);
+            ctx.lineTo(w - 10, 10 + cornerLen);
+            ctx.stroke();
+            // 左下
+            ctx.beginPath();
+            ctx.moveTo(10, h - 10 - cornerLen);
+            ctx.lineTo(10, h - 10);
+            ctx.lineTo(10 + cornerLen, h - 10);
+            ctx.stroke();
+            // 右下
+            ctx.beginPath();
+            ctx.moveTo(w - 10 - cornerLen, h - 10);
+            ctx.lineTo(w - 10, h - 10);
+            ctx.lineTo(w - 10, h - 10 - cornerLen);
+            ctx.stroke();
+
+            // 保存初始状态用于像素检测
+            window._coverData = ctx.getImageData(0, 0, w, h);
+        }
+
+        // 刮擦函数
+        function scratch(x, y) {
+            if (isRevealed) return;
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, RADIUS, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // 更新进度
+            updateProgress();
+        }
+
+        // 计算已刮开百分比 (基于像素透明度)
+        function updateProgress() {
+            if (isRevealed) return;
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            const imageData = ctx.getImageData(0, 0, w, h);
+            const data = imageData.data;
+            let transparent = 0;
+            const total = data.length / 4;
+            // 采样检测 (性能优化)
+            const step = 4;
+            for (let i = 3; i < data.length; i += 4 * step) {
+                if (data[i] < 128) transparent++;
+            }
+            const ratio = transparent / (total / step);
+            const percent = Math.min(100, Math.round(ratio * 100));
+            progressEl.textContent = percent + '%';
+
+            if (percent >= REVEAL_THRESHOLD * 100 && !isRevealed) {
+                fullyReveal();
+            }
+        }
+
+        // 完全揭示
+        function fullyReveal() {
+            if (isRevealed) return;
+            isRevealed = true;
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
+            ctx.clearRect(0, 0, w, h);
+            progressEl.classList.add('hidden');
+
+            // 触发 GA 事件
+            if (typeof gtag === 'function') {
+                gtag('event', 'scratch_reveal', {
+                    'event_category': 'Promo',
+                    'event_label': selectedCode,
+                    'value': promo.value
+                });
+                console.log('✅ GA Event: Scratch Reveal - ' + selectedCode);
+            }
+
+            // 小动画反馈
+            const card = document.getElementById('scratchCard');
+            card.style.transform = 'scale(1.02)';
+            setTimeout(() => { card.style.transform = ''; }, 300);
+        }
+
+        // ——— 事件绑定 (鼠标 + 触摸) ———
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function onStart(e) {
+            e.preventDefault();
+            if (isRevealed) return;
+            isDrawing = true;
+            const pos = getPos(e);
+            scratch(pos.x, pos.y);
+        }
+
+        function onMove(e) {
+            e.preventDefault();
+            if (!isDrawing || isRevealed) return;
+            const pos = getPos(e);
+            scratch(pos.x, pos.y);
+        }
+
+        function onEnd(e) {
+            e.preventDefault();
+            isDrawing = false;
+            // 最后再更新一次进度
+            if (!isRevealed) updateProgress();
+        }
+
+        // 鼠标事件
+        canvas.addEventListener('mousedown', onStart);
+        canvas.addEventListener('mousemove', onMove);
+        canvas.addEventListener('mouseup', onEnd);
+        canvas.addEventListener('mouseleave', onEnd);
+
+        // 触摸事件
+        canvas.addEventListener('touchstart', onStart, { passive: false });
+        canvas.addEventListener('touchmove', onMove, { passive: false });
+        canvas.addEventListener('touchend', onEnd, { passive: false });
+
+        // 窗口缩放时重新适配
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            // 如果已经刮开，保持透明
+            if (isRevealed) {
+                const w = canvas.width / (window.devicePixelRatio || 1);
+                const h = canvas.height / (window.devicePixelRatio || 1);
+                ctx.clearRect(0, 0, w, h);
+            }
+        });
+
+        // 初始化
+        resizeCanvas();
 
         // Initial render
         allGames = [...games];
