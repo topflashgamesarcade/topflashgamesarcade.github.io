@@ -4,29 +4,19 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="images/app_icon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 Flash Game Arcade – Download 300+ Classic Flash Games | Top Flash Games Arcade</title>
-    <meta name="description" content="Download 300+ classic Flash games for free. Play nostalgic retro games offline on Windows PC. Curated by Top Flash Games Arcade.">
-    <meta name="keywords" content="Flash Games, Arcade, Download SWF, Retro Games, Offline Games, Top Flash Games Arcade">
-
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1N5H0EXPRC"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-1N5H0EXPRC');
-    </script>
+    <title>🎮 Flash Game Arcade – Download Classic Flash Games</title>
+    <meta name="description" content="Download classic Flash games for free. Play nostalgic retro games offline on Windows PC.">
+    <meta name="keywords" content="Flash Games, Arcade, Download SWF, Retro Games, Offline Games">
 
     <!-- Google Fonts + FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         /* =========================================================
-                   1. RESET & VARIABLES (CyberVerse Theme)
+                   1. RESET & VARIABLES
                    ========================================================= */
         * {
             margin: 0;
@@ -40,14 +30,10 @@
             --bg-card: #1a2338;
             --bg-card-hover: #212d48;
             --border-subtle: rgba(255, 255, 255, 0.05);
-            --border-glow: rgba(157, 0, 255, 0.4);
+            --border-glow: rgba(157, 0, 255, 0.5);
 
             --primary-neon: #00f0ff;
             --secondary-neon: #ff007f;
-            --accent-purple: #9d00ff;
-            --accent-cyan: #00f0ff;
-            --accent-pink: #ff007f;
-
             --accent-gradient: linear-gradient(135deg, var(--secondary-neon), var(--primary-neon));
 
             --text-primary: #f1f5f9;
@@ -55,10 +41,7 @@
             --text-muted: #475569;
 
             --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.6);
-            --shadow-glow: 0 0 40px rgba(0, 240, 255, 0.15);
-            --radius-lg: 16px;
             --radius-md: 10px;
-            --radius-sm: 6px;
             --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
@@ -67,20 +50,19 @@
             background: var(--bg-deep);
             color: var(--text-primary);
             min-height: 100vh;
-            padding: 0;
-            margin: 0;
             background-image:
                 radial-gradient(ellipse at 10% 20%, rgba(157, 0, 255, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 90% 80%, rgba(0, 240, 255, 0.05) 0%, transparent 50%),
-                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255, 255, 255, 0.01) 39px, rgba(255, 255, 255, 0.01) 40px),
-                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255, 255, 255, 0.01) 39px, rgba(255, 255, 255, 0.01) 40px);
+                radial-gradient(ellipse at 90% 80%, rgba(0, 240, 255, 0.05) 0%, transparent 50%);
             background-attachment: fixed;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 24px;
+            position: relative;
+            z-index: 1;
         }
 
         /* =========================================================
@@ -90,9 +72,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 0 12px;
-            border-bottom: 1px solid var(--border-subtle);
-            margin-bottom: 0px;
+            padding: 14px 24px;
+            margin-top: 12px;
+            border-radius: 60px;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
             flex-wrap: wrap;
             gap: 10px;
         }
@@ -107,66 +92,47 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-subtle);
             padding: 6px 14px 6px 12px;
             border-radius: 40px;
             color: var(--text-secondary);
             font-size: 0.78rem;
-            font-weight: 500;
             text-decoration: none;
+            border: 1px solid var(--border-subtle);
             transition: var(--transition);
-            backdrop-filter: blur(4px);
         }
 
         .nav-home i {
-            font-size: 0.9rem;
             color: var(--primary-neon);
-            transition: var(--transition);
         }
-
         .nav-home:hover {
             background: rgba(0, 240, 255, 0.08);
             border-color: var(--primary-neon);
             color: var(--text-primary);
-            transform: translateY(-1px);
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.05);
-        }
-
-        .nav-home:hover i {
-            color: var(--secondary-neon);
         }
 
         .logo {
-            font-size: 1.15rem;
-            font-weight: 800;
-            letter-spacing: -0.3px;
+            font-size: 1.2rem;
+            font-weight: 900;
             background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
         .nav-badge {
-            background: rgba(0, 240, 255, 0.06);
-            border: 1px solid rgba(0, 240, 255, 0.1);
-            padding: 4px 14px;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            padding: 4px 16px;
             border-radius: 40px;
             font-size: 0.6rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary-neon);
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
         }
 
         .breadcrumb {
-            padding: 12px 0 8px;
+            padding: 16px 0 8px;
             font-size: 0.75rem;
             color: var(--text-muted);
             border-bottom: 1px solid var(--border-subtle);
@@ -175,7 +141,6 @@
         .breadcrumb a {
             color: var(--primary-neon);
             text-decoration: none;
-            transition: var(--transition);
         }
         .breadcrumb a:hover {
             color: var(--secondary-neon);
@@ -189,20 +154,19 @@
         }
 
         /* =========================================================
-                   3. HERO SECTION
+                   3. HERO + SEARCH
                    ========================================================= */
         .hero {
             text-align: center;
-            padding: 16px 0 24px;
-            position: relative;
+            padding: 24px 0 28px;
         }
 
         .hero h1 {
-            font-size: 2.6rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            line-height: 1.1;
-            margin-bottom: 8px;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            line-height: 1.05;
+            margin-bottom: 12px;
         }
 
         .hero h1 .highlight {
@@ -212,63 +176,80 @@
             background-clip: text;
         }
 
+        .hero .sub-highlight {
+            font-size: 0.65em;
+            background: linear-gradient(135deg, #ff007f, #00f0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         .hero p {
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: var(--text-secondary);
             max-width: 520px;
-            margin: 0 auto 16px;
-            line-height: 1.6;
+            margin: 0 auto 20px;
+            line-height: 1.7;
         }
 
         .hero-stats {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 22px;
+            gap: 28px;
             flex-wrap: wrap;
-            margin-bottom: 18px;
-            font-size: 0.8rem;
+            margin-bottom: 22px;
+            font-size: 0.85rem;
             color: var(--text-muted);
+            padding: 8px 24px;
+            border-radius: 60px;
+            border: 1px solid var(--border-subtle);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            backdrop-filter: blur(4px);
         }
 
         .hero-stats span i {
             color: var(--primary-neon);
-            margin-right: 5px;
+            margin-right: 6px;
         }
         .hero-stats span strong {
             color: var(--text-primary);
-            font-weight: 700;
+            font-weight: 800;
         }
 
+        /* ---------- SEARCH BAR ---------- */
         .search-wrapper {
-            max-width: 480px;
+            max-width: 520px;
             margin: 0 auto;
             position: relative;
         }
 
-        .search-wrapper i {
+        .search-wrapper i.fa-search {
             position: absolute;
             left: 18px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 1rem;
             pointer-events: none;
+            z-index: 2;
         }
 
         .search-wrapper input {
             width: 100%;
-            padding: 12px 16px 12px 46px;
+            padding: 14px 50px 14px 48px;
             border: 2px solid var(--border-subtle);
             border-radius: 60px;
             background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             color: var(--text-primary);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-family: inherit;
             outline: none;
             transition: var(--transition);
-            box-shadow: var(--shadow-card);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .search-wrapper input::placeholder {
@@ -278,303 +259,104 @@
 
         .search-wrapper input:focus {
             border-color: var(--primary-neon);
-            box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.1), var(--shadow-card);
+            box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.08), 0 8px 40px rgba(0, 0, 0, 0.4);
             transform: scale(1.01);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        /* ---------- CLEAR BUTTON (Refined) ---------- */
+        .search-wrapper .clear-btn {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            font-weight: 300;
+            line-height: 1;
+            cursor: pointer;
+            display: none;
+            padding: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 2;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .search-wrapper .clear-btn.visible {
+            display: flex;
+            opacity: 1;
+            pointer-events: auto;
+            animation: fadeInBtn 0.2s ease forwards;
+        }
+
+        @keyframes fadeInBtn {
+            0% {
+                opacity: 0;
+                transform: translateY(-50%) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(-50%) scale(1);
+            }
+        }
+
+        .search-wrapper .clear-btn:hover {
+            color: var(--secondary-neon);
+            background: rgba(255, 0, 127, 0.08);
+        }
+
+        .search-wrapper .clear-btn:active {
+            transform: translateY(-50%) scale(0.9);
         }
 
         /* =========================================================
-                   4. SCRATCH CARD — REAL SCRATCH (Canvas-based)
+                   4. GAME GRID
                    ========================================================= */
-        .scratch-section {
-            margin: 32px 0 20px;
-            padding: 24px 20px 28px;
-            background: var(--bg-surface);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-subtle);
-            box-shadow: var(--shadow-card);
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
+        .games-section {
+            margin-top: 32px;
+            padding-bottom: 32px;
         }
 
-        .scratch-section::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: -1px;
-            right: -1px;
-            height: 2px;
-            background: var(--accent-gradient);
-            opacity: 0.6;
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-        }
-
-        .scratch-section::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--primary-neon), transparent);
-            opacity: 0.1;
-        }
-
-        .scratch-header {
+        .section-header {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 18px;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 16px;
             flex-wrap: wrap;
-        }
-
-        .scratch-header h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
             gap: 10px;
         }
 
-        .scratch-header h3 i {
-            -webkit-text-fill-color: initial;
-            color: var(--primary-neon);
-            font-size: 1.2rem;
+        .section-header h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
         }
-
-        .scratch-badge {
-            background: rgba(255, 0, 127, 0.12);
-            border: 1px solid rgba(255, 0, 127, 0.2);
-            padding: 3px 14px;
+        .section-header h2 i {
+            color: var(--primary-neon);
+            margin-right: 8px;
+        }
+        .section-header .result-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: var(--bg-surface);
+            padding: 4px 14px;
             border-radius: 40px;
-            font-size: 0.55rem;
-            font-weight: 600;
-            color: var(--secondary-neon);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .scratch-card-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 24px;
-            flex-wrap: wrap;
-        }
-
-        /* ----- 刮卡容器 ----- */
-        .scratch-card {
-            position: relative;
-            width: 340px;
-            height: 140px;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            cursor: pointer;
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.06), inset 0 0 30px rgba(0, 240, 255, 0.02);
-            border: 2px solid var(--border-subtle);
-            transition: var(--transition);
-            flex-shrink: 0;
-            background: var(--bg-card);
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: none;
-        }
-
-        .scratch-card:hover {
-            border-color: var(--primary-neon);
-            box-shadow: 0 0 40px rgba(0, 240, 255, 0.12), inset 0 0 40px rgba(0, 240, 255, 0.03);
-            transform: scale(1.01);
-        }
-
-        .scratch-card::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            border-radius: var(--radius-md);
-            padding: 2px;
-            background: var(--accent-gradient);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0.25;
-            transition: var(--transition);
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        .scratch-card:hover::before {
-            opacity: 0.6;
-        }
-
-        /* ----- 底层：促销码结果 ----- */
-        .promo-result {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-card);
-            padding: 16px;
-            z-index: 1;
-            text-align: center;
-        }
-
-        .promo-result .promo-label {
-            font-size: 0.55rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            margin-bottom: 2px;
-            font-weight: 500;
-        }
-
-        .promo-result .promo-code {
-            font-size: 1.9rem;
-            font-weight: 800;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 2px;
-            line-height: 1.2;
-            text-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
-        }
-
-        .promo-result .promo-value {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-top: 2px;
-            font-weight: 500;
-        }
-
-        .promo-result .promo-value i {
-            color: var(--secondary-neon);
-            margin-right: 4px;
-        }
-
-        /* ----- Canvas 覆盖层 (刮擦层) ----- */
-        #scratchCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 3;
-            border-radius: var(--radius-md);
-            touch-action: none;
-            cursor: pointer;
-            display: block;
-        }
-
-        /* ----- 刮开百分比指示器 (小彩蛋) ----- */
-        .scratch-progress {
-            position: absolute;
-            bottom: 8px;
-            right: 10px;
-            z-index: 4;
-            font-size: 0.55rem;
-            color: rgba(255, 255, 255, 0.2);
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            pointer-events: none;
-            transition: opacity 0.6s ease;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .scratch-progress.hidden {
-            opacity: 0;
-        }
-
-        /* ----- 刮卡描述文字 ----- */
-        .scratch-desc {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            max-width: 260px;
-            text-align: center;
-            line-height: 1.6;
-        }
-
-        .scratch-desc i {
-            color: var(--primary-neon);
-            margin: 0 2px;
-        }
-
-        /* ----- 响应式 ----- */
-        @media (max-width: 700px) {
-            .scratch-section {
-                padding: 18px 14px 22px;
-                margin: 24px 0 16px;
-            }
-            .scratch-header h3 {
-                font-size: 0.95rem;
-            }
-            .scratch-card {
-                width: 280px;
-                height: 120px;
-            }
-            .promo-result .promo-code {
-                font-size: 1.5rem;
-            }
-            .scratch-badge {
-                font-size: 0.45rem;
-                padding: 2px 10px;
-            }
-            .scratch-desc {
-                font-size: 0.65rem;
-                max-width: 200px;
-            }
-            .scratch-progress {
-                font-size: 0.45rem;
-                bottom: 4px;
-                right: 6px;
-            }
-        }
-
-        @media (max-width: 420px) {
-            .scratch-card {
-                width: 230px;
-                height: 105px;
-            }
-            .promo-result .promo-code {
-                font-size: 1.2rem;
-            }
-            .promo-result .promo-label {
-                font-size: 0.45rem;
-            }
-            .promo-result .promo-value {
-                font-size: 0.6rem;
-            }
-            .scratch-desc {
-                font-size: 0.6rem;
-                max-width: 170px;
-            }
-        }
-
-        /* =========================================================
-                   5. GAME GRID — 8 COLUMNS (Compact)
-                   ========================================================= */
-        .games-section {
-            margin-top: 28px;
-            padding-bottom: 32px;
+            border: 1px solid var(--border-subtle);
         }
 
         .game-grid {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            gap: 14px;
+            gap: 16px;
         }
 
         .game-card {
@@ -582,11 +364,20 @@
             border-radius: var(--radius-md);
             overflow: hidden;
             border: 1px solid var(--border-subtle);
-            transition: var(--transition);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.4s ease,
+                border-color 0.4s ease;
             display: flex;
             flex-direction: column;
             box-shadow: var(--shadow-card);
             position: relative;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--border-glow);
+            box-shadow: 0 20px 60px rgba(0, 240, 255, 0.15), var(--shadow-card);
+            background: var(--bg-card-hover);
         }
 
         .game-card::before {
@@ -601,16 +392,9 @@
             transition: var(--transition);
             z-index: 2;
         }
-
-        .game-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--border-glow);
-            box-shadow: var(--shadow-glow), var(--shadow-card);
-            background: var(--bg-card-hover);
-        }
-
         .game-card:hover::before {
             opacity: 1;
+            height: 3px;
         }
 
         .game-thumb {
@@ -629,11 +413,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.6s ease;
         }
-
         .game-card:hover .game-thumb img {
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .game-thumb .fallback {
@@ -645,13 +428,10 @@
             height: 100%;
             background: linear-gradient(145deg, #1e293b, #0f172a);
         }
-
         .game-thumb .fallback .emoji {
             font-size: 2.8rem;
             opacity: 0.8;
-            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.2));
         }
-
         .game-thumb .fallback .letter {
             font-size: 1.2rem;
             font-weight: 800;
@@ -665,16 +445,16 @@
             position: absolute;
             bottom: 8px;
             left: 8px;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(6px);
-            padding: 2px 10px;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            padding: 2px 12px;
             border-radius: 30px;
             font-size: 0.5rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary-neon);
-            border: 1px solid rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.15);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
         }
 
         .game-info {
@@ -715,7 +495,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            cursor: default;
         }
 
         .btn-download {
@@ -724,7 +503,7 @@
             color: white;
             padding: 10px 0;
             border-radius: var(--radius-sm);
-            font-weight: 700;
+            font-weight: 800;
             font-size: 0.75rem;
             cursor: pointer;
             transition: var(--transition);
@@ -736,25 +515,16 @@
             gap: 8px;
             margin-top: auto;
             font-family: inherit;
-            letter-spacing: 0.3px;
-            box-shadow: 0 4px 16px rgba(255, 0, 127, 0.25);
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 20px rgba(255, 0, 127, 0.25);
             position: relative;
             overflow: hidden;
         }
 
-        .btn-download i {
-            font-size: 0.7rem;
-            transition: var(--transition);
-        }
-
         .btn-download:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 240, 255, 0.45);
-            filter: brightness(1.05);
-        }
-
-        .btn-download:hover i {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 240, 255, 0.4);
+            filter: brightness(1.08);
         }
 
         .btn-download::after {
@@ -764,11 +534,10 @@
             left: -100%;
             width: 200%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
             transform: skewX(-25deg);
-            transition: left 0.6s ease;
+            transition: left 0.7s ease;
         }
-
         .btn-download:hover::after {
             left: 100%;
         }
@@ -776,79 +545,212 @@
         .no-result {
             grid-column: 1 / -1;
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             color: var(--text-muted);
             font-size: 1.1rem;
             font-weight: 500;
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            border: 1px dashed var(--border-subtle);
         }
 
         .no-result i {
-            font-size: 2rem;
+            font-size: 2.5rem;
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             color: var(--primary-neon);
-            opacity: 0.4;
+            opacity: 0.3;
         }
 
         /* =========================================================
-                   6. FOOTER
+                   5. FOOTER
                    ========================================================= */
         .footer {
-            text-align: left;
-            margin-top: 32px;
-            padding: 24px 0 18px;
-            border-top: 1px solid var(--border-subtle);
-            color: var(--text-muted);
-            font-size: 0.7rem;
+            margin-top: 40px;
+            padding: 40px 0 0;
+            position: relative;
             background: var(--bg-deep);
         }
-        .footer a {
-            color: var(--primary-neon);
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 1200px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-neon), var(--secondary-neon), transparent);
+            opacity: 0.3;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 2fr;
+            gap: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .footer-brand .logo-text {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-brand .tagline {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-top: 6px;
+            max-width: 300px;
+        }
+
+        .footer-brand .copyright {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            margin-top: 12px;
+            opacity: 0.6;
+        }
+
+        .footer-links h4,
+        .footer-contact h4 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            font-weight: 700;
+        }
+
+        .footer-links a {
+            display: block;
+            color: var(--text-muted);
             text-decoration: none;
-            font-weight: 500;
+            padding: 5px 0;
+            font-size: 0.85rem;
             transition: var(--transition);
+            width: fit-content;
         }
-        .footer a:hover {
-            color: var(--secondary-neon);
+
+        .footer-links a:hover {
+            color: var(--primary-neon);
+            padding-left: 6px;
         }
-        .footer .footer-flex {
+
+        .footer-contact p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-contact p i {
+            width: 18px;
+            color: var(--primary-neon);
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .footer-contact .social-links {
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-contact .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            transition: var(--transition);
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .footer-contact .social-links a:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--primary-neon);
+            color: var(--primary-neon);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 240, 255, 0.15);
+        }
+
+        .footer-bottom {
+            padding: 20px 0 14px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
             display: flex;
             justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
-            gap: 20px;
-            align-items: flex-start;
+            gap: 10px;
         }
-        .footer .footer-flex .right {
-            text-align: right;
-            line-height: 1.8;
+
+        .footer-bottom .heart {
+            color: var(--secondary-neon);
+            margin: 0 4px;
+            animation: heartbeat 1.8s infinite;
         }
-        .footer .footer-flex .right i {
+
+        @keyframes heartbeat {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .footer-bottom .back-top {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 0.75rem;
+        }
+
+        .footer-bottom .back-top:hover {
             color: var(--primary-neon);
-            width: 16px;
         }
 
         /* =========================================================
-                   7. RESPONSIVE
+                   6. RESPONSIVE
                    ========================================================= */
-        @media (max-width: 1280px) {
-            .game-grid {
-                grid-template-columns: repeat(8, 1fr);
-                gap: 12px;
-            }
-        }
         @media (max-width: 1200px) {
             .game-grid {
                 grid-template-columns: repeat(7, 1fr);
-                gap: 12px;
+                gap: 14px;
             }
         }
         @media (max-width: 1024px) {
             .game-grid {
                 grid-template-columns: repeat(6, 1fr);
-                gap: 12px;
+                gap: 14px;
             }
             .hero h1 {
-                font-size: 2.2rem;
+                font-size: 2.4rem;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .footer-brand {
+                grid-column: 1 / -1;
+            }
+            .footer-brand .tagline {
+                max-width: 100%;
             }
         }
         @media (max-width: 900px) {
@@ -856,18 +758,33 @@
                 grid-template-columns: repeat(5, 1fr);
                 gap: 12px;
             }
-            .game-info {
-                padding: 8px 10px 12px;
+        }
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
             }
-            .game-name {
-                font-size: 0.7rem;
+            .footer-brand .tagline {
+                margin-left: auto;
+                margin-right: auto;
             }
-            .btn-download {
-                font-size: 0.65rem;
-                padding: 8px 0;
+            .footer-links a {
+                margin: 0 auto;
             }
-            .game-thumb .fallback .emoji {
-                font-size: 2.2rem;
+            .footer-links a:hover {
+                padding-left: 0;
+            }
+            .footer-contact p {
+                justify-content: center;
+            }
+            .footer-contact .social-links {
+                justify-content: center;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
             }
         }
         @media (max-width: 700px) {
@@ -876,61 +793,35 @@
                 gap: 10px;
             }
             .hero h1 {
-                font-size: 1.8rem;
-            }
-            .hero p {
-                font-size: 0.85rem;
+                font-size: 2rem;
             }
             .container {
                 padding: 0 14px;
             }
+            .navbar {
+                padding: 10px 16px;
+                border-radius: 30px;
+            }
             .nav-home span {
                 display: none;
-            }
-            .nav-home {
-                padding: 6px 10px;
             }
             .logo {
                 font-size: 1rem;
             }
-            .nav-badge {
-                font-size: 0.5rem;
-                padding: 3px 10px;
+            .hero-stats {
+                gap: 16px;
+                padding: 6px 16px;
+                font-size: 0.7rem;
             }
-            .game-info {
-                padding: 6px 8px 10px;
+            .search-wrapper input {
+                padding: 12px 44px 12px 40px;
+                font-size: 0.85rem;
             }
-            .game-name {
-                font-size: 0.65rem;
-            }
-            .game-meta .file-name {
-                max-width: 60px;
-                font-size: 0.45rem;
-            }
-            .btn-download {
-                font-size: 0.6rem;
-                padding: 7px 0;
-                border-radius: 4px;
-            }
-            .game-thumb .type-badge {
-                font-size: 0.4rem;
-                padding: 1px 8px;
-                bottom: 5px;
-                left: 5px;
-            }
-            .game-thumb .fallback .emoji {
-                font-size: 1.8rem;
-            }
-            .game-thumb .fallback .letter {
-                font-size: 0.9rem;
-            }
-            .footer .footer-flex {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            .footer .footer-flex .right {
-                text-align: center;
+            .search-wrapper .clear-btn {
+                right: 10px;
+                font-size: 1.2rem;
+                width: 24px;
+                height: 24px;
             }
         }
         @media (max-width: 550px) {
@@ -939,15 +830,11 @@
                 gap: 8px;
             }
             .hero h1 {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
             }
             .hero-stats {
-                gap: 12px;
-                font-size: 0.65rem;
-            }
-            .search-wrapper input {
-                padding: 10px 14px 10px 40px;
-                font-size: 0.8rem;
+                gap: 10px;
+                font-size: 0.6rem;
             }
         }
         @media (max-width: 420px) {
@@ -958,32 +845,15 @@
             .hero h1 {
                 font-size: 1.3rem;
             }
-            .hero p {
-                font-size: 0.75rem;
+            .search-wrapper input {
+                padding: 10px 38px 10px 36px;
+                font-size: 0.8rem;
             }
-            .game-info {
-                padding: 4px 6px 8px;
-            }
-            .game-name {
-                font-size: 0.6rem;
-            }
-            .btn-download {
-                font-size: 0.5rem;
-                padding: 6px 0;
-            }
-            .game-meta .file-name {
-                max-width: 45px;
-                font-size: 0.4rem;
-            }
-            .game-thumb .fallback .emoji {
-                font-size: 1.4rem;
-            }
-            .game-thumb .fallback .letter {
-                font-size: 0.7rem;
-            }
-            .game-thumb .type-badge {
-                font-size: 0.35rem;
-                padding: 1px 6px;
+            .search-wrapper .clear-btn {
+                right: 8px;
+                font-size: 1rem;
+                width: 20px;
+                height: 20px;
             }
         }
     </style>
@@ -998,7 +868,7 @@
         ============================================================ -->
         <nav class="navbar">
             <div class="nav-left">
-                <a href="https://topflashgamesarcade.github.io/" class="nav-home" title="Home">
+                <a href="#" class="nav-home" title="Home">
                     <i class="fas fa-house"></i>
                     <span>Home</span>
                 </a>
@@ -1011,7 +881,7 @@
 
         <!-- Breadcrumb -->
         <div class="breadcrumb">
-            <a href="https://topflashgamesarcade.github.io/"><i class="fas fa-home"></i> Home</a>
+            <a href="#">Home</a>
             <span class="sep">›</span>
             <span class="current">Flash Games Archive</span>
         </div>
@@ -1022,7 +892,7 @@
         <section class="hero">
             <h1>
                 Classic <span class="highlight">Flash</span> Games<br>
-                <span style="font-size:0.65em; background: linear-gradient(135deg, #ff007f, #00f0ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Download &amp; Play Offline</span>
+                <span class="sub-highlight">Download &amp; Play Offline</span>
             </h1>
             <p>Download timeless retro games instantly. 100% free, offline-ready, and curated for nostalgia.</p>
 
@@ -1034,44 +904,8 @@
 
             <div class="search-wrapper">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search games by name..." oninput="filterGames()">
-            </div>
-        </section>
-
-        <!-- ============================================================
-        SCRATCH CARD — REAL SCRATCH (Canvas)
-        ============================================================ -->
-        <section class="scratch-section" id="scratchSection">
-            <div class="scratch-header">
-                <h3>
-                    <i class="fas fa-ticket-alt"></i>
-                    Lucky Scratch Card
-                </h3>
-                <span class="scratch-badge"><i class="fas fa-bolt"></i> ခဲခြစ်ပြီး ကံစမ်းပါ</span>
-            </div>
-
-            <div class="scratch-card-wrapper">
-                <div class="scratch-card" id="scratchCard">
-                    <!-- 底层：促销码结果 -->
-                    <div class="promo-result" id="promoResult">
-                        <span class="promo-label"><i class="fas fa-gift"></i> Your Promo Code</span>
-                        <span class="promo-code" id="promoCodeDisplay">———</span>
-                        <span class="promo-value" id="promoValueDisplay"><i class="fas fa-percent"></i> Loading...</span>
-                    </div>
-
-                    <!-- Canvas 刮擦层 -->
-                    <canvas id="scratchCanvas"></canvas>
-
-                    <!-- 刮开进度 (小彩蛋) -->
-                    <span class="scratch-progress" id="scratchProgress">0%</span>
-                </div>
-
-                <div class="scratch-desc">
-                    <i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i>
-                    လက်ချောင်းနဲ့ ပွတ်ဆွဲပြီး ခဲခြစ်လိုက်ပါ။
-                    <br>
-                    <span style="font-size:0.65rem; color:var(--text-muted);">တစ်ကြိမ်သာ အသုံးပြုနိုင်သော ပရိုမိုကုဒ်</span>
-                </div>
+                <input type="text" id="searchInput" placeholder="Search games by name...">
+                <button type="button" class="clear-btn" id="clearSearch" aria-label="Clear search">×</button>
             </div>
         </section>
 
@@ -1079,6 +913,10 @@
         GAME GRID
         ============================================================ -->
         <section class="games-section">
+            <div class="section-header">
+                <h2><i class="fas fa-archive"></i> Game Archive</h2>
+                <span class="result-count" id="resultCount">Showing 0 games</span>
+            </div>
             <div class="game-grid" id="gameGrid"></div>
         </section>
 
@@ -1086,31 +924,49 @@
         FOOTER
         ============================================================ -->
         <footer class="footer">
-            <div class="footer-flex">
-                <div class="left">
-                    <p style="line-height:1.8;">
-                        © 2026 <a href="https://topflashgamesarcade.github.io/" target="_blank">Top Flash Games Arcade</a> &bull;
-                        For educational &amp; personal preservation use only.
-                        <br><span style="font-size:0.65rem;">All original content belongs to their respective copyright holders.</span>
-                    </p>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <span class="logo-text">🎮 Flash Arcade</span>
+                    <p class="tagline">Preserving the golden age of Flash games.<br>Download, play, and relive the nostalgia.</p>
+                    <p class="copyright">&copy; 2026 Flash Arcade. All rights reserved.</p>
                 </div>
-                <div class="right">
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <a href="#">🏠 Home</a>
+                    <a href="#">📂 Game Archive</a>
+                    <a href="#">📖 About Us</a>
+                    <a href="#">📞 Contact</a>
+                </div>
+                <div class="footer-contact">
+                    <h4>Connect with us</h4>
                     <p><i class="fas fa-user"></i> Developer: Myo Kyaw Thu</p>
                     <p><i class="fas fa-phone"></i> 09799497334</p>
                     <p><i class="fab fa-telegram"></i> @myokyawthu_info</p>
-                    <p><i class="fas fa-building"></i> CyberVerse Computer Training</p>
+                    <p><i class="fas fa-building"></i> CyberVerse Training</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-telegram-plane"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
                 </div>
+            </div>
+            <div class="footer-bottom">
+                <span>Built with <i class="fas fa-heart heart"></i> by CyberVerse Team</span>
+                <a href="#" class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
+                    <i class="fas fa-arrow-up"></i> Back to Top
+                </a>
             </div>
         </footer>
 
     </div>
 
     <!-- ============================================================
-    SCRIPT (Game Data + Render Engine + Scratch Card Logic)
+    SCRIPT
     ============================================================ -->
     <script>
         // ================================================================
-        // 🎮 GAME LIST (Full list — trimmed for brevity, full included)
+        // 🎮 GAME LIST (Placeholder — Add your own game data below)
         // ================================================================
         const games = [
     {
@@ -3352,7 +3208,9 @@
         function renderGames(filtered) {
             const grid = document.getElementById('gameGrid');
             grid.innerHTML = '';
-            document.getElementById('gameCount').textContent = filtered.length;
+            const count = filtered.length;
+            document.getElementById('gameCount').textContent = count;
+            document.getElementById('resultCount').textContent = `Showing ${count} games`;
 
             if (filtered.length === 0) {
                 grid.innerHTML = `
@@ -3364,7 +3222,7 @@
                 return;
             }
 
-            filtered.forEach(game => {
+            filtered.forEach((game, index) => {
                 const card = document.createElement('div');
                 card.className = 'game-card';
 
@@ -3441,277 +3299,30 @@
         }
 
         // ================================================================
-        // 🟢 GOOGLE ANALYTICS DOWNLOAD TRACKING
+        // SEARCH BAR LOGIC
         // ================================================================
-        document.getElementById('gameGrid').addEventListener('click', function(e) {
-            const btn = e.target.closest('.btn-download');
-            if (btn) {
-                const card = btn.closest('.game-card');
-                if (card) {
-                    const nameEl = card.querySelector('.game-name');
-                    if (nameEl) {
-                        const gameName = nameEl.textContent;
-                        if (typeof gtag === 'function') {
-                            gtag('event', 'download', {
-                                'event_category': 'Flash Games',
-                                'event_label': gameName,
-                                'value': 1
-                            });
-                            console.log('✅ GA Event Sent: Download - ' + gameName);
-                        }
-                    }
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearSearch');
+
+            searchInput.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    clearBtn.classList.add('visible');
+                } else {
+                    clearBtn.classList.remove('visible');
                 }
-            }
+                filterGames();
+            });
+
+            clearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                this.classList.remove('visible');
+                filterGames();
+                searchInput.focus();
+            });
+
+            renderGames(allGames);
         });
-
-        // ================================================================
-        // 🎟️ SCRATCH CARD — REAL SCRATCH WITH CANVAS
-        // ================================================================
-        const promoCodes = {
-            "WELCOME50": { "type": "percent", "value": 50, "label": "50% OFF" },
-            "VIP1000": { "type": "percent", "value": 100, "label": "100% FREE" },
-            "BETA100": { "type": "fixed", "value": 1000, "label": "1000 MMK OFF" },
-            "GAMER25": { "type": "percent", "value": 25, "label": "25% OFF" },
-            "FLASH75": { "type": "percent", "value": 75, "label": "75% OFF" },
-            "ARCADE50": { "type": "percent", "value": 50, "label": "50% OFF" }
-        };
-
-        // 从 localStorage 获取或生成新的促销码
-        let selectedCode = localStorage.getItem('myPromoCode');
-        if (!selectedCode || !promoCodes[selectedCode]) {
-            const codes = Object.keys(promoCodes);
-            selectedCode = codes[Math.floor(Math.random() * codes.length)];
-            localStorage.setItem('myPromoCode', selectedCode);
-        }
-
-        // 显示促销码
-        const promo = promoCodes[selectedCode];
-        document.getElementById('promoCodeDisplay').textContent = selectedCode;
-        document.getElementById('promoValueDisplay').innerHTML = `<i class="fas fa-gift"></i> ${promo.label}`;
-
-        // ——— Canvas 刮擦引擎 ———
-        const canvas = document.getElementById('scratchCanvas');
-        const ctx = canvas.getContext('2d');
-        const progressEl = document.getElementById('scratchProgress');
-
-        let isDrawing = false;
-        let isRevealed = false;
-        const RADIUS = 28; // 刮擦笔刷半径
-        const REVEAL_THRESHOLD = 0.50; // 刮开 50% 即自动完全揭示
-
-        function resizeCanvas() {
-            const rect = canvas.parentElement.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            canvas.style.width = rect.width + 'px';
-            canvas.style.height = rect.height + 'px';
-            ctx.scale(dpr, dpr);
-            // 重绘覆盖层
-            drawCover();
-        }
-
-        function drawCover() {
-            const w = canvas.width / (window.devicePixelRatio || 1);
-            const h = canvas.height / (window.devicePixelRatio || 1);
-            ctx.clearRect(0, 0, w, h);
-
-            // 渐变背景 (与卡片风格一致)
-            const grad = ctx.createLinearGradient(0, 0, w, h);
-            grad.addColorStop(0, '#1a2338');
-            grad.addColorStop(0.5, '#0f172a');
-            grad.addColorStop(1, '#1a2338');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-
-            // 网格纹理 (科技感)
-            ctx.strokeStyle = 'rgba(0, 240, 255, 0.04)';
-            ctx.lineWidth = 1;
-            const step = 20;
-            for (let x = 0; x < w; x += step) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, h);
-                ctx.stroke();
-            }
-            for (let y = 0; y < h; y += step) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(w, y);
-                ctx.stroke();
-            }
-
-            // 中央提示文字
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.font = '600 1.2rem "Inter", sans-serif';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-            ctx.fillText('🎟️ ခဲခြစ်ပါ', w / 2, h / 2 - 8);
-
-            ctx.font = '400 0.6rem "Inter", sans-serif';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
-            ctx.fillText('scratch to reveal', w / 2, h / 2 + 22);
-
-            // 霓虹边框装饰 (四个角)
-            const cornerLen = 18;
-            const cornerColor = 'rgba(0, 240, 255, 0.15)';
-            ctx.strokeStyle = cornerColor;
-            ctx.lineWidth = 2;
-            // 左上
-            ctx.beginPath();
-            ctx.moveTo(10, 10 + cornerLen);
-            ctx.lineTo(10, 10);
-            ctx.lineTo(10 + cornerLen, 10);
-            ctx.stroke();
-            // 右上
-            ctx.beginPath();
-            ctx.moveTo(w - 10 - cornerLen, 10);
-            ctx.lineTo(w - 10, 10);
-            ctx.lineTo(w - 10, 10 + cornerLen);
-            ctx.stroke();
-            // 左下
-            ctx.beginPath();
-            ctx.moveTo(10, h - 10 - cornerLen);
-            ctx.lineTo(10, h - 10);
-            ctx.lineTo(10 + cornerLen, h - 10);
-            ctx.stroke();
-            // 右下
-            ctx.beginPath();
-            ctx.moveTo(w - 10 - cornerLen, h - 10);
-            ctx.lineTo(w - 10, h - 10);
-            ctx.lineTo(w - 10, h - 10 - cornerLen);
-            ctx.stroke();
-
-            // 保存初始状态用于像素检测
-            window._coverData = ctx.getImageData(0, 0, w, h);
-        }
-
-        // 刮擦函数
-        function scratch(x, y) {
-            if (isRevealed) return;
-            const w = canvas.width / (window.devicePixelRatio || 1);
-            const h = canvas.height / (window.devicePixelRatio || 1);
-
-            ctx.save();
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.beginPath();
-            ctx.arc(x, y, RADIUS, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-
-            // 更新进度
-            updateProgress();
-        }
-
-        // 计算已刮开百分比 (基于像素透明度)
-        function updateProgress() {
-            if (isRevealed) return;
-            const w = canvas.width / (window.devicePixelRatio || 1);
-            const h = canvas.height / (window.devicePixelRatio || 1);
-            const imageData = ctx.getImageData(0, 0, w, h);
-            const data = imageData.data;
-            let transparent = 0;
-            const total = data.length / 4;
-            // 采样检测 (性能优化)
-            const step = 4;
-            for (let i = 3; i < data.length; i += 4 * step) {
-                if (data[i] < 128) transparent++;
-            }
-            const ratio = transparent / (total / step);
-            const percent = Math.min(100, Math.round(ratio * 100));
-            progressEl.textContent = percent + '%';
-
-            if (percent >= REVEAL_THRESHOLD * 100 && !isRevealed) {
-                fullyReveal();
-            }
-        }
-
-        // 完全揭示
-        function fullyReveal() {
-            if (isRevealed) return;
-            isRevealed = true;
-            const w = canvas.width / (window.devicePixelRatio || 1);
-            const h = canvas.height / (window.devicePixelRatio || 1);
-            ctx.clearRect(0, 0, w, h);
-            progressEl.classList.add('hidden');
-
-            // 触发 GA 事件
-            if (typeof gtag === 'function') {
-                gtag('event', 'scratch_reveal', {
-                    'event_category': 'Promo',
-                    'event_label': selectedCode,
-                    'value': promo.value
-                });
-                console.log('✅ GA Event: Scratch Reveal - ' + selectedCode);
-            }
-
-            // 小动画反馈
-            const card = document.getElementById('scratchCard');
-            card.style.transform = 'scale(1.02)';
-            setTimeout(() => { card.style.transform = ''; }, 300);
-        }
-
-        // ——— 事件绑定 (鼠标 + 触摸) ———
-        function getPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
-            };
-        }
-
-        function onStart(e) {
-            e.preventDefault();
-            if (isRevealed) return;
-            isDrawing = true;
-            const pos = getPos(e);
-            scratch(pos.x, pos.y);
-        }
-
-        function onMove(e) {
-            e.preventDefault();
-            if (!isDrawing || isRevealed) return;
-            const pos = getPos(e);
-            scratch(pos.x, pos.y);
-        }
-
-        function onEnd(e) {
-            e.preventDefault();
-            isDrawing = false;
-            // 最后再更新一次进度
-            if (!isRevealed) updateProgress();
-        }
-
-        // 鼠标事件
-        canvas.addEventListener('mousedown', onStart);
-        canvas.addEventListener('mousemove', onMove);
-        canvas.addEventListener('mouseup', onEnd);
-        canvas.addEventListener('mouseleave', onEnd);
-
-        // 触摸事件
-        canvas.addEventListener('touchstart', onStart, { passive: false });
-        canvas.addEventListener('touchmove', onMove, { passive: false });
-        canvas.addEventListener('touchend', onEnd, { passive: false });
-
-        // 窗口缩放时重新适配
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            // 如果已经刮开，保持透明
-            if (isRevealed) {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
-                ctx.clearRect(0, 0, w, h);
-            }
-        });
-
-        // 初始化
-        resizeCanvas();
-
-        // Initial render
-        allGames = [...games];
-        renderGames(allGames);
     </script>
 
 </body>
