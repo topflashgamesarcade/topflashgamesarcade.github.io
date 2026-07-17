@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scratch Card · Expire & Copy</title>
     <style>
-        /* ===== CSS ===== */
+        /* ===== CSS (unchanged) ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-deep: #070b15; --bg-surface: #0f172a; --bg-card: #1a2338;
@@ -32,6 +32,7 @@
         .promo-result { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-card); padding: 16px; z-index: 1; text-align: center; }
         .promo-result .promo-label { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 2px; font-weight: 500; }
         .promo-result .promo-code { font-size: 1.9rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 2px; line-height: 1.2; text-shadow: 0 0 40px rgba(0,240,255,0.15); }
+        .promo-result .promo-code.empty-prize { background: none; -webkit-text-fill-color: #fbbf24; color: #fbbf24; background-clip: unset; font-size: 1.2rem; }
         .promo-result .promo-code.expired-status { background: none; -webkit-text-fill-color: #f87171; color: #f87171; background-clip: unset; }
         .promo-result .promo-code.full-status { background: none; -webkit-text-fill-color: #fbbf24; color: #fbbf24; background-clip: unset; }
         .promo-result .promo-code.revealed-expired { background: none; -webkit-text-fill-color: #fbbf24; color: #fbbf24; background-clip: unset; }
@@ -119,32 +120,26 @@
         const db = firebase.database();
 
         // ================================================================
-        // 💾 STABLE DEVICE ID (stored in localStorage, but we only use it
-        //    to identify the user, NOT to store reveal status)
+        // 💾 STABLE DEVICE ID
         // ================================================================
         function getDeviceId() {
             let deviceId = localStorage.getItem('deviceId');
             if (!deviceId) {
                 deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 localStorage.setItem('deviceId', deviceId);
-                console.log('🔑 New device ID created:', deviceId);
-            } else {
-                console.log('🔑 Existing device ID:', deviceId);
             }
             return deviceId;
         }
         const USER_ID = getDeviceId();
 
         // ================================================================
-        // 💾 REVEAL STATUS (stored in Firebase ONLY)
+        // 💾 REVEAL STATUS (stored in Firebase)
         // ================================================================
         async function getRevealedStatus(code) {
             try {
                 const ref = db.ref('promoCodes/' + code + '/revealed/' + USER_ID);
                 const snapshot = await ref.once('value');
-                const status = snapshot.val() === true;
-                console.log('📖 Reveal status for', code, ':', status);
-                return status;
+                return snapshot.val() === true;
             } catch (error) {
                 console.error('❌ Error checking reveal status:', error);
                 return false;
@@ -155,7 +150,6 @@
             try {
                 const ref = db.ref('promoCodes/' + code + '/revealed/' + USER_ID);
                 await ref.set(status);
-                console.log('💾 Reveal status saved for', code, ':', status);
                 return true;
             } catch (error) {
                 console.error('❌ Error setting reveal status:', error);
@@ -191,6 +185,7 @@
         let isDateExpired = false;
         let isUsageExhausted = false;
         let justClaimed = false;
+        let isEmptyPrize = false; // 👈 NEW
         const RADIUS = 28;
         const REVEAL_THRESHOLD = 0.50;
 
@@ -354,7 +349,7 @@
             else if (rejectReason === 'removed') statusMessage.innerHTML = '🔄 Your previous promo code is no longer available. Here is a new one!';
             else statusMessage.innerHTML = '<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.';
 
-            // 🔥 Check reveal status using stable device ID
+            // Check reveal status
             isRevealed = await getRevealedStatus(selectedCode);
             if (isRevealed) {
                 canvas.style.display = 'none';
@@ -368,6 +363,9 @@
             loadingOverlay.style.display = 'none';
         }
 
+        // ================================================================
+        // 🖼️ DISPLAY PROMO INFO (UPDATED with empty prize support)
+        // ================================================================
         function displayPromoInfo(usage, claimedByUser = false) {
             const used = usage.used || 0;
             const maxU = usage.max_uses || promo.max_uses || 100;
@@ -378,47 +376,96 @@
             const today = new Date();
             isDateExpired = expiryDate ? expiryDate <= today : false;
             isUsageExhausted = used >= maxU;
-            promoCodeDisplay.classList.remove('expired-status', 'full-status', 'revealed-expired');
+            
+            // 👇 Check if this is an empty prize (label contains "empty" or "လက်မဲ့" or value is 0 with special label)
+            const labelLower = (promo.label || '').toLowerCase();
+            const isEmpty = labelLower.includes('empty') || labelLower.includes('လက်မဲ့') || labelLower.includes('မရှိ') || (promo.value === 0 && (labelLower.includes('ကံ') || labelLower.includes('မကောင်း')));
+            isEmptyPrize = isEmpty;
+
+            promoCodeDisplay.classList.remove('expired-status', 'full-status', 'revealed-expired', 'empty-prize');
 
             let codeDisplay = '', valueDisplay = '', statusHtml = '', showCopy = false, copyDisabled = false;
+
             if (claimedByUser) {
-                codeDisplay = selectedCode;
-                valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
-                statusHtml = `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
-                showCopy = true; copyDisabled = false;
-                if (isDateExpired) { promoCodeDisplay.classList.add('revealed-expired'); statusHtml = `<i class="fas fa-exclamation-triangle" style="color:#fbbf24;"></i> This promo has expired, but you already revealed it.`; }
+                // 🎯 If it's an empty prize, show special message instead of code
+                if (isEmpty) {
+                    codeDisplay = '😔';
+                    valueDisplay = `${promo.label}`;
+                    statusHtml = `<i class="fas fa-sad-tear" style="color:#fbbf24;"></i> No promo code this time. Better luck next time!`;
+                    promoCodeDisplay.classList.add('empty-prize');
+                    showCopy = false;
+                    copyDisabled = true;
+                } else {
+                    codeDisplay = selectedCode;
+                    valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
+                    statusHtml = `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
+                    showCopy = true;
+                    copyDisabled = false;
+                }
+                if (isDateExpired && !isEmpty) {
+                    promoCodeDisplay.classList.add('revealed-expired');
+                    statusHtml = `<i class="fas fa-exclamation-triangle" style="color:#fbbf24;"></i> This promo has expired, but you already revealed it.`;
+                }
             } else if (isDateExpired) {
                 codeDisplay = '⛔ EXPIRED';
                 valueDisplay = '<i class="fas fa-exclamation-triangle"></i> This promo has expired.';
                 statusHtml = `<i class="fas fa-times-circle" style="color:#f87171;"></i> This promo code has expired. Please try another card.`;
-                promoCodeDisplay.classList.add('expired-status'); showCopy = false; copyDisabled = true;
+                promoCodeDisplay.classList.add('expired-status');
+                showCopy = false;
+                copyDisabled = true;
             } else if (isUsageExhausted) {
                 codeDisplay = '⛔ FULLY USED';
                 valueDisplay = '<i class="fas fa-users-slash"></i> All slots are taken.';
                 statusHtml = `<i class="fas fa-users" style="color:#fbbf24;"></i> This promo code has reached its usage limit. Please try another card.`;
-                promoCodeDisplay.classList.add('full-status'); showCopy = false; copyDisabled = true;
+                promoCodeDisplay.classList.add('full-status');
+                showCopy = false;
+                copyDisabled = true;
             } else {
                 if (isRevealed) {
-                    codeDisplay = selectedCode;
-                    valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
-                    statusHtml = `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
-                    showCopy = true; copyDisabled = false;
+                    // 🎯 If it's an empty prize, show special message instead of code
+                    if (isEmpty) {
+                        codeDisplay = '😔';
+                        valueDisplay = `${promo.label}`;
+                        statusHtml = `<i class="fas fa-sad-tear" style="color:#fbbf24;"></i> No promo code this time. Better luck next time!`;
+                        promoCodeDisplay.classList.add('empty-prize');
+                        showCopy = false;
+                        copyDisabled = true;
+                    } else {
+                        codeDisplay = selectedCode;
+                        valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
+                        statusHtml = `<i class="fas fa-check-circle" style="color:#4caf50;"></i> Promo code revealed! Copy and use it.`;
+                        showCopy = true;
+                        copyDisabled = false;
+                    }
                 } else {
                     codeDisplay = '???';
                     valueDisplay = `<i class="fas fa-gift"></i> ${promo.label}`;
                     statusHtml = `<i class="fas fa-hand-pointer" style="color:var(--secondary-neon);"></i> Swipe with your finger to scratch and reveal your promo code.`;
-                    showCopy = false; copyDisabled = true;
+                    showCopy = false;
+                    copyDisabled = true;
                 }
             }
+
             promoCodeDisplay.textContent = codeDisplay;
+            promoCodeDisplay.style.fontSize = isEmpty && claimedByUser ? '2.2rem' : '';
             promoValueDisplay.innerHTML = valueDisplay;
-            if (claimedByUser || isDateExpired || isUsageExhausted || isRevealed) statusMessage.innerHTML = statusHtml;
-            if (showCopy) { copyBtn.style.display = 'inline-flex'; copyBtn.disabled = false; copyBtn.classList.remove('copied'); copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }
-            else { copyBtn.style.display = 'none'; copyBtn.disabled = true; }
+            if (claimedByUser || isDateExpired || isUsageExhausted || isRevealed) {
+                statusMessage.innerHTML = statusHtml;
+            }
+
+            if (showCopy) {
+                copyBtn.style.display = 'inline-flex';
+                copyBtn.disabled = false;
+                copyBtn.classList.remove('copied');
+                copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            } else {
+                copyBtn.style.display = 'none';
+                copyBtn.disabled = true;
+            }
         }
 
         // ================================================================
-        // 🖌️ CANVAS SCRATCH ENGINE
+        // 🖌️ CANVAS SCRATCH ENGINE (unchanged)
         // ================================================================
         function resizeCanvas() {
             const rect = canvas.parentElement.getBoundingClientRect();
@@ -479,7 +526,7 @@
         }
 
         // ================================================================
-        // 🎉 FULLY REVEAL
+        // 🎉 FULLY REVEAL (unchanged)
         // ================================================================
         async function fullyReveal() {
             if (isRevealed || isUpdating) return;
@@ -495,7 +542,6 @@
                 ctx.clearRect(0, 0, w, h); progressEl.classList.add('hidden');
                 let updatedUsage;
                 try { updatedUsage = await updatePromoUsageInRTDB(selectedCode); console.log('✅ DB updated:', updatedUsage); } catch (error) { console.error('❌ DB update failed, using localStorage:', error); updatedUsage = updatePromoUsageInLocal(selectedCode); }
-                // 🔥 Save reveal status using stable device ID
                 await setRevealedStatus(selectedCode, true);
                 isRevealed = true; canvas.style.display = 'none'; justClaimed = true;
                 displayPromoInfo(updatedUsage, true);
@@ -505,7 +551,7 @@
         }
 
         // ================================================================
-        // 📋 COPY
+        // 📋 COPY (unchanged)
         // ================================================================
         copyBtn.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -527,7 +573,7 @@
         }
 
         // ================================================================
-        // 🖱️ EVENT LISTENERS
+        // 🖱️ EVENT LISTENERS (unchanged)
         // ================================================================
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
