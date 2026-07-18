@@ -264,7 +264,7 @@
             background: rgba(15, 23, 42, 0.9);
         }
 
-        /* ---------- CLEAR BUTTON (Refined) ---------- */
+        /* ---------- CLEAR BUTTON ---------- */
         .search-wrapper .clear-btn {
             position: absolute;
             right: 14px;
@@ -318,10 +318,60 @@
         }
 
         /* =========================================================
-                   4. GAME GRID
+                   4. TABS
+                   ========================================================= */
+        .tab-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 16px 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            padding: 8px 28px;
+            border-radius: 40px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(4px);
+            letter-spacing: 0.3px;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--primary-neon);
+            color: var(--text-primary);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-gradient);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(255, 0, 127, 0.3);
+        }
+
+        .tab-btn .badge-count {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            margin-left: 6px;
+        }
+        .tab-btn.active .badge-count {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* =========================================================
+                   5. GAME GRID
                    ========================================================= */
         .games-section {
-            margin-top: 32px;
+            margin-top: 10px;
             padding-bottom: 32px;
         }
 
@@ -457,6 +507,30 @@
             letter-spacing: 0.6px;
         }
 
+        /* ---------- NEW BADGE (အသစ်ထည့်ထားတာ) ---------- */
+        .game-thumb .new-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: linear-gradient(135deg, #ff007f, #ff7700);
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(255, 0, 127, 0.4);
+            z-index: 3;
+            animation: pulseNew 2s infinite;
+        }
+
+        @keyframes pulseNew {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
         .game-info {
             padding: 10px 12px 14px;
             flex: 1;
@@ -502,7 +576,7 @@
             border: none;
             color: white;
             padding: 10px 0;
-            border-radius: var(--radius-sm);
+            border-radius: 6px;
             font-weight: 800;
             font-size: 0.75rem;
             cursor: pointer;
@@ -550,7 +624,7 @@
             font-size: 1.1rem;
             font-weight: 500;
             background: var(--bg-surface);
-            border-radius: var(--radius-lg);
+            border-radius: 12px;
             border: 1px dashed var(--border-subtle);
         }
 
@@ -563,7 +637,7 @@
         }
 
         /* =========================================================
-                   5. FOOTER
+                   6. FOOTER
                    ========================================================= */
         .footer {
             margin-top: 40px;
@@ -727,7 +801,7 @@
         }
 
         /* =========================================================
-                   6. RESPONSIVE
+                   7. RESPONSIVE
                    ========================================================= */
         @media (max-width: 1200px) {
             .game-grid {
@@ -823,6 +897,10 @@
                 width: 24px;
                 height: 24px;
             }
+            .tab-btn {
+                padding: 6px 18px;
+                font-size: 0.75rem;
+            }
         }
         @media (max-width: 550px) {
             .game-grid {
@@ -854,6 +932,10 @@
                 font-size: 1rem;
                 width: 20px;
                 height: 20px;
+            }
+            .tab-btn {
+                padding: 4px 12px;
+                font-size: 0.65rem;
             }
         }
     </style>
@@ -910,11 +992,23 @@
         </section>
 
         <!-- ============================================================
+        🆕 TAB BAR (အသစ်ထည့်ထားတာ)
+        ============================================================ -->
+        <div class="tab-wrapper">
+            <button class="tab-btn active" data-tab="all" id="tabAll">
+                📂 All Games <span class="badge-count" id="allCount">0</span>
+            </button>
+            <button class="tab-btn" data-tab="new" id="tabNew">
+                🆕 New Games <span class="badge-count" id="newCount">0</span>
+            </button>
+        </div>
+
+        <!-- ============================================================
         GAME GRID
         ============================================================ -->
         <section class="games-section">
             <div class="section-header">
-                <h2><i class="fas fa-archive"></i> Game Archive</h2>
+                <h2><i class="fas fa-archive"></i> <span id="sectionTitle">Game Archive</span></h2>
                 <span class="result-count" id="resultCount">Showing 0 games</span>
             </div>
             <div class="game-grid" id="gameGrid"></div>
@@ -962,2240 +1056,2666 @@
     </div>
 
     <!-- ============================================================
+    TOAST CONTAINER (အသစ်ထည့်ထားတာ)
+    ============================================================ -->
+    <div id="toastContainer" style="position:fixed; bottom:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; max-width:380px;"></div>
+
+    <!-- ============================================================
     SCRIPT
     ============================================================ -->
     <script>
         // ================================================================
-        // 🎮 GAME LIST (Placeholder — Add your own game data below)
+        // 🎮 GAME LIST (Placeholder — ဒီနေရာကို Python Script က အလိုအလျောက် ပြင်ဆင်ပေးမယ်)
         // ================================================================
         const games = [
     {
         "name": "100Men",
         "file": "https://archive.org/download/my_flash_games_arcade/100men.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/100men.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "13 Days In Hell",
         "file": "https://archive.org/download/my_flash_games_arcade/13 Days in Hell.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/13 Days in Hell.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "1Balloon",
         "file": "https://archive.org/download/my_flash_games_arcade/1balloon.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/1balloon.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "3 Foot Ninja Ii",
         "file": "https://archive.org/download/my_flash_games_arcade/3 foot ninja II.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/3 foot ninja II.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "333",
         "file": "https://archive.org/download/my_flash_games_arcade/333.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/333.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "3Dautomobile",
         "file": "https://archive.org/download/my_flash_games_arcade/3DAutoMobile.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/3DAutoMobile.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "3Dfroggeribpag",
         "file": "https://archive.org/download/my_flash_games_arcade/3dfroggerIBPAG.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/3dfroggerIBPAG.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "3Dpool",
         "file": "https://archive.org/download/my_flash_games_arcade/3DPool.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/3DPool.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "3Dsudoku",
         "file": "https://archive.org/download/my_flash_games_arcade/3dsudoku.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/3dsudoku.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "3Dworm",
         "file": "https://archive.org/download/my_flash_games_arcade/3dWorm.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/3dWorm.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "3Foot Ninja Chapter 1 The Lost Scrolls",
         "file": "https://archive.org/download/my_flash_games_arcade/3FOOT NINJA CHAPTER 1 THE LOST SCROLLS.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/3FOOT NINJA CHAPTER 1 THE LOST SCROLLS.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "4 Wheel Madness",
         "file": "https://archive.org/download/my_flash_games_arcade/4 Wheel Madness.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/4 Wheel Madness.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "7 Deadly Sins",
         "file": "https://archive.org/download/my_flash_games_arcade/7 Deadly Sins.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/7 Deadly Sins.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "99Bricks The Legend Of Garry",
         "file": "https://archive.org/download/my_flash_games_arcade/99Bricks-The legend of Garry.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/99Bricks-The legend of Garry.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "9Ball",
         "file": "https://archive.org/download/my_flash_games_arcade/9BALL.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/9BALL.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "A Day Of Slacking A Day Of Slacking",
         "file": "https://archive.org/download/my_flash_games_arcade/a day of slacking a day of slacking.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/a day of slacking a day of slacking.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "A Goody Life",
         "file": "https://archive.org/download/my_flash_games_arcade/A Goody LIFE.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/A Goody LIFE.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "A La Casa Del Deserto",
         "file": "https://archive.org/download/my_flash_games_arcade/A la Casa del Deserto.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/A la Casa del Deserto.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Aabb",
         "file": "https://archive.org/download/my_flash_games_arcade/aabb.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/aabb.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Abba'S On A Mission",
         "file": "https://archive.org/download/my_flash_games_arcade/ABBA'S ON A MISSION.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ABBA'S ON A MISSION.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Acci",
         "file": "https://archive.org/download/my_flash_games_arcade/Acci.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Acci.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Accurate Boy",
         "file": "https://archive.org/download/my_flash_games_arcade/ACCURATE BOY.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ACCURATE BOY.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Achilles",
         "file": "https://archive.org/download/my_flash_games_arcade/Achilles.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Achilles.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Acne Be Gone",
         "file": "https://archive.org/download/my_flash_games_arcade/acne-be-gone.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/acne-be-gone.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Actionfish",
         "file": "https://archive.org/download/my_flash_games_arcade/actionfish.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/actionfish.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Addlikemadsykoect",
         "file": "https://archive.org/download/my_flash_games_arcade/addlikemadSYKOECT.swf",
         "thumb": "",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Adventure Island",
         "file": "https://archive.org/download/my_flash_games_arcade/adventure-island.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/adventure-island.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Age Of War 1",
         "file": "https://archive.org/download/my_flash_games_arcade/AGE OF WAR 1.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/AGE OF WAR 1.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Age Of War 2",
         "file": "https://archive.org/download/my_flash_games_arcade/AGE OF WAR 2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/AGE OF WAR 2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Aggressive Attack",
         "file": "https://archive.org/download/my_flash_games_arcade/Aggressive Attack.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Aggressive Attack.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Air Hockey",
         "file": "https://archive.org/download/my_flash_games_arcade/AIR_HOCKEY.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/AIR_HOCKEY.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Alarmclock",
         "file": "https://archive.org/download/my_flash_games_arcade/alarmclock.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/alarmclock.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Alcohol",
         "file": "https://archive.org/download/my_flash_games_arcade/Alcohol.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Alcohol.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Alex In Danger",
         "file": "https://archive.org/download/my_flash_games_arcade/ALEX in DANGER.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ALEX in DANGER.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Alien Splatter",
         "file": "https://archive.org/download/my_flash_games_arcade/alien-splatter.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/alien-splatter.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Alienhominid",
         "file": "https://archive.org/download/my_flash_games_arcade/Alienhominid.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Alienhominid.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "All Out Allout Offsite",
         "file": "https://archive.org/download/my_flash_games_arcade/all out allout offsite.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/all out allout offsite.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Allythealien",
         "file": "https://archive.org/download/my_flash_games_arcade/allythealien.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/allythealien.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Alphattack Alphattack",
         "file": "https://archive.org/download/my_flash_games_arcade/alphattack alphattack.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/alphattack alphattack.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ameoba",
         "file": "https://archive.org/download/my_flash_games_arcade/Ameoba.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Ameoba.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angel Differences Bbl",
         "file": "https://archive.org/download/my_flash_games_arcade/angel_differences_Bbl.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angel_differences_Bbl.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Bad Pigs",
         "file": "https://archive.org/download/my_flash_games_arcade/Angry Birds Bad Pigs.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Angry Birds Bad Pigs.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Bomb",
         "file": "https://archive.org/download/my_flash_games_arcade/Angry Birds Bomb.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Angry Birds Bomb.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Cannon Collection",
         "file": "https://archive.org/download/my_flash_games_arcade/angry birds cannon collection.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry birds cannon collection.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Hd 3.0",
         "file": "https://archive.org/download/my_flash_games_arcade/angry birds hd 3.0.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry birds hd 3.0.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Take A Shower2",
         "file": "https://archive.org/download/my_flash_games_arcade/angry birds take a shower2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry birds take a shower2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Duck Cannon 4",
         "file": "https://archive.org/download/my_flash_games_arcade/Angry Duck Cannon 4.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Angry Duck Cannon 4.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Bird Counterattack",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-bird-counterattack.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-bird-counterattack.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Arms Bird",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-arms-bird.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-arms-bird.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Bad Pigs",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-bad-pigs.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-bad-pigs.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Bike Revenge",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-bike-revenge.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-bike-revenge.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Cannon",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-cannon.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-cannon.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Connect",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-connect.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-connect.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Crazy Racing S",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-crazy-racing-s.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-crazy-racing-s.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Go Crazy",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-go-crazy.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-go-crazy.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Halloween Adventure",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-halloween-adventure.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-halloween-adventure.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Halloween Hd",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-halloween-hd.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-halloween-hd.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Hockey",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-hockey.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-hockey.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Matching",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-matching.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-matching.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Online",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-online.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-online.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Piggies Escape 6898",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-piggies-escape-6898.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-piggies-escape-6898.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Pigs Out",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-pigs-out.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-pigs-out.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Punisher",
         "file": "https://archive.org/download/my_flash_games_arcade/Angry-Birds-Punisher.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Angry-Birds-Punisher.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Rio",
         "file": "https://archive.org/download/my_flash_games_arcade/Angry-Birds-Rio.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Angry-Birds-Rio.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Rush Rush Rush S",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-rush-rush-rush-s.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-rush-rush-rush-s.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Shot",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-shot.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-shot.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Space",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-space.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-space.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Stella",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-stella.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-stella.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Vs Zombies",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds-vs-zombies.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds-vs-zombies.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-birds.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-birds.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Duck Space",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-duck-space.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-duck-space.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Pigs 2",
         "file": "https://archive.org/download/my_flash_games_arcade/angry-pigs-2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry-pigs-2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angrybirds Huge",
         "file": "https://archive.org/download/my_flash_games_arcade/angrybirds-huge.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angrybirds-huge.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angrybirdsonline",
         "file": "https://archive.org/download/my_flash_games_arcade/AngryBirdsOnline.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/AngryBirdsOnline.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angrybirdsspacebike",
         "file": "https://archive.org/download/my_flash_games_arcade/angrybirdsspacebike.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angrybirdsspacebike.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angrybirdsspace Do 100",
         "file": "https://archive.org/download/my_flash_games_arcade/angryBirdsSpace_do-100.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angryBirdsSpace_do-100.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angrybirds Drink Water",
         "file": "https://archive.org/download/my_flash_games_arcade/angrybirds_drink_water.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angrybirds_drink_water.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds 2 Cannon",
         "file": "https://archive.org/download/my_flash_games_arcade/angry_birds_2_cannon.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry_birds_2_cannon.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Bad Pig Game",
         "file": "https://archive.org/download/my_flash_games_arcade/angry_birds_bad_pig_game.swf",
         "thumb": "",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Bomb 2",
         "file": "https://archive.org/download/my_flash_games_arcade/angry_birds_bomb_2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry_birds_bomb_2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Canon 3",
         "file": "https://archive.org/download/my_flash_games_arcade/angry_birds_canon_3.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry_birds_canon_3.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Dentist",
         "file": "https://archive.org/download/my_flash_games_arcade/angry_birds_dentist.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry_birds_dentist.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Differences",
         "file": "https://archive.org/download/my_flash_games_arcade/angry_birds_differences.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry_birds_differences.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Glace",
         "file": "https://archive.org/download/my_flash_games_arcade/angry_birds_glace.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry_birds_glace.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Kick Piggies",
         "file": "https://archive.org/download/my_flash_games_arcade/angry_birds_kick_piggies.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry_birds_kick_piggies.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Angry Birds Slingshot Fun 2",
         "file": "https://archive.org/download/my_flash_games_arcade/angry_birds_slingshot_fun_2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/angry_birds_slingshot_fun_2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Animator Vs  Animation By Alanbecker",
         "file": "https://archive.org/download/my_flash_games_arcade/Animator_vs__Animation_by_alanbecker.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Animator_vs__Animation_by_alanbecker.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Aqua Slug",
         "file": "https://archive.org/download/my_flash_games_arcade/Aqua Slug.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Aqua Slug.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Army Swat",
         "file": "https://archive.org/download/my_flash_games_arcade/ARMY SWAT.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ARMY SWAT.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Arny'S Battle Carribeans",
         "file": "https://archive.org/download/my_flash_games_arcade/ARNY'S BATTLE CARRIBEANS.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ARNY'S BATTLE CARRIBEANS.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Arrivalinhell",
         "file": "https://archive.org/download/my_flash_games_arcade/ArrivalInHell.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ArrivalInHell.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Asteroids",
         "file": "https://archive.org/download/my_flash_games_arcade/asteroids.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/asteroids.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Audio",
         "file": "https://archive.org/download/my_flash_games_arcade/Audio.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Audio.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Autumn War  Survivor",
         "file": "https://archive.org/download/my_flash_games_arcade/AUTUMN WAR  SURVIVOR.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/AUTUMN WAR  SURVIVOR.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Avenue Of Death",
         "file": "https://archive.org/download/my_flash_games_arcade/Avenue of Death.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Avenue of Death.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Babbie",
         "file": "https://archive.org/download/my_flash_games_arcade/Babbie.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Babbie.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Piggies 3.4",
         "file": "https://archive.org/download/my_flash_games_arcade/Bad Piggies 3.4.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Bad Piggies 3.4.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Piggies Stop Stop Stop",
         "file": "https://archive.org/download/my_flash_games_arcade/bad piggies stop stop stop.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bad piggies stop stop stop.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Piggies",
         "file": "https://archive.org/download/my_flash_games_arcade/Bad Piggies.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Bad Piggies.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Pig Defense",
         "file": "https://archive.org/download/my_flash_games_arcade/bad-pig-defense.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bad-pig-defense.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Piggies 3",
         "file": "https://archive.org/download/my_flash_games_arcade/Bad-Piggies-3.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Bad-Piggies-3.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Piggies 38",
         "file": "https://archive.org/download/my_flash_games_arcade/bad-piggies-38.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bad-piggies-38.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Piggies Ground Hot Day",
         "file": "https://archive.org/download/my_flash_games_arcade/bad-piggies-ground-hot-day.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bad-piggies-ground-hot-day.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Piggies Kart Racing",
         "file": "https://archive.org/download/my_flash_games_arcade/bad-piggies-kart-racing.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bad-piggies-kart-racing.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Piggies Online 2018",
         "file": "https://archive.org/download/my_flash_games_arcade/bad-piggies-online-2018.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bad-piggies-online-2018.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Badpiggies 20",
         "file": "https://archive.org/download/my_flash_games_arcade/badpiggies-20.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/badpiggies-20.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Piggies Air Strike",
         "file": "https://archive.org/download/my_flash_games_arcade/bad_piggies_air_strike.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bad_piggies_air_strike.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Piggies Rocket Jet",
         "file": "https://archive.org/download/my_flash_games_arcade/bad_piggies_rocket_jet.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bad_piggies_rocket_jet.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bad Pig Perfect Couple",
         "file": "https://archive.org/download/my_flash_games_arcade/bad_pig_perfect_couple.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bad_pig_perfect_couple.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bakeriesef",
         "file": "https://archive.org/download/my_flash_games_arcade/bakeriesEF.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bakeriesEF.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Balling",
         "file": "https://archive.org/download/my_flash_games_arcade/Balling.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Balling.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Balloon Hunter [From Www.Metacafe.Com]",
         "file": "https://archive.org/download/my_flash_games_arcade/Balloon Hunter [from www.metacafe.com].swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Balloon Hunter [from www.metacafe.com].png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Balloony",
         "file": "https://archive.org/download/my_flash_games_arcade/balloony.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/balloony.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Barbie Dress Up",
         "file": "https://archive.org/download/my_flash_games_arcade/barbie dress up.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/barbie dress up.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Battle For Gondor",
         "file": "https://archive.org/download/my_flash_games_arcade/Battle for Gondor.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Battle for Gondor.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Battlecity",
         "file": "https://archive.org/download/my_flash_games_arcade/battlecity.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/battlecity.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Battlecity ",
         "file": "https://archive.org/download/my_flash_games_arcade/battlecity_.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/battlecity_.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Battleships",
         "file": "https://archive.org/download/my_flash_games_arcade/battleships.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/battleships.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Be The Slayer",
         "file": "https://archive.org/download/my_flash_games_arcade/Be The Slayer.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Be The Slayer.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bed Bug'S Puzzle",
         "file": "https://archive.org/download/my_flash_games_arcade/BED BUG'S PUZZLE.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/BED BUG'S PUZZLE.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ben 10   Blockade Blitz",
         "file": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Blockade Blitz.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Blockade Blitz.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ben 10   Hero Matrix",
         "file": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Hero Matrix.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Hero Matrix.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ben 10   Powersplash",
         "file": "https://archive.org/download/my_flash_games_arcade/Ben 10 - powersplash.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Ben 10 - powersplash.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ben 10   Savage Pursuit",
         "file": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Savage Pursuit.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Ben 10 - Savage Pursuit.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ben 10 Critical Impact",
         "file": "https://archive.org/download/my_flash_games_arcade/Ben 10 Critical Impact.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Ben 10 Critical Impact.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ben10 Alien Force Alien X Master Of The Universe",
         "file": "https://archive.org/download/my_flash_games_arcade/Ben10 Alien force Alien X-master of the Universe.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Ben10 Alien force Alien X-master of the Universe.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Billiards Master Pro",
         "file": "https://archive.org/download/my_flash_games_arcade/BILLIARDS MASTER PRO.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/BILLIARDS MASTER PRO.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Billiarels",
         "file": "https://archive.org/download/my_flash_games_arcade/Billiarels.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Billiarels.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Blastem [From Www.Metacafe.Com]",
         "file": "https://archive.org/download/my_flash_games_arcade/blastem [from www.metacafe.com].swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/blastem [from www.metacafe.com].png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Blighted House Escape",
         "file": "https://archive.org/download/my_flash_games_arcade/Blighted House Escape.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Blighted House Escape.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Blobs Offsite",
         "file": "https://archive.org/download/my_flash_games_arcade/Blobs Offsite.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Blobs Offsite.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bloody Day",
         "file": "https://archive.org/download/my_flash_games_arcade/Bloody Day.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Bloody Day.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Blox",
         "file": "https://archive.org/download/my_flash_games_arcade/BLOX.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/BLOX.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bloxorz",
         "file": "https://archive.org/download/my_flash_games_arcade/BLOXORZ.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/BLOXORZ.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bobobomb",
         "file": "https://archive.org/download/my_flash_games_arcade/bobobomb.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bobobomb.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bobo Aliean",
         "file": "https://archive.org/download/my_flash_games_arcade/bobo_aliean.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bobo_aliean.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bombay Taxi",
         "file": "https://archive.org/download/my_flash_games_arcade/BOMBAY TAXI.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/BOMBAY TAXI.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bomberbob",
         "file": "https://archive.org/download/my_flash_games_arcade/bomberbob.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bomberbob.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bongo Balls",
         "file": "https://archive.org/download/my_flash_games_arcade/Bongo Balls.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Bongo Balls.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Boomboom",
         "file": "https://archive.org/download/my_flash_games_arcade/boomboom.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/boomboom.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bowmaster Prelude",
         "file": "https://archive.org/download/my_flash_games_arcade/Bowmaster prelude.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Bowmaster prelude.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bubble Shooter",
         "file": "https://archive.org/download/my_flash_games_arcade/BUBBLE SHOOTER.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/BUBBLE SHOOTER.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bubble Trouble",
         "file": "https://archive.org/download/my_flash_games_arcade/BUBBLE TROUBLE.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/BUBBLE TROUBLE.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Bubble Bobble 2",
         "file": "https://archive.org/download/my_flash_games_arcade/bubble-bobble-2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/bubble-bobble-2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Buggyrun",
         "file": "https://archive.org/download/my_flash_games_arcade/buggyrun.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/buggyrun.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Buzzer",
         "file": "https://archive.org/download/my_flash_games_arcade/buzzer.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/buzzer.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cannon Angry Birds 2",
         "file": "https://archive.org/download/my_flash_games_arcade/Cannon Angry Birds 2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Cannon Angry Birds 2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cannon Bird 3",
         "file": "https://archive.org/download/my_flash_games_arcade/Cannon Bird 3.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Cannon Bird 3.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cannon Angry Bird",
         "file": "https://archive.org/download/my_flash_games_arcade/cannon-angry-bird.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/cannon-angry-bird.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cat A Pult",
         "file": "https://archive.org/download/my_flash_games_arcade/Cat-A-Pult.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Cat-A-Pult.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cat Uac Catapult Ii",
         "file": "https://archive.org/download/my_flash_games_arcade/CAT-UAC CATAPULT II.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/CAT-UAC CATAPULT II.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Caveman Game",
         "file": "https://archive.org/download/my_flash_games_arcade/caveman game.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/caveman game.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Centipede",
         "file": "https://archive.org/download/my_flash_games_arcade/centipede.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/centipede.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cg Mario Level Pack",
         "file": "https://archive.org/download/my_flash_games_arcade/CG MARIO LEVEL PACK.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/CG MARIO LEVEL PACK.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cgi Mario Levels Pack",
         "file": "https://archive.org/download/my_flash_games_arcade/cgi mario levels pack.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/cgi mario levels pack.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Chatnoir",
         "file": "https://archive.org/download/my_flash_games_arcade/chatnoir.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/chatnoir.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Chess",
         "file": "https://archive.org/download/my_flash_games_arcade/chess.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/chess.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Clone Adoodledoo",
         "file": "https://archive.org/download/my_flash_games_arcade/Clone-ADoodleDoo.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Clone-ADoodleDoo.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Contra",
         "file": "https://archive.org/download/my_flash_games_arcade/contra.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/contra.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Contra World Challenge 61",
         "file": "https://archive.org/download/my_flash_games_arcade/contra_world_challenge_61.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/contra_world_challenge_61.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
+    },
+    {
+        "name": "Counter Snipe",
+        "file": "https://archive.org/download/my_flash_games_arcade/Counter Snipe.swf",
+        "thumb": "",
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Crazy Flasher 3",
         "file": "https://archive.org/download/my_flash_games_arcade/Crazy Flasher 3.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Crazy Flasher 3.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cross Xo Game",
         "file": "https://archive.org/download/my_flash_games_arcade/Cross_XO_Game.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Cross_XO_Game.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Crush The Castle",
         "file": "https://archive.org/download/my_flash_games_arcade/Crush the Castle.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Crush the Castle.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Crush Bad Piggie",
         "file": "https://archive.org/download/my_flash_games_arcade/Crush-Bad-PigGie.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Crush-Bad-PigGie.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Crypt Raider2003",
         "file": "https://archive.org/download/my_flash_games_arcade/CRYPT RAIDER2003.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/CRYPT RAIDER2003.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cubox",
         "file": "https://archive.org/download/my_flash_games_arcade/Cubox.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Cubox.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cyber Uf2",
         "file": "https://archive.org/download/my_flash_games_arcade/Cyber UF2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Cyber UF2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cybermice",
         "file": "https://archive.org/download/my_flash_games_arcade/cybermice.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/cybermice.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Cycle Racers",
         "file": "https://archive.org/download/my_flash_games_arcade/Cycle Racers.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Cycle Racers.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Days 2 Die   The Other Side",
         "file": "https://archive.org/download/my_flash_games_arcade/Days 2 Die - The Other Side.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Days 2 Die - The Other Side.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Dead Frontier   Night One",
         "file": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night One.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night One.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Dead Frontier   Night Three",
         "file": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night Three.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night Three.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Dead Frontier   Night Two",
         "file": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night Two.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Dead Frontier - Night Two.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Defender",
         "file": "https://archive.org/download/my_flash_games_arcade/defender.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/defender.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Deluxe Pool Deluxepool Miniclip",
         "file": "https://archive.org/download/my_flash_games_arcade/deluxe pool deluxepool miniclip.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/deluxe pool deluxepool miniclip.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Dirt Bike",
         "file": "https://archive.org/download/my_flash_games_arcade/Dirt Bike.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Dirt Bike.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Dog & Cat Game",
         "file": "https://archive.org/download/my_flash_games_arcade/Dog & Cat Game.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Dog & Cat Game.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Donkey Kong",
         "file": "https://archive.org/download/my_flash_games_arcade/donkey-kong.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/donkey-kong.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Doodle",
         "file": "https://archive.org/download/my_flash_games_arcade/doodle.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/doodle.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Doom",
         "file": "https://archive.org/download/my_flash_games_arcade/DOOM.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/DOOM.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Double Dragon",
         "file": "https://archive.org/download/my_flash_games_arcade/double-dragon.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/double-dragon.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Dr Compactor Dr Compactor",
         "file": "https://archive.org/download/my_flash_games_arcade/dr compactor dr compactor.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/dr compactor dr compactor.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Drakojan Skies   Mission 2",
         "file": "https://archive.org/download/my_flash_games_arcade/Drakojan Skies - Mission 2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Drakojan Skies - Mission 2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Draw Play 2",
         "file": "https://archive.org/download/my_flash_games_arcade/Draw Play 2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Draw Play 2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Drive The Rabbit Crazy",
         "file": "https://archive.org/download/my_flash_games_arcade/Drive The Rabbit Crazy.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Drive The Rabbit Crazy.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Duck Hunt",
         "file": "https://archive.org/download/my_flash_games_arcade/duck-hunt.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/duck-hunt.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Earn To Die 2 Exodus",
         "file": "https://archive.org/download/my_flash_games_arcade/Earn to Die 2 Exodus.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Earn to Die 2 Exodus.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Elephantquest Public Secure 1.11",
         "file": "https://archive.org/download/my_flash_games_arcade/ElephantQuest-Public_secure_1.11.swf",
         "thumb": "",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Epic Battle Fantasy 2",
         "file": "https://archive.org/download/my_flash_games_arcade/Epic Battle Fantasy 2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Epic Battle Fantasy 2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Epic Battle Fantasy 4",
         "file": "https://archive.org/download/my_flash_games_arcade/Epic Battle Fantasy 4.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Epic Battle Fantasy 4.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Epic Battle Fantasy 3 Secure",
         "file": "https://archive.org/download/my_flash_games_arcade/Epic_Battle_Fantasy_3_secure.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Epic_Battle_Fantasy_3_secure.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Epic Battle Fantasy 5",
         "file": "https://archive.org/download/my_flash_games_arcade/Epic_Battle_Fantasy_5.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Epic_Battle_Fantasy_5.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Escape",
         "file": "https://archive.org/download/my_flash_games_arcade/escape.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/escape.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Escape From Zombie Place",
         "file": "https://archive.org/download/my_flash_games_arcade/Escape_From_Zombie_Place.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Escape_From_Zombie_Place.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Exoforse [From Www.Metacafe.Com]",
         "file": "https://archive.org/download/my_flash_games_arcade/Exoforse [from www.metacafe.com].swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Exoforse [from www.metacafe.com].png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Find Different Point Findgames",
         "file": "https://archive.org/download/my_flash_games_arcade/FIND DIFFERENT POINT-FINDGAMES.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/FIND DIFFERENT POINT-FINDGAMES.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Fireworks",
         "file": "https://archive.org/download/my_flash_games_arcade/fireworks.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/fireworks.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Fit To Be Pie'D",
         "file": "https://archive.org/download/my_flash_games_arcade/FIT TO BE PIE'D.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/FIT TO BE PIE'D.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Flash Chess Iii",
         "file": "https://archive.org/download/my_flash_games_arcade/Flash Chess III.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Flash Chess III.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Flash Football Game",
         "file": "https://archive.org/download/my_flash_games_arcade/flash-football-game.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/flash-football-game.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Flash Tetris",
         "file": "https://archive.org/download/my_flash_games_arcade/flash-tetris.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/flash-tetris.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Flashblox",
         "file": "https://archive.org/download/my_flash_games_arcade/Flashblox.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Flashblox.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Flashman",
         "file": "https://archive.org/download/my_flash_games_arcade/Flashman.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Flashman.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Food Bash",
         "file": "https://archive.org/download/my_flash_games_arcade/FOOD BASH.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/FOOD BASH.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Foreign Creature Latest",
         "file": "https://archive.org/download/my_flash_games_arcade/foreign_creature_latest.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/foreign_creature_latest.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Foxysniper",
         "file": "https://archive.org/download/my_flash_games_arcade/foxysniper.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/foxysniper.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Frisbee Dog",
         "file": "https://archive.org/download/my_flash_games_arcade/Frisbee Dog.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Frisbee Dog.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Frog Mania",
         "file": "https://archive.org/download/my_flash_games_arcade/Frog Mania.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Frog Mania.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Galaga",
         "file": "https://archive.org/download/my_flash_games_arcade/galaga.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/galaga.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ghosts And Goblins",
         "file": "https://archive.org/download/my_flash_games_arcade/ghosts-and-goblins.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ghosts-and-goblins.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ghostscape2",
         "file": "https://archive.org/download/my_flash_games_arcade/GHOSTSCAPE2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/GHOSTSCAPE2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Ghosty Ghosty",
         "file": "https://archive.org/download/my_flash_games_arcade/Ghosty Ghosty.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Ghosty Ghosty.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ghost Rider Demon Duel",
         "file": "https://archive.org/download/my_flash_games_arcade/GHOST_RIDER_Demon_Duel.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/GHOST_RIDER_Demon_Duel.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Girl & Boy",
         "file": "https://archive.org/download/my_flash_games_arcade/girl & boy.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/girl & boy.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Glopjs",
         "file": "https://archive.org/download/my_flash_games_arcade/GlopJS.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/GlopJS.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Gold Miner",
         "file": "https://archive.org/download/my_flash_games_arcade/Gold Miner.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Gold Miner.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Golddiggers",
         "file": "https://archive.org/download/my_flash_games_arcade/golddiggers.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/golddiggers.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Golf 2001",
         "file": "https://archive.org/download/my_flash_games_arcade/Golf 2001.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Golf 2001.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Golf Master 3D",
         "file": "https://archive.org/download/my_flash_games_arcade/Golf Master 3D.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Golf Master 3D.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Goofy Gopher",
         "file": "https://archive.org/download/my_flash_games_arcade/Goofy Gopher.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Goofy Gopher.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Governor Of Poker",
         "file": "https://archive.org/download/my_flash_games_arcade/GOVERNOR OF POKER.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/GOVERNOR OF POKER.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Gun Knight",
         "file": "https://archive.org/download/my_flash_games_arcade/GUN KNIGHT.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/GUN KNIGHT.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Gunblood",
         "file": "https://archive.org/download/my_flash_games_arcade/GUNBLOOD.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/GUNBLOOD.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Gunny Bunny Ver2",
         "file": "https://archive.org/download/my_flash_games_arcade/Gunny Bunny Ver2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Gunny Bunny Ver2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Gunrun",
         "file": "https://archive.org/download/my_flash_games_arcade/GUNRUN.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/GUNRUN.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Gunslinger",
         "file": "https://archive.org/download/my_flash_games_arcade/GunSlinger.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/GunSlinger.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Gyroball Gyroball",
         "file": "https://archive.org/download/my_flash_games_arcade/gyroball gyroball.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/gyroball gyroball.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Happy Pill",
         "file": "https://archive.org/download/my_flash_games_arcade/Happy Pill.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Happy Pill.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Happymemoryste",
         "file": "https://archive.org/download/my_flash_games_arcade/happymemorySte.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/happymemorySte.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Happywheels",
         "file": "https://archive.org/download/my_flash_games_arcade/HAPPYWHEELS.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/HAPPYWHEELS.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Heal Stella",
         "file": "https://archive.org/download/my_flash_games_arcade/heal-stella.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/heal-stella.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Hexxagon",
         "file": "https://archive.org/download/my_flash_games_arcade/HEXXAGON.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/HEXXAGON.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Homerun",
         "file": "https://archive.org/download/my_flash_games_arcade/HomeRun.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/HomeRun.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Horror Plant Kongregate Preloader3",
         "file": "https://archive.org/download/my_flash_games_arcade/horror_plant_kongregate_preloader3.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/horror_plant_kongregate_preloader3.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Horse Show Jumping",
         "file": "https://archive.org/download/my_flash_games_arcade/Horse Show Jumping.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Horse Show Jumping.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Isaac",
         "file": "https://archive.org/download/my_flash_games_arcade/ISAAC.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ISAAC.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Jet Set Willy",
         "file": "https://archive.org/download/my_flash_games_arcade/jet-set-willy.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/jet-set-willy.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Kick Out Green Pigs",
         "file": "https://archive.org/download/my_flash_games_arcade/kick-out-green-pigs.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/kick-out-green-pigs.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Kicks Indoor Soccer",
         "file": "https://archive.org/download/my_flash_games_arcade/KICKS indoor soccer.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/KICKS indoor soccer.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Kickups",
         "file": "https://archive.org/download/my_flash_games_arcade/kickups.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/kickups.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Killerescape3",
         "file": "https://archive.org/download/my_flash_games_arcade/killerescape3.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/killerescape3.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Killingsubstance",
         "file": "https://archive.org/download/my_flash_games_arcade/KillingSubstance.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/KillingSubstance.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Kindergarten",
         "file": "https://archive.org/download/my_flash_games_arcade/kindergarten.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/kindergarten.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "King Of Fighters",
         "file": "https://archive.org/download/my_flash_games_arcade/king-of-fighters.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/king-of-fighters.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Kingdomrush",
         "file": "https://archive.org/download/my_flash_games_arcade/KINGDOMRUSH.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/KINGDOMRUSH.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Kingdomrush V1.071 S Sl Kongregate Nopremium",
         "file": "https://archive.org/download/my_flash_games_arcade/KingdomRush_v1.071_s_sl_Kongregate_nopremium.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/KingdomRush_v1.071_s_sl_Kongregate_nopremium.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Kingdom Rush Frontiers",
         "file": "https://archive.org/download/my_flash_games_arcade/KINGDOM_RUSH_FRONTIERS.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/KINGDOM_RUSH_FRONTIERS.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Kingofthehill",
         "file": "https://archive.org/download/my_flash_games_arcade/kingofthehill.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/kingofthehill.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Kung Fu Remix",
         "file": "https://archive.org/download/my_flash_games_arcade/kung-fu-remix.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/kung-fu-remix.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Loco Motion",
         "file": "https://archive.org/download/my_flash_games_arcade/LOCO Motion.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/LOCO Motion.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Magic Ultra Warrior",
         "file": "https://archive.org/download/my_flash_games_arcade/magic_ultra_warrior.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/magic_ultra_warrior.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Manic Miner",
         "file": "https://archive.org/download/my_flash_games_arcade/manic-miner.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/manic-miner.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mapleflashstory",
         "file": "https://archive.org/download/my_flash_games_arcade/MapleFlashStory.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MapleFlashStory.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Maplestory Kill Panda",
         "file": "https://archive.org/download/my_flash_games_arcade/MapleStory Kill Panda.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MapleStory Kill Panda.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mario Adventure",
         "file": "https://archive.org/download/my_flash_games_arcade/Mario adventure.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Mario adventure.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mario Combat",
         "file": "https://archive.org/download/my_flash_games_arcade/Mario Combat.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Mario Combat.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mario In The Jungle",
         "file": "https://archive.org/download/my_flash_games_arcade/Mario in the jungle.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Mario in the jungle.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Master Fighting",
         "file": "https://archive.org/download/my_flash_games_arcade/MASTER_FIGHTING.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MASTER_FIGHTING.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Memory 2000",
         "file": "https://archive.org/download/my_flash_games_arcade/Memory 2000.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Memory 2000.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Memory",
         "file": "https://archive.org/download/my_flash_games_arcade/Memory.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Memory.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Merlins Christmas Natal2006",
         "file": "https://archive.org/download/my_flash_games_arcade/merlins christmas natal2006.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/merlins christmas natal2006.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Metalslug",
         "file": "https://archive.org/download/my_flash_games_arcade/metalslug.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/metalslug.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Metele",
         "file": "https://archive.org/download/my_flash_games_arcade/Metele.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Metele.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Minesweeper",
         "file": "https://archive.org/download/my_flash_games_arcade/minesweeper.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/minesweeper.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mini Moto",
         "file": "https://archive.org/download/my_flash_games_arcade/Mini Moto.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Mini Moto.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Miniball",
         "file": "https://archive.org/download/my_flash_games_arcade/Miniball.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Miniball.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mini Golf",
         "file": "https://archive.org/download/my_flash_games_arcade/MINI_GOLF.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MINI_GOLF.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Monk",
         "file": "https://archive.org/download/my_flash_games_arcade/Monk.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Monk.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Monkey Lander",
         "file": "https://archive.org/download/my_flash_games_arcade/MONKEY LANDER.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MONKEY LANDER.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Monkeynutste",
         "file": "https://archive.org/download/my_flash_games_arcade/MonkeyNutSte.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MonkeyNutSte.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Monster Memory",
         "file": "https://archive.org/download/my_flash_games_arcade/MONSTER MEMORY.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MONSTER MEMORY.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Monster Pool Side Sumo",
         "file": "https://archive.org/download/my_flash_games_arcade/MONSTER POOL SIDE SUMO.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MONSTER POOL SIDE SUMO.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mortal Kombat",
         "file": "https://archive.org/download/my_flash_games_arcade/mortal-kombat.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/mortal-kombat.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Motocross Fmx",
         "file": "https://archive.org/download/my_flash_games_arcade/Motocross FMX.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Motocross FMX.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Motorcycle Racer",
         "file": "https://archive.org/download/my_flash_games_arcade/MOTORCYCLE RACER.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MOTORCYCLE RACER.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mountain Bike",
         "file": "https://archive.org/download/my_flash_games_arcade/MOUNTAIN BIKE.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MOUNTAIN BIKE.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mountain Bike",
         "file": "https://archive.org/download/my_flash_games_arcade/MOUNTAIN_BIKE.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MOUNTAIN_BIKE.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mouse Hunt",
         "file": "https://archive.org/download/my_flash_games_arcade/MOUSE HUNT.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MOUSE HUNT.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Moving  Cat",
         "file": "https://archive.org/download/my_flash_games_arcade/moving  cat.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/moving  cat.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Mummies",
         "file": "https://archive.org/download/my_flash_games_arcade/Mummies.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Mummies.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Mummyforkong Secure",
         "file": "https://archive.org/download/my_flash_games_arcade/MummyForKong_secure.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MummyForKong_secure.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Mummymojo",
         "file": "https://archive.org/download/my_flash_games_arcade/MummyMojo.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/MummyMojo.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Mummy Mfz Viral",
         "file": "https://archive.org/download/my_flash_games_arcade/mummy_mfz_viral.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/mummy_mfz_viral.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Naughty Angry Birds",
         "file": "https://archive.org/download/my_flash_games_arcade/naughty_angry_birds.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/naughty_angry_birds.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ninja Guiji",
         "file": "https://archive.org/download/my_flash_games_arcade/ninja guiji.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ninja guiji.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ninja Virus",
         "file": "https://archive.org/download/my_flash_games_arcade/ninja-virus.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ninja-virus.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ninja Gaiden 4 The Prince Of Darkness",
         "file": "https://archive.org/download/my_flash_games_arcade/ninja_gaiden_4_the_prince_of_darkness.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ninja_gaiden_4_the_prince_of_darkness.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Orbox B",
         "file": "https://archive.org/download/my_flash_games_arcade/ORBOX B.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ORBOX B.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Pacman",
         "file": "https://archive.org/download/my_flash_games_arcade/PacMan.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/PacMan.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Papa'S Burgeria",
         "file": "https://archive.org/download/my_flash_games_arcade/Papa's Burgeria.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Papa's Burgeria.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Papa'S Pastaria",
         "file": "https://archive.org/download/my_flash_games_arcade/Papa's Pastaria.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Papa's Pastaria.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Pingpong",
         "file": "https://archive.org/download/my_flash_games_arcade/PingPong.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/PingPong.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Plants Vs Zombies 2   Fungame",
         "file": "https://archive.org/download/my_flash_games_arcade/Plants Vs Zombies 2 - Fungame.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Plants Vs Zombies 2 - Fungame.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Playing With Fire 2",
         "file": "https://archive.org/download/my_flash_games_arcade/Playing with fire 2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Playing with fire 2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Plumber",
         "file": "https://archive.org/download/my_flash_games_arcade/Plumber.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Plumber.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Pong",
         "file": "https://archive.org/download/my_flash_games_arcade/pong.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/pong.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Pretty Mummy And Her Child Dress Up Loading",
         "file": "https://archive.org/download/my_flash_games_arcade/Pretty-Mummy-and-Her-Child-Dress-Up-loading.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Pretty-Mummy-and-Her-Child-Dress-Up-loading.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Prince Of Persia",
         "file": "https://archive.org/download/my_flash_games_arcade/prince-of-persia.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/prince-of-persia.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Puzzlemaniaxibpag",
         "file": "https://archive.org/download/my_flash_games_arcade/puzzlemaniaxIBPAG.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/puzzlemaniaxIBPAG.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Quick Draw",
         "file": "https://archive.org/download/my_flash_games_arcade/Quick Draw.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Quick Draw.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Raidenx",
         "file": "https://archive.org/download/my_flash_games_arcade/raidenx.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/raidenx.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Rickdangerous",
         "file": "https://archive.org/download/my_flash_games_arcade/rickdangerous.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/rickdangerous.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Road Of The Dead 2010",
         "file": "https://archive.org/download/my_flash_games_arcade/road-of-the-dead-2010.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/road-of-the-dead-2010.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Road Of The Deads 2",
         "file": "https://archive.org/download/my_flash_games_arcade/road_of_the_deads_2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/road_of_the_deads_2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Rtype",
         "file": "https://archive.org/download/my_flash_games_arcade/rtype.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/rtype.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Run 2",
         "file": "https://archive.org/download/my_flash_games_arcade/Run 2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Run 2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Samurai Jack Code Of The Samurai",
         "file": "https://archive.org/download/my_flash_games_arcade/Samurai Jack Code of The Samurai.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Samurai Jack Code of The Samurai.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Scooby Doo And The Creepy Castle",
         "file": "https://archive.org/download/my_flash_games_arcade/Scooby Doo and The Creepy Castle.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Scooby Doo and The Creepy Castle.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Shove It Good",
         "file": "https://archive.org/download/my_flash_games_arcade/Shove It good.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Shove It good.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Shuffle [From Www.Metacafe.Com]",
         "file": "https://archive.org/download/my_flash_games_arcade/Shuffle [from www.metacafe.com].swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Shuffle [from www.metacafe.com].png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Silversphere",
         "file": "https://archive.org/download/my_flash_games_arcade/Silversphere.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Silversphere.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Skeet Shoot",
         "file": "https://archive.org/download/my_flash_games_arcade/Skeet Shoot.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Skeet Shoot.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Sniper(Myanmar Version)",
         "file": "https://archive.org/download/my_flash_games_arcade/sniper(Myanmar Version).swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/sniper(Myanmar Version).png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Sniperassassinfinal Filtered",
         "file": "https://archive.org/download/my_flash_games_arcade/sniperassassinfinal_filtered.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/sniperassassinfinal_filtered.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Sniper Assassin2",
         "file": "https://archive.org/download/my_flash_games_arcade/sniper_assassin2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/sniper_assassin2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Soap Bubble",
         "file": "https://archive.org/download/my_flash_games_arcade/SOAP BUBBLE.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/SOAP BUBBLE.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Sonny2Kong",
         "file": "https://archive.org/download/my_flash_games_arcade/Sonny2Kong.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Sonny2Kong.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Squares2",
         "file": "https://archive.org/download/my_flash_games_arcade/Squares2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Squares2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Stabike",
         "file": "https://archive.org/download/my_flash_games_arcade/Stabike.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Stabike.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Star Ball",
         "file": "https://archive.org/download/my_flash_games_arcade/Star Ball.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Star Ball.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
+    },
+    {
+        "name": "Stick Squad 3 Sniper",
+        "file": "https://archive.org/download/my_flash_games_arcade/stick-squad-3_Sniper.swf",
+        "thumb": "https://archive.org/download/my_flash_games_arcade/stick-squad-3_Sniper.png",
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Stone",
         "file": "https://archive.org/download/my_flash_games_arcade/STONE.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/STONE.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Streetfighter2",
         "file": "https://archive.org/download/my_flash_games_arcade/streetfighter2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/streetfighter2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Strike Force Heroes 2",
         "file": "https://archive.org/download/my_flash_games_arcade/strike-force-heroes-2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/strike-force-heroes-2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Sumo",
         "file": "https://archive.org/download/my_flash_games_arcade/sumo.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/sumo.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Sunnypatch3Kong",
         "file": "https://archive.org/download/my_flash_games_arcade/SunnyPatch3Kong.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/SunnyPatch3Kong.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Super Mario Flash 3",
         "file": "https://archive.org/download/my_flash_games_arcade/SUPER MARIO FLASH 3.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/SUPER MARIO FLASH 3.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Super Ninja Strike",
         "file": "https://archive.org/download/my_flash_games_arcade/Super Ninja Strike.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Super Ninja Strike.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Superbattlecity2",
         "file": "https://archive.org/download/my_flash_games_arcade/superbattlecity2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/superbattlecity2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Supermario63 D",
         "file": "https://archive.org/download/my_flash_games_arcade/supermario63_d.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/supermario63_d.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Swords&Souls",
         "file": "https://archive.org/download/my_flash_games_arcade/swords&souls.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/swords&souls.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "The Fancy Pants Adventures World 1",
         "file": "https://archive.org/download/my_flash_games_arcade/The Fancy Pants Adventures World 1.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/The Fancy Pants Adventures World 1.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "The Fancy Pants Adventures World 2",
         "file": "https://archive.org/download/my_flash_games_arcade/The Fancy Pants Adventures World 2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/The Fancy Pants Adventures World 2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "The Final War",
         "file": "https://archive.org/download/my_flash_games_arcade/THE FINAL WAR.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/THE FINAL WAR.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "The Last Stand 2",
         "file": "https://archive.org/download/my_flash_games_arcade/THE LAST STAND 2.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/THE LAST STAND 2.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "The Last Stand",
         "file": "https://archive.org/download/my_flash_games_arcade/The Last Stand.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/The Last Stand.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "The Mario Bros",
         "file": "https://archive.org/download/my_flash_games_arcade/THE MARIO BROS.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/THE MARIO BROS.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "The Smurfs Brainy'S Bad Day",
         "file": "https://archive.org/download/my_flash_games_arcade/THE SMURFS BRAINY'S BAD DAY.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/THE SMURFS BRAINY'S BAD DAY.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "The Visitor Massacre At Camp Happy",
         "file": "https://archive.org/download/my_flash_games_arcade/The Visitor Massacre at Camp Happy.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/The Visitor Massacre at Camp Happy.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "The Great Giana Sisters",
         "file": "https://archive.org/download/my_flash_games_arcade/the-great-giana-sisters.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/the-great-giana-sisters.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "The Last Stand Union City",
         "file": "https://archive.org/download/my_flash_games_arcade/the-last-stand-union-city.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/the-last-stand-union-city.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "The Visitor    Kongregate",
         "file": "https://archive.org/download/my_flash_games_arcade/The_Visitor_-__Kongregate.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/The_Visitor_-__Kongregate.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Third Rock Rescue",
         "file": "https://archive.org/download/my_flash_games_arcade/THIRD ROCK RESCUE.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/THIRD ROCK RESCUE.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Time Pilot",
         "file": "https://archive.org/download/my_flash_games_arcade/time-pilot.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/time-pilot.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Tom And Jerry [From Www.Metacafe.Com]",
         "file": "https://archive.org/download/my_flash_games_arcade/Tom and Jerry [from www.metacafe.com].swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Tom and Jerry [from www.metacafe.com].png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "U Force",
         "file": "https://archive.org/download/my_flash_games_arcade/U-Force.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/U-Force.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Ufo Joe",
         "file": "https://archive.org/download/my_flash_games_arcade/UFO joe.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/UFO joe.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Unfreeze Angry Birds",
         "file": "https://archive.org/download/my_flash_games_arcade/Unfreeze-Angry-Birds.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Unfreeze-Angry-Birds.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Unreal Flash",
         "file": "https://archive.org/download/my_flash_games_arcade/Unreal Flash.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Unreal Flash.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Uphill Rush",
         "file": "https://archive.org/download/my_flash_games_arcade/Uphill Rush.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Uphill Rush.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Utter Nonsense",
         "file": "https://archive.org/download/my_flash_games_arcade/Utter Nonsense.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Utter Nonsense.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Velocity",
         "file": "https://archive.org/download/my_flash_games_arcade/Velocity.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Velocity.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Visitor Returns",
         "file": "https://archive.org/download/my_flash_games_arcade/visitor_returns.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/visitor_returns.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     },
     {
         "name": "Voly Ball [From Www.Metacafe.Com]",
         "file": "https://archive.org/download/my_flash_games_arcade/voly ball [from www.metacafe.com].swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/voly ball [from www.metacafe.com].png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Warfare 1917",
         "file": "https://archive.org/download/my_flash_games_arcade/WARFARE 1917.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/WARFARE 1917.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Warfare 1944",
         "file": "https://archive.org/download/my_flash_games_arcade/WARFARE 1944.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/WARFARE 1944.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Whack A Craft Minecraft Game",
         "file": "https://archive.org/download/my_flash_games_arcade/whack-a-craft-minecraft-game.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/whack-a-craft-minecraft-game.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Wheelers",
         "file": "https://archive.org/download/my_flash_games_arcade/Wheelers.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Wheelers.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Windows Xp",
         "file": "https://archive.org/download/my_flash_games_arcade/Windows XP.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Windows XP.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Wordz",
         "file": "https://archive.org/download/my_flash_games_arcade/Wordz.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Wordz.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Worldcupfever",
         "file": "https://archive.org/download/my_flash_games_arcade/Worldcupfever.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Worldcupfever.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Wpnfire",
         "file": "https://archive.org/download/my_flash_games_arcade/WpnFire.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/WpnFire.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Xevious",
         "file": "https://archive.org/download/my_flash_games_arcade/xevious.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/xevious.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Xiaoxiao Man Shoot Down",
         "file": "https://archive.org/download/my_flash_games_arcade/XIAOXIAO MAN SHOOT DOWN.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/XIAOXIAO MAN SHOOT DOWN.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Xraye",
         "file": "https://archive.org/download/my_flash_games_arcade/XRAYE.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/XRAYE.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Xtremeshelleste",
         "file": "https://archive.org/download/my_flash_games_arcade/XtremeShelleSte.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/XtremeShelleSte.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Year Of The Snake",
         "file": "https://archive.org/download/my_flash_games_arcade/Year of the Snake.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Year of the Snake.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Youda Camper",
         "file": "https://archive.org/download/my_flash_games_arcade/youda CAMPER.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/youda CAMPER.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Your Transformers Name",
         "file": "https://archive.org/download/my_flash_games_arcade/YOUR TRANSFORMERS NAME.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/YOUR TRANSFORMERS NAME.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Zombie Run",
         "file": "https://archive.org/download/my_flash_games_arcade/ZOMBIE RUN.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/ZOMBIE RUN.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": false
     },
     {
         "name": "Zuma Game",
         "file": "https://archive.org/download/my_flash_games_arcade/Zuma-Game.swf",
         "thumb": "https://archive.org/download/my_flash_games_arcade/Zuma-Game.png",
-        "emoji": "🎮"
+        "emoji": "🎮",
+        "isNew": true
     }
 ];
 
         // ================================================================
-        // RENDER ENGINE
+        // GLOBAL STATE
         // ================================================================
         let allGames = [...games];
+        let currentTab = 'all';   // 'all' or 'new'
+        let hasNotified = false;
 
+        // ================================================================
+        // 🆕 NEW GAME HELPER
+        // ================================================================
+        function isNewGame(game) {
+            return game.isNew === true;
+        }
+
+        // ================================================================
+        // 🔔 TOAST NOTIFICATION
+        // ================================================================
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.style.background = '#1a2338';
+            toast.style.border = '1px solid #00f0ff';
+            toast.style.color = '#f1f5f9';
+            toast.style.padding = '14px 20px';
+            toast.style.borderRadius = '12px';
+            toast.style.boxShadow = '0 8px 32px rgba(0,0,0,0.8)';
+            toast.style.fontSize = '0.9rem';
+            toast.style.animation = 'fadeInBtn 0.3s ease';
+            toast.style.backdropFilter = 'blur(8px)';
+            toast.innerHTML = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s';
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        }
+
+        // ================================================================
+        // RENDER ENGINE
+        // ================================================================
         function getFallbackColor(name) {
             let hash = 0;
             for (let i = 0; i < name.length; i++) {
@@ -3209,20 +3729,35 @@
             const grid = document.getElementById('gameGrid');
             grid.innerHTML = '';
             const count = filtered.length;
-            document.getElementById('gameCount').textContent = count;
+
+            // Update stats & counts
+            document.getElementById('gameCount').textContent = allGames.length;
             document.getElementById('resultCount').textContent = `Showing ${count} games`;
+
+            // Update Tab Badges
+            const newGames = allGames.filter(g => isNewGame(g));
+            document.getElementById('allCount').textContent = allGames.length;
+            document.getElementById('newCount').textContent = newGames.length;
+
+            // Update Section Title
+            const titleEl = document.getElementById('sectionTitle');
+            if (currentTab === 'new') {
+                titleEl.textContent = '🆕 New Games';
+            } else {
+                titleEl.textContent = 'Game Archive';
+            }
 
             if (filtered.length === 0) {
                 grid.innerHTML = `
                             <div class="no-result">
                                 <i class="fas fa-gamepad"></i>
-                                No games found. Try a different keyword!
+                                ${currentTab === 'new' ? 'No new games found.' : 'No games found. Try a different keyword!'}
                             </div>
                         `;
                 return;
             }
 
-            filtered.forEach((game, index) => {
+            filtered.forEach((game) => {
                 const card = document.createElement('div');
                 card.className = 'game-card';
 
@@ -3256,10 +3791,19 @@
                     thumb.appendChild(fallback);
                 }
 
+                // SWF Badge
                 const badge = document.createElement('span');
                 badge.className = 'type-badge';
                 badge.textContent = 'SWF';
                 thumb.appendChild(badge);
+
+                // 🆕 NEW Badge (အသစ်ဖြစ်ရင်)
+                if (isNewGame(game)) {
+                    const newBadge = document.createElement('span');
+                    newBadge.className = 'new-badge';
+                    newBadge.textContent = '🌟 New';
+                    thumb.appendChild(newBadge);
+                }
 
                 const info = document.createElement('div');
                 info.className = 'game-info';
@@ -3292,9 +3836,18 @@
             });
         }
 
+        // ================================================================
+        // FILTER LOGIC (Tab + Search)
+        // ================================================================
         function filterGames() {
             const q = document.getElementById('searchInput').value.toLowerCase().trim();
-            const filtered = allGames.filter(g => g.name.toLowerCase().includes(q));
+            let filtered = allGames.filter(g => g.name.toLowerCase().includes(q));
+
+            // Tab filter
+            if (currentTab === 'new') {
+                filtered = filtered.filter(g => isNewGame(g));
+            }
+
             renderGames(filtered);
         }
 
@@ -3305,6 +3858,7 @@
             const searchInput = document.getElementById('searchInput');
             const clearBtn = document.getElementById('clearSearch');
 
+            // Search input
             searchInput.addEventListener('input', function() {
                 if (this.value.length > 0) {
                     clearBtn.classList.add('visible');
@@ -3314,6 +3868,7 @@
                 filterGames();
             });
 
+            // Clear button
             clearBtn.addEventListener('click', function() {
                 searchInput.value = '';
                 this.classList.remove('visible');
@@ -3321,7 +3876,40 @@
                 searchInput.focus();
             });
 
-            renderGames(allGames);
+            // ============================================================
+            // 🆕 TAB CLICK LOGIC (အသစ်ထည့်ထားတာ)
+            // ============================================================
+            const tabAll = document.getElementById('tabAll');
+            const tabNew = document.getElementById('tabNew');
+
+            function setActiveTab(tab) {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                tab.classList.add('active');
+                currentTab = tab.dataset.tab;
+                filterGames();
+            }
+
+            tabAll.addEventListener('click', function() {
+                setActiveTab(this);
+            });
+
+            tabNew.addEventListener('click', function() {
+                setActiveTab(this);
+            });
+
+            // ============================================================
+            // 🔔 INITIAL RENDER + TOAST (ပထမဆုံးအကြိမ်)
+            // ============================================================
+            filterGames(); // ပထမဆုံး Render
+
+            // Toast ပြမယ် (အသစ်တွေရှိရင်)
+            const newGames = allGames.filter(g => isNewGame(g));
+            if (newGames.length > 0) {
+                // နာမည်တွေ စုပြီး Toast ပြမယ်
+                const names = newGames.slice(0, 5).map(g => g.name).join(', ');
+                const more = newGames.length > 5 ? ` and ${newGames.length - 5} more` : '';
+                showToast(`🎉 New games added: ${names}${more}`);
+            }
         });
     </script>
 
