@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scratch Card · Expire & Copy</title>
+    <title>Scratch Card · Pro Robot</title>
     <style>
-        /* ===== CLEAN & MODERN CSS ===== */
+        /* ============================================================
+           CLEAN & MODERN CSS — with bot.html inspired robot
+           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -16,7 +18,7 @@
             --bg-surface: #0f172a;
             --bg-card: #1a2338;
             --bg-card-hover: #212d48;
-            --border-subtle: rgba(255, 255, 255, 0.05);
+            --border-subtle: rgba(255, 255, 255, 0.06);
             --border-glow: rgba(157, 0, 255, 0.4);
             --primary-neon: #00f0ff;
             --secondary-neon: #ff007f;
@@ -103,6 +105,7 @@
             gap: 28px;
             flex-wrap: wrap;
         }
+
         /* ---- SCRATCH CARD ---- */
         .scratch-card {
             position: relative;
@@ -287,7 +290,8 @@
         .scratch-progress.hidden {
             opacity: 0;
         }
-        /* ---- RIGHT SIDE - STATUS + EVE with SPEECH BUBBLE ---- */
+
+        /* ---- RIGHT SIDE - STATUS with SPEECH BUBBLE & ROBOT ---- */
         .scratch-desc {
             font-size: 0.75rem;
             color: var(--text-muted);
@@ -306,7 +310,8 @@
             color: var(--primary-neon);
             margin: 0 2px;
         }
-        /* ---- SPEECH BUBBLE + EVE CONTAINER ---- */
+
+        /* ---- SPEECH BUBBLE + ROBOT CONTAINER ---- */
         .eve-speech-container {
             display: flex;
             flex-direction: column;
@@ -314,6 +319,7 @@
             gap: 2px;
             width: 100%;
         }
+
         /* Speech Bubble */
         .speech-bubble {
             position: relative;
@@ -339,32 +345,273 @@
             color: var(--primary-neon);
             font-size: 0.75rem;
         }
-        /* Arrow (tail) removed */
-        .speech-bubble::after,
-        .speech-bubble::before {
-            display: none;
-            content: none;
-        }
         @keyframes float-bubble {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-4px); }
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-4px);
+            }
         }
-        /* EVE Robot - clearer & brighter */
-        .eve-robot-wrapper {
+
+        /* ==============================================================
+               ROBOT — inspired by bot.html, upgraded for pro look
+               ============================================================== */
+        .robot-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
             margin-top: -2px;
-            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.08));
-        }
-        .eve-robot-wrapper .android-robot-svg {
-            width: 48px;
-            height: 48px;
+            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.06));
+            width: 60px;
+            height: 60px;
+            position: relative;
             flex-shrink: 0;
-            display: block;
-            filter: drop-shadow(0 4px 12px rgba(0, 240, 255, 0.06));
         }
-        /* ---- MESSAGE BOX NOTE (new) ---- */
+
+        /* robot container — holds all parts */
+        .robot {
+            position: relative;
+            width: 52px;
+            height: 58px;
+            transform: scale(1);
+            transform-origin: center center;
+        }
+
+        /* ---- robot parts (all positioned absolute) ---- */
+        .robot-head {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 38px;
+            height: 30px;
+            background: radial-gradient(ellipse at 50% 30%, #f8fafc, #e2e8f0);
+            border-radius: 30px 30px 12px 12px;
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), inset 0 -4px 8px rgba(0, 0, 0, 0.05);
+            z-index: 3;
+        }
+        /* face mask */
+        .robot-face {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22px;
+            height: 14px;
+            background: linear-gradient(180deg, #1a1a2e, #0f0f1f);
+            border-radius: 10px 10px 6px 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 4;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+        }
+        /* eyes */
+        .robot-eye {
+            position: absolute;
+            top: 10px;
+            width: 6px;
+            height: 7px;
+            background: radial-gradient(circle at 40% 30%, #7df9ff, #00c8d6);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.15);
+            z-index: 5;
+            animation: blink 3.8s ease-in-out infinite;
+            transition: all 0.1s;
+        }
+        .robot-eye::after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 1.5px;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            filter: blur(0.5px);
+        }
+        .robot-eye.left {
+            left: 50%;
+            transform: translateX(-11px);
+        }
+        .robot-eye.right {
+            left: 50%;
+            transform: translateX(5px);
+        }
+
+        @keyframes blink {
+            0%,
+            92%,
+            100% {
+                transform: scaleY(1) translateX(var(--tx, 0));
+            }
+            94% {
+                transform: scaleY(0.1) translateX(var(--tx, 0));
+            }
+            96% {
+                transform: scaleY(1) translateX(var(--tx, 0));
+            }
+        }
+        .robot-eye.left {
+            --tx: -11px;
+        }
+        .robot-eye.right {
+            --tx: 5px;
+        }
+
+        /* antenna */
+        .robot-antenna {
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 8px;
+            background: linear-gradient(180deg, #00f0ff, rgba(0, 240, 255, 0.2));
+            border-radius: 2px;
+            z-index: 2;
+        }
+        .robot-antenna::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background: radial-gradient(circle, #ff007f, #cc005f);
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255, 0, 127, 0.4);
+            animation: pulse-antenna 1.6s ease-in-out infinite;
+        }
+        @keyframes pulse-antenna {
+            0%,
+            100% {
+                transform: translateX(-50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateX(-50%) scale(0.6);
+                opacity: 0.5;
+            }
+        }
+
+        /* body */
+        .robot-body {
+            position: absolute;
+            top: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 24px;
+            background: radial-gradient(ellipse at 50% 30%, #f8fafc, #dce2ec);
+            border-radius: 12px 12px 18px 18px;
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 -2px 6px rgba(0, 0, 0, 0.04);
+            z-index: 2;
+        }
+        /* chest accent */
+        .robot-chest {
+            position: absolute;
+            top: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 8px;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(157, 0, 255, 0.10));
+            border-radius: 4px;
+            border: 1px solid rgba(0, 240, 255, 0.08);
+            z-index: 3;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.04);
+        }
+
+        /* arms */
+        .robot-arm {
+            position: absolute;
+            top: 26px;
+            width: 7px;
+            height: 18px;
+            background: linear-gradient(180deg, #eef2f6, #d0d8e0);
+            border-radius: 8px 8px 4px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            z-index: 1;
+            transform-origin: top center;
+        }
+        .robot-arm.left {
+            left: 1px;
+            animation: arm-swing-left 2.2s ease-in-out infinite;
+        }
+        .robot-arm.right {
+            right: 1px;
+            animation: arm-swing-right 2.2s ease-in-out infinite;
+        }
+        @keyframes arm-swing-left {
+            0%,
+            100% {
+                transform: rotate(-18deg);
+            }
+            50% {
+                transform: rotate(18deg);
+            }
+        }
+        @keyframes arm-swing-right {
+            0%,
+            100% {
+                transform: rotate(18deg);
+            }
+            50% {
+                transform: rotate(-18deg);
+            }
+        }
+
+        /* legs (small feet) */
+        .robot-leg {
+            position: absolute;
+            bottom: -4px;
+            width: 8px;
+            height: 6px;
+            background: linear-gradient(180deg, #d0d8e0, #b8c0cc);
+            border-radius: 0 0 6px 6px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            z-index: 1;
+        }
+        .robot-leg.left {
+            left: 8px;
+        }
+        .robot-leg.right {
+            right: 8px;
+        }
+
+        /* subtle glow ring around robot */
+        .robot-glow-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(0, 240, 255, 0.06);
+            animation: ring-pulse 3s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes ring-pulse {
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.4;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.15);
+                opacity: 1;
+            }
+        }
+
+        /* ---- MESSAGE BOX NOTE ---- */
         .message-box-note {
             display: inline-flex;
             align-items: center;
@@ -391,6 +638,7 @@
             background: rgba(0, 240, 255, 0.08);
             border-color: rgba(0, 240, 255, 0.18);
         }
+
         /* ---- LOADING OVERLAY ---- */
         .loading-overlay {
             position: absolute;
@@ -422,9 +670,14 @@
             letter-spacing: 0.5px;
         }
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         /* ---- RESPONSIVE ---- */
         @media (max-width: 700px) {
             .scratch-section {
@@ -466,9 +719,13 @@
             .speech-bubble .bubble-text .wifi-icon {
                 font-size: 0.65rem;
             }
-            .eve-robot-wrapper .android-robot-svg {
-                width: 40px;
-                height: 40px;
+            .robot-wrapper {
+                width: 48px;
+                height: 48px;
+            }
+            .robot {
+                transform: scale(0.78);
+                transform-origin: center center;
             }
             .message-box-note {
                 font-size: 0.5rem;
@@ -511,9 +768,13 @@
             .speech-bubble .bubble-text .wifi-icon {
                 font-size: 0.55rem;
             }
-            .eve-robot-wrapper .android-robot-svg {
-                width: 34px;
-                height: 34px;
+            .robot-wrapper {
+                width: 40px;
+                height: 40px;
+            }
+            .robot {
+                transform: scale(0.65);
+                transform-origin: center center;
             }
             .message-box-note {
                 font-size: 0.45rem;
@@ -747,7 +1008,7 @@
         // 🎯 MAIN LOGIC
         // ================================================================
         async function loadPromoCode() {
-            // ---- Show loading overlay & EVE with SPEECH BUBBLE + MESSAGE BOX NOTE ----
+            // ---- Show loading overlay with SPEECH BUBBLE + ROBOT (bot.html style) ----
             loadingOverlay.style.display = 'flex';
             statusMessage.innerHTML = `
                 <div class="eve-speech-container">
@@ -758,39 +1019,24 @@
                             မိတ်ဆွေ VPN အသုံးပြုပါ
                         </span>
                     </div>
-                    <!-- EVE Robot -->
-                    <div class="eve-robot-wrapper">
-                        <svg class="android-robot-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <style>
-                                .eve-body { fill: #f8fafc; stroke: #e2e8f0; stroke-width: 1.8; }
-                                .eve-accent { fill: #94a3b8; }
-                                .eve-eye { fill: #00f0ff; }
-                                .eve-eye-pupil { fill: #ffffff; }
-                                @keyframes float-eve { 0%,100%{transform:translateY(0px) rotate(-1.5deg)} 50%{transform:translateY(-8px) rotate(1.5deg)} }
-                                @keyframes blink-eve { 0%,93%,100%{transform:scaleY(1)} 95%{transform:scaleY(0.1)} }
-                                @keyframes glow-ring-eve { 0%,100%{opacity:0.15;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.08)} }
-                                @keyframes bounce-light-eve { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.2;transform:scale(0.6)} }
-                                .floating-group { animation: float-eve 3.4s ease-in-out infinite; transform-origin:40px 40px; }
-                                .eye-group { animation: blink-eve 4.8s ease-in-out infinite; transform-origin:40px 30px; }
-                                .ring-glow { animation: glow-ring-eve 2.6s ease-in-out infinite; }
-                                .antenna-light { animation: bounce-light-eve 1.1s ease-in-out infinite; }
-                            </style>
-                            <g class="floating-group">
-                                <circle cx="40" cy="42" r="34" fill="none" stroke="#00f0ff" stroke-width="1.5" opacity="0.15" class="ring-glow"/>
-                                <ellipse cx="40" cy="46" rx="24" ry="28" class="eve-body"/>
-                                <ellipse cx="40" cy="28" rx="20" ry="22" class="eve-body"/>
-                                <ellipse cx="40" cy="30" rx="14" ry="16" fill="#1e293b" opacity="0.9"/>
-                                <circle cx="34" cy="28" r="5.5" class="eve-eye eye-group"/>
-                                <circle cx="46" cy="28" r="5.5" class="eve-eye eye-group"/>
-                                <circle cx="34" cy="28" r="2.5" class="eve-eye-pupil eye-group"/>
-                                <circle cx="46" cy="28" r="2.5" class="eve-eye-pupil eye-group"/>
-                                <ellipse cx="20" cy="44" rx="7" ry="14" class="eve-body" transform="rotate(-22,20,44)"/>
-                                <ellipse cx="60" cy="44" rx="7" ry="14" class="eve-body" transform="rotate(22,60,44)"/>
-                                <rect x="30" y="70" width="20" height="5" rx="2.5" class="eve-accent"/>
-                                <line x1="40" y1="6" x2="40" y2="2" stroke="#cbd5e1" stroke-width="2.5" stroke-linecap="round"/>
-                                <circle cx="40" cy="2" r="3" fill="#ff007f" class="antenna-light"/>
-                            </g>
-                        </svg>
+                    <!-- ROBOT (bot.html inspired) -->
+                    <div class="robot-wrapper">
+                        <div class="robot-glow-ring"></div>
+                        <div class="robot">
+                            <div class="robot-antenna"></div>
+                            <div class="robot-head">
+                                <div class="robot-face"></div>
+                                <div class="robot-eye left"></div>
+                                <div class="robot-eye right"></div>
+                            </div>
+                            <div class="robot-body">
+                                <div class="robot-chest"></div>
+                            </div>
+                            <div class="robot-arm left"></div>
+                            <div class="robot-arm right"></div>
+                            <div class="robot-leg left"></div>
+                            <div class="robot-leg right"></div>
+                        </div>
                     </div>
                 </div>
                 <!-- Message Box Note -->
