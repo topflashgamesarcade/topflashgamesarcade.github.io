@@ -2926,6 +2926,8 @@
         function updateUIWithUser() {
             const name = currentUserData.displayName;
             const initial = name.charAt(0).toUpperCase();
+            // Navbar မှာ Blue Mark ထည့်မယ်
+    navUsername.innerHTML = `${escapeHtml(name)} ${renderVerifiedBadge(currentUserData.verified || false)}`;
             navUsername.textContent = name;
             composeAvatarText.textContent = initial;
             navAvatarText.textContent = initial;
@@ -2966,6 +2968,19 @@
             const bio = currentUserData.bio || '';
             const photoURL = currentUserData.photoURL || '';
             const initial = name.charAt(0).toUpperCase();
+
+            // Profile Modal အတွင်း နာမည်ဘေးမှာ Blue Mark ပြမယ်
+    // ဒါပေမယ့် modal မှာ name input ဖြစ်နေတာမို့ input ထဲမှာ မထည့်နိုင်ဘူး
+    // အဲဒီအတွက် modal header မှာ ပြမယ်
+    
+    // Profile Modal ရဲ့ header ကို ပြင်မယ် (အောက်မှာ ရှင်းပြထားတယ်)
+    document.querySelector('#profile-modal .modal-header h2').innerHTML = 
+        `<i class="fas fa-user-circle" style="color:var(--primary);margin-right:8px;"></i> Profile ${renderVerifiedBadge(currentUserData.verified || false)}`;
+    
+    profileNameInput.value = name;
+    profileBioInput.value = bio;
+    profilePhotoInput.value = photoURL;
+    profileEmailDisplay.textContent = email;
 
             profileNameInput.value = name;
             profileBioInput.value = bio;
@@ -4109,6 +4124,26 @@ function renderVerifiedBadge(isVerified) {
                     const isFollowed = following.includes(data.uid);
 
                     if (filter === 'following' && !isOwner && !isFollowed) continue;
+
+                    // ---- ဒီအပိုင်းကို ထည့်ပါ ----
+    // Post မှာ authorVerified မပါရင် User ရဲ့ လက်ရှိ verified ကို ယူပြီး Update လုပ်မယ်
+    if (data.authorVerified === undefined && data.uid) {
+        try {
+            const userSnap = await getDoc(doc(db, 'users', data.uid));
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                const isVerified = userData.verified || false;
+                // Post ကို Update လုပ်မယ် (နောက်တစ်ခါ မလုပ်ရအောင်)
+                await updateDoc(doc(db, 'posts', id), {
+                    authorVerified: isVerified
+                });
+                data.authorVerified = isVerified; // လက်ရှိ data ကိုလည်း Update
+            }
+        } catch (err) {
+            console.warn('Failed to update authorVerified for post:', id, err);
+        }
+    }
+    // ---- ဒီအထိ ----
 
                     posts.push({ id, data, isOwner, isFollowed });
                 }
