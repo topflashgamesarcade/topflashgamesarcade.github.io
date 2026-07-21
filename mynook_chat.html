@@ -988,7 +988,7 @@
         });
 
         // ============================================================
-        // LOAD CONTACTS (Real-time) - permission error ကိုရှောင်မယ်
+        // LOAD CONTACTS (Real-time)
         // ============================================================
         function loadContacts() {
             if (unsubscribeContacts) {
@@ -1007,7 +1007,8 @@
                             uid: docSnap.id,
                             displayName: data.displayName || 'User',
                             photoURL: data.photoURL || '',
-                            verified: data.verified || false
+                            verified: data.verified || false,
+                            email: data.email || ''
                         };
                     }
                 });
@@ -1027,20 +1028,18 @@
                             const data = chatSnap.data();
                             lastMsg = data.lastMessage || '';
                             lastTime = data.lastUpdated?.toDate?.() || null;
-                            
                             try {
-                                const msgsSnap = await getDocs(query(
-                                    collection(db, 'chats', chatId, 'messages'),
+                                const msgsSnap = await getDocs(query(collection(db, 'chats', chatId, 'messages'),
                                     where('receiverId', '==', currentUser.uid),
                                     where('read', '==', false)
                                 ));
                                 unread = msgsSnap.size;
                             } catch (msgErr) {
-                                // unread count မရရင် skip
+                                // unread count error ဖြစ်ရင် ကျော်သွားမယ်
                             }
                         }
                     } catch (err) {
-                        // Chat doc မရှိသေးရင် skip
+                        // Chat doesn't exist yet
                     }
                     
                     contactList.push({
@@ -1061,7 +1060,6 @@
 
                 renderContacts(contactList);
 
-                // URL parameter က user ကိုဖွင့်မယ်
                 if (isAuthReady && pendingTargetUser) {
                     const targetUid = pendingTargetUser;
                     const chatId = getChatId(currentUser.uid, targetUid);
@@ -1082,9 +1080,9 @@
 
         function renderContacts(contacts) {
             const searchTerm = searchInput.value.toLowerCase().trim();
-            // Search မှာ name နဲ့ပဲရှာတော့မယ် (email ဖယ်လိုက်ပြီ)
             const filtered = contacts.filter(c =>
-                c.displayName.toLowerCase().includes(searchTerm)
+                c.displayName.toLowerCase().includes(searchTerm) ||
+                (c.email && c.email.toLowerCase().includes(searchTerm))
             );
 
             if (filtered.length === 0) {
@@ -1131,7 +1129,7 @@
             });
         }
 
-        // Search filter - name နဲ့ပဲရှာမယ်
+        // Search filter - နာမည်နဲ့ပဲ ရှာမယ် (email ဖျောက်ထား)
         searchInput.addEventListener('input', () => {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const items = contactsList.querySelectorAll('.contact-item');
@@ -1213,7 +1211,6 @@
                 });
                 messagesList.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);padding:20px;">No messages yet. Say hi!</div>';
                 messagesList.scrollTop = messagesList.scrollHeight;
-
                 markMessagesAsRead(chatId, partnerUid);
             }, (err) => {
                 console.error('Messages error:', err);
@@ -1268,6 +1265,20 @@
             sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
             try {
+                // Chat document ရှိမရှိ စစ်မယ်
+                const chatRef = doc(db, 'chats', activeChatId);
+                const chatSnap = await getDoc(chatRef);
+                
+                // Chat document မရှိရင် အရင်ဖန်တီးမယ်
+                if (!chatSnap.exists()) {
+                    await setDoc(chatRef, {
+                        participants: [currentUser.uid, activeChatPartnerUid],
+                        lastMessage: text,
+                        lastUpdated: serverTimestamp(),
+                        createdAt: serverTimestamp()
+                    });
+                }
+
                 const msgData = {
                     senderId: currentUser.uid,
                     receiverId: activeChatPartnerUid,
@@ -1278,12 +1289,10 @@
 
                 await addDoc(collection(db, 'chats', activeChatId, 'messages'), msgData);
 
-                const chatRef = doc(db, 'chats', activeChatId);
-                await setDoc(chatRef, {
-                    participants: [currentUser.uid, activeChatPartnerUid],
+                await updateDoc(chatRef, {
                     lastMessage: text,
-                    lastUpdated: serverTimestamp(),
-                }, { merge: true });
+                    lastUpdated: serverTimestamp()
+                });
 
                 messageInput.value = '';
                 messageInput.focus();
@@ -1327,7 +1336,6 @@
 
         console.log('💬 My Nook Chat loaded.');
         console.log('ℹ️ Chat uses Firestore subcollections: chats/{chatId}/messages/{msgId}');
-        console.log('ℹ️ Chat ID format: uid1_uid2 (sorted)');
     </script>
 
 </body>
