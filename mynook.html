@@ -796,6 +796,29 @@
             background: linear-gradient(to bottom, transparent, var(--card-bg));
             pointer-events: none;
         }
+        /* ===== VERIFIED BADGE (Blue Mark) ===== */
+.verified-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    line-height: 18px;
+    text-align: center;
+    margin-left: 4px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+}
+.verified-badge i {
+    font-size: 10px;
+    vertical-align: middle;
+}
+[data-theme="dark"] .verified-badge {
+    box-shadow: 0 2px 6px rgba(26, 115, 232, 0.5);
+}
         /* ===== SEE MORE (Facebook Style - စာရဲ့အောက်ခြေမှာ သီးသန့်) ===== */
 .post-content .see-more-btn {
     display: none;
@@ -2800,7 +2823,8 @@
                             uid: user.uid,
                             followers: data.followers || [],
                             following: data.following || [],
-                            photoURL: data.photoURL || ''
+                            photoURL: data.photoURL || '',
+                            verified: data.verified || false  // <-- ဒီစာကြောင်းထည့်ပါ
                         };
                         if (data.photoURL && user.photoURL !== data.photoURL) {
                             await updateProfile(user, { photoURL: data.photoURL });
@@ -2813,7 +2837,8 @@
                             uid: user.uid,
                             followers: [],
                             following: [],
-                            photoURL: user.photoURL || ''
+                            photoURL: user.photoURL || '',
+                            verified: false   // <-- ဒီစာကြောင်းထည့်ပါ
                         };
                         await setDoc(doc(db, 'users', user.uid), {
                             displayName: currentUserData.displayName,
@@ -2888,7 +2913,8 @@
                         email: data.email || '',
                         bio: data.bio || '',
                         followers: data.followers || [],
-                        photoURL: data.photoURL || ''
+                        photoURL: data.photoURL || '',
+                        verified: data.verified || false   // <-- ဒီစာကြောင်းထည့်ပါ
                     };
                 });
             } catch (err) { console.warn('Load users error:', err); }
@@ -3095,7 +3121,7 @@
                 const photoURL = data.photoURL || '';
                 const initial = name.charAt(0).toUpperCase();
 
-                userProfileName.textContent = name;
+                userProfileName.innerHTML = `${escapeHtml(name)} ${renderVerifiedBadge(data.verified || false)}`;
                 userProfileEmail.textContent = email;
 
                 const wrapper = userProfileAvatar;
@@ -3429,7 +3455,39 @@
             }
             return `<span>${initial}</span>`;
         }
+        // ===== GET USER DATA WITH VERIFIED =====
+async function getUserData(uid) {
+    if (uid === currentUser?.uid) {
+        return currentUserData;
+    }
+    if (allUsersCache[uid]) {
+        return allUsersCache[uid];
+    }
+    try {
+        const snap = await getDoc(doc(db, 'users', uid));
+        if (snap.exists()) {
+            const data = snap.data();
+            return {
+                uid: uid,
+                displayName: data.displayName || 'User',
+                email: data.email || '',
+                bio: data.bio || '',
+                followers: data.followers || [],
+                photoURL: data.photoURL || '',
+                verified: data.verified || false
+            };
+        }
+    } catch (err) {
+        console.warn('Get user data error:', err);
+    }
+    return null;
+}
 
+// ===== RENDER VERIFIED BADGE =====
+function renderVerifiedBadge(isVerified) {
+    if (!isVerified) return '';
+    return `<span class="verified-badge"><i class="fas fa-check"></i></span>`;
+}
         // ============================================================
         // CREATE POST
         // ============================================================
@@ -3476,6 +3534,7 @@
                     uid: currentUser.uid,
                     author: currentUserData.displayName,
                     authorPhotoURL: currentUserData.photoURL || '',
+                    authorVerified: currentUserData.verified || false,   // <-- ဒီစာကြောင်းထည့်ပါ
                     text: trimmed,
                     createdAt: serverTimestamp(),
                     likes: [],
@@ -4173,7 +4232,7 @@
                 <div class="post-card" data-id="${id}" data-uid="${data.uid || ''}">
                   <div class="post-header">
                     <div class="avatar" data-uid="${data.uid || ''}">${avatarHtml}</div>
-                    <span class="post-user" data-uid="${data.uid || ''}">${escapeHtml(author)}</span>
+                    <span class="post-user" data-uid="${data.uid || ''}">${escapeHtml(author)}${renderVerifiedBadge(data.authorVerified || false)}</span>
                     <span class="post-time">${timeStr}</span>
                     ${isOwner ? `
                       <div class="post-menu-wrapper">
