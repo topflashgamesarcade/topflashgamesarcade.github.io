@@ -2320,8 +2320,12 @@
                     <div class="profile-email" id="user-profile-bio">No bio yet</div>
                 </div>
                 <button class="follow-profile-btn follow" id="user-profile-follow-btn">
-                    <i class="fas fa-user-plus"></i> Follow
-                </button>
+    <i class="fas fa-user-plus"></i> Follow
+</button>
+<button class="follow-profile-btn follow" id="user-profile-chat-btn" style="margin-top:8px;background:var(--primary-gradient);">
+    <i class="fas fa-comment-dots"></i> Send Message
+</button>
+<div class="profile-divider"></div>
                 <div class="profile-divider"></div>
                 <div style="font-size:13px;color:var(--text-muted);text-align:center;">
                     <i class="fas fa-envelope"></i> <span id="user-profile-email">user@example.com</span>
@@ -3166,6 +3170,13 @@
                 const isFollowing = currentUserData.following.includes(uid);
                 updateFollowButton(isFollowing);
                 userProfileFollowBtn.onclick = () => toggleFollowUser(uid);
+
+// Chat Button
+const chatBtn = document.getElementById('user-profile-chat-btn');
+chatBtn.onclick = () => {
+    closeUserProfileFn();
+    window.location.href = `mynook_chat.html?user=${uid}`;
+};
 
                 const q = query(collection(db, 'posts'), where('uid', '==', uid));
                 const postSnap = await getDocs(q);

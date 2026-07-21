@@ -1276,16 +1276,18 @@
                 };
 
                 // Add message to subcollection
-                await addDoc(collection(db, 'chats', activeChatId, 'messages'), msgData);
+await addDoc(collection(db, 'chats', activeChatId, 'messages'), msgData);
 
-                // Update chat document (last message, last updated)
-                const chatRef = doc(db, 'chats', activeChatId);
-                await setDoc(chatRef, {
-                    participants: [currentUser.uid, activeChatPartnerUid],
-                    lastMessage: text,
-                    lastUpdated: serverTimestamp(),
-                    // Keep participants array unique
-                }, { merge: true });
+// Update chat document
+const chatRef = doc(db, 'chats', activeChatId);
+await setDoc(chatRef, {
+    participants: [currentUser.uid, activeChatPartnerUid],
+    lastMessage: text,
+    lastUpdated: serverTimestamp(),
+}, { merge: true });
+
+// Chat document ကို ဖန်တီးဖို့ သေချာအောင် (ပထမဆုံး message အတွက်)
+// setDoc က merge: true နဲ့ သုံးထားတာမို့ အလိုအလျောက် ဖန်တီးပေးမှာပါ
 
                 messageInput.value = '';
                 messageInput.focus();
@@ -1313,6 +1315,23 @@
         console.log('💬 My Nook Chat loaded.');
         console.log('ℹ️ Chat uses Firestore subcollections: chats/{chatId}/messages/{msgId}');
         console.log('ℹ️ Chat ID format: uid1_uid2 (sorted)');
+
+
+        // URL parameter ကနေ user ကိုဖတ်ပြီး Chat ဖွင့်မယ်
+const urlParams = new URLSearchParams(window.location.search);
+const targetUser = urlParams.get('user');
+if (targetUser) {
+    // Chat ID ကိုတွက်ပြီး ချက်ချင်းဖွင့်မယ်
+    setTimeout(() => {
+        const chatId = getChatId(currentUser.uid, targetUser);
+        // User က contact list ထဲမှာ ရှိမှ openChat လုပ်မယ်
+        if (allUsers[targetUser]) {
+            openChat(targetUser, chatId);
+        } else {
+            showToast('User not found.', 'error');
+        }
+    }, 1000); // Contact list load ဖြစ်ဖို့ ခဏစောင့်မယ်
+}
     </script>
 
 </body>
