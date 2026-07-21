@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Nook — Chat</title>
+    <title>My Nook — ချတ်</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -21,6 +21,7 @@
     </script>
 
     <style>
+        /* ===== CSS ပြောင်းလဲနိုင်သော တန်ဖိုးများ ===== */
         :root {
             --primary: #1a73e8;
             --primary-dark: #1557b0;
@@ -39,6 +40,8 @@
             --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             --header-height: 60px;
             --danger: #ea4335;
+            --online-green: #31a24c;
+            --offline-gray: #8a8d91;
         }
 
         [data-theme="dark"] {
@@ -66,7 +69,7 @@
             overflow: hidden;
         }
 
-        /* ===== AUTH ===== */
+        /* ===== အကောင့်ဝင်ခြင်း (Auth) ===== */
         .auth-section {
             max-width: 400px;
             margin: 80px auto;
@@ -150,7 +153,7 @@
             display: block;
         }
 
-        /* ===== CHAT APP ===== */
+        /* ===== ချတ်အက်ပ် (Chat App) ===== */
         #chat-app {
             display: none;
             height: 100vh;
@@ -268,6 +271,7 @@
             overflow: hidden;
         }
 
+        /* ===== ဘယ်ဘက် ဆိုက်ဘား (Contacts Sidebar) ===== */
         .contacts-sidebar {
             width: 320px;
             background: var(--card-bg);
@@ -303,6 +307,7 @@
             overflow-y: auto;
             padding: 8px 0;
         }
+
         .contact-item {
             display: flex;
             align-items: center;
@@ -311,6 +316,7 @@
             cursor: pointer;
             transition: var(--transition);
             border-bottom: 1px solid var(--card-border);
+            position: relative;
         }
         .contact-item:hover {
             background: var(--bg);
@@ -322,9 +328,17 @@
         [data-theme="dark"] .contact-item.active {
             background: rgba(26, 115, 232, 0.15);
         }
-        .contact-item .avatar {
+
+        /* ===== Online/Offline အခြေအနေ အစက် (Status Dot) ===== */
+        .contact-item .avatar-wrap {
+            position: relative;
+            flex-shrink: 0;
             width: 40px;
             height: 40px;
+        }
+        .contact-item .avatar-wrap .avatar {
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             background: var(--primary-gradient);
             display: flex;
@@ -334,15 +348,28 @@
             font-weight: 700;
             font-size: 16px;
             text-transform: uppercase;
-            flex-shrink: 0;
             overflow: hidden;
-            position: relative;
         }
-        .contact-item .avatar img {
+        .contact-item .avatar-wrap .avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+        .status-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+            background: var(--offline-gray);
+            transition: background 0.3s;
+        }
+        .status-dot.online {
+            background: var(--online-green);
+        }
+
         .contact-item .info {
             flex: 1;
             min-width: 0;
@@ -399,6 +426,7 @@
             margin-left: auto;
         }
 
+        /* ===== ညာဘက် စကားပြောခန်း (Messages Area) ===== */
         .messages-area {
             flex: 1;
             display: flex;
@@ -433,9 +461,15 @@
             flex-shrink: 0;
             min-height: 60px;
         }
-        .messages-area .chat-user-header .avatar {
+        .messages-area .chat-user-header .avatar-wrap {
+            position: relative;
             width: 36px;
             height: 36px;
+            flex-shrink: 0;
+        }
+        .messages-area .chat-user-header .avatar-wrap .avatar {
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             background: var(--primary-gradient);
             display: flex;
@@ -446,16 +480,27 @@
             font-size: 14px;
             text-transform: uppercase;
             overflow: hidden;
-            flex-shrink: 0;
         }
-        .messages-area .chat-user-header .avatar img {
+        .messages-area .chat-user-header .avatar-wrap .avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+        .messages-area .chat-user-header .avatar-wrap .status-dot {
+            width: 10px;
+            height: 10px;
+            border-width: 2px;
+        }
+        .messages-area .chat-user-header .user-info {
+            display: flex;
+            flex-direction: column;
+        }
         .messages-area .chat-user-header .name {
             font-weight: 600;
             font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         .messages-area .chat-user-header .name .verified-badge {
             display: inline-block;
@@ -473,6 +518,14 @@
         .messages-area .chat-user-header .name .verified-badge i {
             font-size: 8px;
             vertical-align: middle;
+        }
+        .messages-area .chat-user-header .user-status {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        .messages-area .chat-user-header .user-status.online {
+            color: var(--online-green);
         }
 
         .messages-area .messages-list {
@@ -568,7 +621,7 @@
             cursor: not-allowed;
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* ===== မိုဘိုင်းအတွက် တုံ့ပြန်မှု (Responsive) ===== */
         @media (max-width: 640px) {
             .contacts-sidebar {
                 width: 100%;
@@ -610,6 +663,7 @@
             }
         }
 
+        /* ===== Scrollbar ===== */
         .contacts-list::-webkit-scrollbar,
         .messages-list::-webkit-scrollbar {
             width: 4px;
@@ -624,7 +678,7 @@
             background: transparent;
         }
 
-        /* Toast */
+        /* ===== Toast အသိပေးချက် ===== */
         #toast-container {
             position: fixed;
             bottom: 28px;
@@ -669,7 +723,6 @@
             transform: translateY(0) scale(1);
         }
 
-        /* Loading spinner in contacts */
         .contacts-loading {
             text-align: center;
             padding: 30px 16px;
@@ -696,78 +749,89 @@
 <body>
 
     <div id="app">
-        <!-- TOAST -->
+        <!-- Toast ပြတင်းပေါက် -->
         <div id="toast-container"></div>
 
-        <!-- AUTH -->
+        <!-- ===== အကောင့်ဝင်ခြင်း အပိုင်း ===== -->
         <div id="auth-section" class="auth-section">
-            <div class="logo"><i class="fas fa-comment-dots" style="margin-right:8px;"></i>My Nook Chat</div>
-            <div class="sub">Connect with your friends</div>
+            <div class="logo"><i class="fas fa-comment-dots" style="margin-right:8px;"></i>My Nook ချတ်</div>
+            <div class="sub">သူငယ်ချင်းများနှင့် ချိတ်ဆက်ပါ</div>
             <div id="auth-error" class="auth-error"></div>
             <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="login-email" placeholder="you@example.com" />
+                <label>အီးမေးလ်</label>
+                <input type="email" id="login-email" placeholder="သင့်အီးမေးလ်" />
             </div>
             <div class="form-group">
-                <label>Password</label>
+                <label>စကားဝှက်</label>
                 <input type="password" id="login-password" placeholder="••••••••" />
             </div>
-            <button class="btn-primary" id="login-btn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+            <button class="btn-primary" id="login-btn"><i class="fas fa-sign-in-alt"></i> ဝင်မည်</button>
             <div style="margin-top:12px;font-size:13px;color:var(--text-muted);">
-                Don't have an account? <a href="mynook.html" style="color:var(--primary);font-weight:600;text-decoration:none;">Sign Up</a>
+                အကောင့်မရှိသေးဘူးလား? <a href="mynook.html" style="color:var(--primary);font-weight:600;text-decoration:none;">စာရင်းသွင်းပါ</a>
             </div>
         </div>
 
-        <!-- CHAT APP -->
+        <!-- ===== ချတ်အက်ပ် အပိုင်း ===== -->
         <div id="chat-app">
-            <!-- Header -->
+            <!-- ထိပ်ပိုင်း ဘား (Header) -->
             <div class="chat-header">
                 <div class="brand">
                     <i class="fas fa-comment-dots"></i>
-                    <span>My Nook Chat</span>
-                    <button class="back-home" id="back-home" title="Back to Feed"><i class="fas fa-arrow-left"></i></button>
+                    <span>My Nook ချတ်</span>
+                    <button class="back-home" id="back-home" title="Feed သို့ပြန်သွားရန်"><i class="fas fa-arrow-left"></i></button>
                 </div>
                 <div class="header-actions">
                     <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon"></i></button>
                     <div class="user-badge">
-                        <span id="nav-username">User</span>
+                        <span id="nav-username">အသုံးပြုသူ</span>
                         <div class="avatar" id="nav-avatar"><span id="nav-avatar-text">U</span></div>
                     </div>
                     <button id="logout-btn"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
             </div>
 
-            <!-- Main -->
+            <!-- အဓိက အကြောင်းအရာ (Main) -->
             <div class="chat-main">
-                <!-- Contacts -->
+                <!-- ဘယ်ဘက် ဆက်သွယ်သူများ -->
                 <div class="contacts-sidebar">
                     <div class="search-box">
-                        <input type="text" id="search-contacts" placeholder="Search by name..." />
+                        <input type="text" id="search-contacts" placeholder="အမည်ဖြင့် ရှာဖွေရန်..." />
                     </div>
                     <div class="contacts-list" id="contacts-list">
                         <div class="contacts-loading">
                             <i class="fas fa-spinner fa-spin"></i>
-                            Loading users...
+                            အသုံးပြုသူများ ဖွင့်နေသည်...
                         </div>
                     </div>
                 </div>
 
-                <!-- Messages -->
+                <!-- ညာဘက် စကားပြောခန်း -->
                 <div class="messages-area" id="messages-area">
+                    <!-- စကားမပြောရသေးချိန် နေရာလွတ် -->
                     <div class="chat-placeholder" id="chat-placeholder">
                         <i class="fas fa-comments"></i>
-                        <h3>Select a conversation</h3>
-                        <p>Choose a friend to start chatting</p>
+                        <h3>စကားဝိုင်းတစ်ခုကို ရွေးပါ</h3>
+                        <p>စကားစပြောရန် သူငယ်ချင်းတစ်ယောက်ကို ရွေးပါ</p>
                     </div>
+                    <!-- စကားပြောနေချိန် အကြောင်းအရာ -->
                     <div id="chat-active" style="display:none;flex-direction:column;height:100%;">
+                        <!-- စကားပြောနေသူ၏ ခေါင်းစီး -->
                         <div class="chat-user-header" id="chat-user-header">
-                            <div class="avatar" id="chat-user-avatar"><span>U</span></div>
-                            <div class="name" id="chat-user-name">User</div>
+                            <div class="avatar-wrap">
+                                <div class="avatar" id="chat-user-avatar"><span>U</span></div>
+                                <div class="status-dot" id="chat-header-status-dot"></div>
+                            </div>
+                            <div class="user-info">
+                                <div class="name" id="chat-user-name">အသုံးပြုသူ</div>
+                                <span class="user-status" id="chat-user-status">အော့ဖ်လိုင်း</span>
+                            </div>
                         </div>
+                        <!-- စာများစာရင်း -->
                         <div class="messages-list" id="messages-list"></div>
+                        <!-- စာရိုက်ကွင်း -->
                         <div class="message-input-wrap">
-                            <input type="text" id="message-input" placeholder="Type a message..." />
-                            <button id="send-btn"><i class="fas fa-paper-plane"></i> Send</button>
+                            <input type="text" id="message-input" placeholder="စာရိုက်ပါ..." />
+                            <button id="send-btn"><i class="fas fa-paper-plane"></i> ပို့မည်</button>
                         </div>
                     </div>
                 </div>
@@ -776,16 +840,16 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- FIREBASE + APP LOGIC -->
+    <!-- Firebase နှင့် အဓိက လုပ်ဆောင်ချက်များ (JavaScript) -->
     <!-- ============================================================ -->
     <script type="module">
+        // Firebase စာကြည့်တိုက်များ သွင်းခြင်း
         import { initializeApp } from 'firebase/app';
         import {
             getAuth,
             signInWithEmailAndPassword,
             onAuthStateChanged,
-            signOut,
-            updateProfile
+            signOut
         } from 'firebase/auth';
         import {
             getFirestore,
@@ -801,12 +865,11 @@
             updateDoc,
             serverTimestamp,
             setDoc,
-            writeBatch,
-            deleteField
+            writeBatch
         } from 'firebase/firestore';
 
         // ============================================================
-        // CONFIG
+        // Firebase ပြင်ဆင်မှု (Config)
         // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyC21SJE6vYiN98dE7CjQ8lUV0sSI6NpGZA",
@@ -823,7 +886,7 @@
         const db = getFirestore(app);
 
         // ============================================================
-        // DOM REFS
+        // HTML ဒြပ်စင်များ (DOM Refs)
         // ============================================================
         const $ = (s) => document.querySelector(s);
         const $$ = (s) => document.querySelectorAll(s);
@@ -850,13 +913,15 @@
         const chatActive = $('#chat-active');
         const chatUserName = $('#chat-user-name');
         const chatUserAvatar = $('#chat-user-avatar');
+        const chatUserStatus = $('#chat-user-status');
+        const chatHeaderStatusDot = $('#chat-header-status-dot');
         const toastContainer = $('#toast-container');
 
         // ============================================================
-        // STATE
+        // အခြေအနေ သိမ်းဆည်းခြင်း (State)
         // ============================================================
         let currentUser = null;
-        let currentUserData = { displayName: 'User', photoURL: '', uid: '', verified: false };
+        let currentUserData = { displayName: 'အသုံးပြုသူ', photoURL: '', uid: '', verified: false };
         let allUsers = {}; // uid -> userData
         let activeChatId = null;
         let activeChatPartnerUid = null;
@@ -865,9 +930,10 @@
         let isAuthReady = false;
         let pendingTargetUser = null;
         let isSending = false;
+        let presenceInterval = null; // အွန်လိုင်းနေရန် အချိန်ပိုင်း
 
         // ============================================================
-        // TOAST
+        // Toast အသိပေးချက်
         // ============================================================
         function showToast(msg, type = 'info') {
             const toast = document.createElement('div');
@@ -885,7 +951,7 @@
         }
 
         // ============================================================
-        // THEME
+        // အမှောင်/အလင်း အပြောင်းအလဲ (Theme)
         // ============================================================
         let darkMode = localStorage.getItem('nook-chat-theme') === 'dark';
         if (darkMode) document.documentElement.setAttribute('data-theme', 'dark');
@@ -899,7 +965,7 @@
         });
 
         // ============================================================
-        // HELPERS
+        // အကူပြုလုပ်ဆောင်ချက်များ (Helpers)
         // ============================================================
         function escapeHtml(text) {
             if (!text) return '';
@@ -914,11 +980,11 @@
             if (isNaN(d)) return '';
             const now = new Date();
             const diff = Math.floor((now - d) / 1000);
-            if (diff < 60) return 'Just now';
-            if (diff < 3600) return `${Math.floor(diff / 60)}m`;
-            if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
-            if (diff < 604800) return `${Math.floor(diff / 86400)}d`;
-            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            if (diff < 60) return 'အခုလေးတင်';
+            if (diff < 3600) return `${Math.floor(diff / 60)} မိနစ်`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} နာရီ`;
+            if (diff < 604800) return `${Math.floor(diff / 86400)} ရက်`;
+            return d.toLocaleDateString('my-MM', { month: 'short', day: 'numeric' });
         }
 
         function getChatId(uid1, uid2) {
@@ -952,7 +1018,55 @@
         }
 
         // ============================================================
-        // AUTH
+        // အွန်လိုင်း/အော့ဖ်လိုင်း အခြေအနေ သတ်မှတ်ခြင်း (Presence)
+        // ============================================================
+        async function updatePresence(isOnline) {
+            if (!currentUser) return;
+            try {
+                const userRef = doc(db, 'users', currentUser.uid);
+                await updateDoc(userRef, {
+                    online: isOnline,
+                    lastSeen: serverTimestamp()
+                });
+            } catch (err) {
+                // အမှားရှိရင်လည်း ဆက်လုပ်ပါ
+            }
+        }
+
+        function setupPresence() {
+            // အခါအားလျော်စွာ အသက်ရှင်နေကြောင်း အချက်ပြခြင်း (ဥပမာ ၃၀ စက္ကန့်)
+            if (presenceInterval) clearInterval(presenceInterval);
+            presenceInterval = setInterval(() => {
+                if (currentUser && document.visibilityState === 'visible') {
+                    updatePresence(true);
+                }
+            }, 30000); // 30 sec
+
+            // Tab ပြောင်းခြင်း / ပိတ်ခြင်း အခြေအနေများ
+            const handleVisibilityChange = () => {
+                if (document.hidden) {
+                    // ကိုယ်က တဘ်ကိုပိတ် သို့မဟုတ် အခြားတဘ်သို့ပြောင်းသွား
+                    updatePresence(false);
+                } else {
+                    // ပြန်ဝင်လာ
+                    updatePresence(true);
+                }
+            };
+
+            const handleBeforeUnload = () => {
+                updatePresence(false);
+                if (presenceInterval) clearInterval(presenceInterval);
+            };
+
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            window.addEventListener('beforeunload', handleBeforeUnload);
+
+            // စာမျက်နှာစတင်ဖွင့်ချိန်တွင် အွန်လိုင်းဖြစ်အောင်လုပ်
+            updatePresence(true);
+        }
+
+        // ============================================================
+        // အကောင့်ဝင်ခြင်း ဆိုင်ရာ (Auth Functions)
         // ============================================================
         function showAuthError(msg) {
             authError.textContent = msg;
@@ -967,21 +1081,22 @@
             hideAuthError();
             const email = loginEmail.value.trim();
             const pass = loginPassword.value.trim();
-            if (!email || !pass) { showAuthError('Please enter email and password.'); return; }
+            if (!email || !pass) { showAuthError('ကျေးဇူးပြု၍ အီးမေးလ်နှင့် စကားဝှက် ထည့်ပါ။'); return; }
             loginBtn.disabled = true;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ဝင်နေသည်...';
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
             } catch (err) {
                 showAuthError(err.message);
                 loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ဝင်မည်';
             }
         });
 
         logoutBtn.addEventListener('click', async () => {
+            await updatePresence(false);
             await signOut(auth);
-            showToast('Logged out.', 'info');
+            showToast('ထွက်သွားပါပြီ။', 'info');
         });
 
         loginPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') loginBtn.click(); });
@@ -992,7 +1107,7 @@
         });
 
         // ============================================================
-        // ENSURE USER DOCUMENT EXISTS
+        // အသုံးပြုသူစာရွက် သေချာရှိစေရန် (Ensure User Doc)
         // ============================================================
         async function ensureUserDocument(user) {
             if (!user) return null;
@@ -1002,19 +1117,22 @@
                 const data = snap.data();
                 return {
                     uid: user.uid,
-                    displayName: data.displayName || user.displayName || user.email?.split('@')[0] || 'User',
+                    displayName: data.displayName || user.displayName || user.email?.split('@')[0] || 'အသုံးပြုသူ',
                     photoURL: data.photoURL || user.photoURL || '',
                     verified: data.verified || false,
-                    email: data.email || user.email || ''
+                    email: data.email || user.email || '',
+                    online: data.online || false,
+                    lastSeen: data.lastSeen || null
                 };
             } else {
-                // Create user document
-                const displayName = user.displayName || user.email?.split('@')[0] || 'User';
+                const displayName = user.displayName || user.email?.split('@')[0] || 'အသုံးပြုသူ';
                 const newUser = {
                     displayName: displayName,
                     photoURL: user.photoURL || '',
                     email: user.email || '',
                     verified: false,
+                    online: true,
+                    lastSeen: serverTimestamp(),
                     createdAt: serverTimestamp()
                 };
                 await setDoc(userRef, newUser);
@@ -1023,13 +1141,15 @@
                     displayName: displayName,
                     photoURL: user.photoURL || '',
                     verified: false,
-                    email: user.email || ''
+                    email: user.email || '',
+                    online: true,
+                    lastSeen: new Date()
                 };
             }
         }
 
         // ============================================================
-        // AUTH STATE
+        // အကောင့်ဝင်ပြီးနောက် အခြေအနေ (Auth State)
         // ============================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -1043,16 +1163,19 @@
                         chatApp.classList.add('show');
                         navUsername.textContent = currentUserData.displayName;
                         setAvatarElement(navAvatar, currentUserData.photoURL, currentUserData.displayName);
+
+                        // အွန်လိုင်း အခြေအနေ စတင်ခြင်း
+                        setupPresence();
+
+                        // ဆက်သွယ်သူများ ဖွင့်ခြင်း
                         loadContacts();
 
-                        // If there's a pending user from URL, open chat
+                        // URL မှ user parameter ရှိရင် ဖွင့်ပေးခြင်း
                         if (pendingTargetUser) {
                             const targetUid = pendingTargetUser;
-                            const chatId = getChatId(currentUser.uid, targetUid);
                             if (allUsers[targetUid]) {
-                                setTimeout(() => openChat(targetUid, chatId), 500);
+                                setTimeout(() => openChat(targetUid, getChatId(currentUser.uid, targetUid)), 500);
                             } else {
-                                // Wait a bit for contacts to load
                                 const waitForUser = setInterval(() => {
                                     if (allUsers[targetUid]) {
                                         clearInterval(waitForUser);
@@ -1064,16 +1187,18 @@
                             pendingTargetUser = null;
                         }
                     } else {
-                        throw new Error('Failed to load user data');
+                        throw new Error('အသုံးပြုသူဒေတာ ရယူရန် မအောင်မြင်ပါ');
                     }
                 } catch (err) {
-                    console.error('Auth load error:', err);
-                    showToast('Error loading profile: ' + err.message, 'error');
+                    console.error('အကောင့်ဝင်ချိန် အမှား:', err);
+                    showToast('ပရိုဖိုင် ဖွင့်ရာတွင် အမှားရှိသည်: ' + err.message, 'error');
                 }
             } else {
+                // အကောင့်မဝင်တော့ပါ
                 currentUser = null;
-                currentUserData = { displayName: 'User', photoURL: '', uid: '', verified: false };
+                currentUserData = { displayName: 'အသုံးပြုသူ', photoURL: '', uid: '', verified: false };
                 isAuthReady = false;
+                if (presenceInterval) clearInterval(presenceInterval);
                 authSection.style.display = 'block';
                 chatApp.classList.remove('show');
                 if (unsubscribeContacts) { unsubscribeContacts();
@@ -1081,19 +1206,19 @@
                 if (unsubscribeMessages) { unsubscribeMessages();
                     unsubscribeMessages = null; }
                 loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ဝင်မည်';
                 allUsers = {};
                 contactsList.innerHTML = `
                     <div class="contacts-loading">
                         <i class="fas fa-spinner fa-spin"></i>
-                        Loading users...
+                        အသုံးပြုသူများ ဖွင့်နေသည်...
                     </div>
                 `;
             }
         });
 
         // ============================================================
-        // LOAD CONTACTS (Real-time)
+        // ဆက်သွယ်သူများ ဖွင့်ခြင်း (Load Contacts)
         // ============================================================
         function loadContacts() {
             if (unsubscribeContacts) {
@@ -1110,40 +1235,41 @@
                     if (docSnap.id !== currentUser.uid) {
                         users[docSnap.id] = {
                             uid: docSnap.id,
-                            displayName: data.displayName || 'User',
+                            displayName: data.displayName || 'အသုံးပြုသူ',
                             photoURL: data.photoURL || '',
                             verified: data.verified || false,
-                            email: data.email || ''
+                            email: data.email || '',
+                            online: data.online || false,
+                            lastSeen: data.lastSeen || null
                         };
                     }
                 });
                 allUsers = users;
                 renderContactsWithLastMessages(users);
             }, (err) => {
-                console.error('Contacts error:', err);
+                console.error('ဆက်သွယ်သူများ အမှား:', err);
                 if (err.code === 'permission-denied') {
                     contactsList.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-lock"></i>
-                            <p>Permission denied. Please check Firestore rules.</p>
-                            <p style="font-size:12px;margin-top:6px;">Make sure rules allow reading users collection.</p>
+                            <p>ခွင့်ပြုချက် မရှိပါ။ Firestore စည်းမျဉ်းများကို စစ်ဆေးပါ။</p>
                         </div>
                     `;
-                    showToast('Cannot load users: permission denied. Check Firestore rules.', 'error');
+                    showToast('အသုံးပြုသူများ ဖွင့်၍မရပါ။ Firestore စည်းမျဉ်းကို စစ်ဆေးပါ။', 'error');
                 } else {
                     contactsList.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-exclamation-triangle"></i>
-                            <p>Failed to load users: ${err.message}</p>
+                            <p>ဖွင့်ရာတွင် အမှားရှိသည်: ${err.message}</p>
                         </div>
                     `;
-                    showToast('Error loading contacts: ' + err.message, 'error');
+                    showToast('ဆက်သွယ်သူများ ဖွင့်ရာတွင် အမှား: ' + err.message, 'error');
                 }
             });
         }
 
         // ============================================================
-        // RENDER CONTACTS WITH LAST MESSAGE
+        // ဆက်သွယ်သူများကို နောက်ဆုံးစာနှင့်တွဲဖော်ပြခြင်း
         // ============================================================
         async function renderContactsWithLastMessages(users) {
             const contactList = [];
@@ -1161,7 +1287,6 @@
                         lastMsg = data.lastMessage || '';
                         lastTime = data.lastUpdated?.toDate?.() || null;
                     }
-                    // Count unread messages
                     try {
                         const msgsRef = collection(db, 'chats', chatId, 'messages');
                         const qUnread = query(msgsRef,
@@ -1170,8 +1295,8 @@
                         );
                         const unreadSnap = await getDocs(qUnread);
                         unread = unreadSnap.size;
-                    } catch (e) { /* ignore */ }
-                } catch (err) { /* ignore */ }
+                    } catch (e) { /* ဂရုမစိုက်ပါ */ }
+                } catch (err) { /* ဂရုမစိုက်ပါ */ }
 
                 contactList.push({
                     ...user,
@@ -1192,6 +1317,9 @@
             renderContacts(contactList);
         }
 
+        // ============================================================
+        // ဆက်သွယ်သူများ UI ဆွဲခြင်း (Render Contacts)
+        // ============================================================
         function renderContacts(contacts) {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const filtered = contacts.filter(c =>
@@ -1202,7 +1330,7 @@
                 contactsList.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-user-slash"></i>
-                        <p>${searchTerm ? 'No users match "' + escapeHtml(searchTerm) + '"' : 'No users found'}</p>
+                        <p>${searchTerm ? `"${escapeHtml(searchTerm)}" နှင့်ကိုက်ညီသော သူမရှိပါ` : 'အသုံးပြုသူ မရှိပါ'}</p>
                     </div>
                 `;
                 return;
@@ -1216,13 +1344,17 @@
                     `<span>${initial}</span>`;
                 const isActive = activeChatPartnerUid === c.uid;
                 const timeStr = c.lastTime ? formatTime(c.lastTime) : '';
+                const statusClass = c.online ? 'online' : 'offline';
 
                 html += `
                     <div class="contact-item ${isActive ? 'active' : ''}" data-uid="${c.uid}" data-chatid="${c.chatId}">
-                        <div class="avatar">${avatarHtml}</div>
+                        <div class="avatar-wrap">
+                            <div class="avatar">${avatarHtml}</div>
+                            <div class="status-dot ${statusClass}"></div>
+                        </div>
                         <div class="info">
                             <div class="name">${escapeHtml(c.displayName)} ${renderVerifiedBadge(c.verified)}</div>
-                            <div class="last-msg">${escapeHtml(c.lastMsg || 'No messages yet')}</div>
+                            <div class="last-msg">${escapeHtml(c.lastMsg || 'စာမရှိသေးပါ')}</div>
                         </div>
                         <div class="time">${timeStr}</div>
                         ${c.unread > 0 ? `<div class="unread-badge">${c.unread}</div>` : ''}
@@ -1242,7 +1374,9 @@
             });
         }
 
-        // Search filter
+        // ============================================================
+        // ရှာဖွေမှု စစ်ထုတ်ခြင်း (Search Filter)
+        // ============================================================
         searchInput.addEventListener('input', () => {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const items = contactsList.querySelectorAll('.contact-item');
@@ -1257,13 +1391,12 @@
                 }
             });
 
-            // Remove any existing empty state from previous renders
-            const existingEmpty = contactsList.querySelector('.empty-state');
+            const existingEmpty = contactsList.querySelector('.empty-state:not(.global)');
             if (!hasVisible && items.length > 0) {
                 if (!existingEmpty) {
                     const empty = document.createElement('div');
                     empty.className = 'empty-state';
-                    empty.innerHTML = `<i class="fas fa-user-slash"></i><p>No users match "${escapeHtml(searchTerm)}"</p>`;
+                    empty.innerHTML = `<i class="fas fa-user-slash"></i><p>"${escapeHtml(searchTerm)}" နှင့် ကိုက်ညီသူမရှိပါ</p>`;
                     contactsList.appendChild(empty);
                 }
             } else if (existingEmpty) {
@@ -1272,15 +1405,15 @@
         });
 
         // ============================================================
-        // OPEN CHAT
+        // စကားပြောခန်း ဖွင့်ခြင်း (Open Chat)
         // ============================================================
         async function openChat(partnerUid, chatId) {
             if (!currentUser) {
-                showToast('Please sign in first.', 'info');
+                showToast('ကျေးဇူးပြု၍ အကောင့်ဝင်ပါ။', 'info');
                 return;
             }
             if (partnerUid === currentUser.uid) {
-                showToast("You can't chat with yourself.", 'info');
+                showToast("ကိုယ်နဲ့ကိုယ် စကားမပြောနိုင်ပါ။", 'info');
                 return;
             }
 
@@ -1298,12 +1431,17 @@
             if (partner) {
                 chatUserName.innerHTML = `${escapeHtml(partner.displayName)} ${renderVerifiedBadge(partner.verified)}`;
                 setAvatarElement(chatUserAvatar, partner.photoURL, partner.displayName);
+                // အခြေအနေ မွမ်းမံ
+                updateChatHeaderStatus(partner.online, partner.lastSeen);
             } else {
-                chatUserName.textContent = 'User';
-                setAvatarElement(chatUserAvatar, '', 'User');
+                chatUserName.textContent = 'အသုံးပြုသူ';
+                setAvatarElement(chatUserAvatar, '', '');
+                chatUserStatus.textContent = 'အော့ဖ်လိုင်း';
+                chatUserStatus.className = 'user-status';
+                chatHeaderStatusDot.className = 'status-dot offline';
             }
 
-            // Ensure chat document exists with participants
+            // ချတ်စာရွက် သေချာရှိစေရန်
             try {
                 const chatRef = doc(db, 'chats', chatId);
                 const chatSnap = await getDoc(chatRef);
@@ -1323,16 +1461,16 @@
                     }
                 }
             } catch (err) {
-                console.warn('Chat doc setup error:', err);
+                console.warn('ချတ်စာရွက် သတ်မှတ်ရာတွင် အမှား:', err);
                 if (err.code === 'permission-denied') {
-                    showToast('Permission denied to create chat. Check Firestore rules.', 'error');
+                    showToast('ချတ်ဖန်တီးခွင့် မရှိပါ။ Firestore စည်းမျဉ်းကို စစ်ဆေးပါ။', 'error');
                 } else {
-                    showToast('Error setting up chat: ' + err.message, 'error');
+                    showToast('ချတ်သတ်မှတ်ရာတွင် အမှား: ' + err.message, 'error');
                 }
                 return;
             }
 
-            // Subscribe to messages
+            // စာများ နားထောင်ခြင်း
             if (unsubscribeMessages) {
                 unsubscribeMessages();
                 unsubscribeMessages = null;
@@ -1343,9 +1481,7 @@
 
             unsubscribeMessages = onSnapshot(q, (snapshot) => {
                 let html = '';
-                let hasMessages = false;
                 snapshot.forEach(docSnap => {
-                    hasMessages = true;
                     const data = docSnap.data();
                     const isSent = data.senderId === currentUser.uid;
                     const time = data.createdAt?.toDate?.() || new Date();
@@ -1357,21 +1493,21 @@
                         </div>
                     `;
                 });
-                messagesList.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);padding:20px;">No messages yet. Say hi!</div>';
+                messagesList.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);padding:20px;">စာမရှိသေးပါ။ ဟိုင်းလိုက်ပါ။</div>';
                 messagesList.scrollTop = messagesList.scrollHeight;
                 markMessagesAsRead(chatId, partnerUid);
             }, (err) => {
-                console.error('Messages error:', err);
+                console.error('စာများဖွင့်ရာတွင် အမှား:', err);
                 if (err.code === 'permission-denied') {
-                    showToast('Cannot read messages: permission denied.', 'error');
+                    showToast('စာများဖတ်ခွင့် မရှိပါ။', 'error');
                     messagesList.innerHTML = `
                         <div style="text-align:center;color:var(--text-muted);padding:20px;">
                             <i class="fas fa-lock" style="font-size:24px;display:block;margin-bottom:8px;"></i>
-                            Permission denied. Make sure you are a participant.
+                            ခွင့်ပြုချက် မရှိပါ။ သင်သည် ပါဝင်သူဖြစ်ကြောင်း သေချာပါစေ။
                         </div>
                     `;
                 } else {
-                    showToast('Error loading messages: ' + err.message, 'error');
+                    showToast('စာများဖွင့်ရာတွင် အမှား: ' + err.message, 'error');
                 }
             });
 
@@ -1379,7 +1515,31 @@
         }
 
         // ============================================================
-        // MARK AS READ
+        // ခေါင်းစီးရှိ အခြေအနေကို မွမ်းမံခြင်း (Update Header Status)
+        // ============================================================
+        function updateChatHeaderStatus(isOnline, lastSeen) {
+            if (isOnline) {
+                chatUserStatus.textContent = 'အွန်လိုင်း';
+                chatUserStatus.className = 'user-status online';
+                chatHeaderStatusDot.className = 'status-dot online';
+            } else {
+                let statusText = 'အော့ဖ်လိုင်း';
+                if (lastSeen) {
+                    const lastSeenDate = lastSeen.toDate ? lastSeen.toDate() : new Date(lastSeen);
+                    const diff = Math.floor((Date.now() - lastSeenDate) / 1000);
+                    if (diff < 60) statusText = 'အခုလေးတင် မြင်ခဲ့ရ';
+                    else if (diff < 3600) statusText = `${Math.floor(diff / 60)} မိနစ်ခန့်က မြင်ခဲ့ရ`;
+                    else if (diff < 86400) statusText = `${Math.floor(diff / 3600)} နာရီခန့်က မြင်ခဲ့ရ`;
+                    else statusText = `${Math.floor(diff / 86400)} ရက်ခန့်က မြင်ခဲ့ရ`;
+                }
+                chatUserStatus.textContent = statusText;
+                chatUserStatus.className = 'user-status';
+                chatHeaderStatusDot.className = 'status-dot offline';
+            }
+        }
+
+        // ============================================================
+        // စာဖတ်ပြီးကြောင်း အမှတ်အသားပြုခြင်း (Mark as Read)
         // ============================================================
         async function markMessagesAsRead(chatId, partnerUid) {
             if (!currentUser) return;
@@ -1396,7 +1556,7 @@
                     batch.update(d.ref, { read: true });
                 });
                 await batch.commit();
-                // Update UI badge
+                // UI အပေါ်က အရေအတွက် ဖယ်ရှားရန်
                 const contactItems = contactsList.querySelectorAll('.contact-item');
                 contactItems.forEach(el => {
                     if (el.dataset.uid === partnerUid) {
@@ -1405,21 +1565,21 @@
                     }
                 });
             } catch (err) {
-                console.warn('Mark read error:', err);
+                console.warn('ဖတ်ပြီးကြောင်း မှတ်ရာတွင် အမှား:', err);
             }
         }
 
         // ============================================================
-        // SEND MESSAGE
+        // စာပို့ခြင်း (Send Message)
         // ============================================================
         async function sendMessage() {
             const text = messageInput.value.trim();
             if (!text) {
-                showToast('Please type a message.', 'info');
+                showToast('ကျေးဇူးပြု၍ စာရိုက်ပါ။', 'info');
                 return;
             }
             if (!activeChatId || !activeChatPartnerUid) {
-                showToast('Please select a conversation first.', 'info');
+                showToast('ကျေးဇူးပြု၍ စကားဝိုင်းတစ်ခုကို ရွေးပါ။', 'info');
                 return;
             }
             if (isSending) return;
@@ -1429,7 +1589,6 @@
             sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
             try {
-                // Double-check chat document exists
                 const chatRef = doc(db, 'chats', activeChatId);
                 const chatSnap = await getDoc(chatRef);
                 if (!chatSnap.exists()) {
@@ -1440,7 +1599,6 @@
                         createdAt: serverTimestamp()
                     });
                 } else {
-                    // Ensure participants include both users
                     const data = chatSnap.data();
                     const participants = data.participants || [];
                     if (!participants.includes(currentUser.uid) || !participants.includes(activeChatPartnerUid)) {
@@ -1449,7 +1607,6 @@
                     }
                 }
 
-                // Add message
                 const msgData = {
                     senderId: currentUser.uid,
                     receiverId: activeChatPartnerUid,
@@ -1459,7 +1616,6 @@
                 };
                 await addDoc(collection(db, 'chats', activeChatId, 'messages'), msgData);
 
-                // Update last message
                 await updateDoc(chatRef, {
                     lastMessage: text,
                     lastUpdated: serverTimestamp()
@@ -1467,18 +1623,17 @@
 
                 messageInput.value = '';
                 messageInput.focus();
-                // Let the onSnapshot update the UI
             } catch (err) {
-                console.error('Send error:', err);
+                console.error('စာပို့ရာတွင် အမှား:', err);
                 if (err.code === 'permission-denied') {
-                    showToast('Permission denied. Make sure you are a participant in this chat.', 'error');
+                    showToast('ခွင့်ပြုချက် မရှိပါ။ သင်သည် ပါဝင်သူဖြစ်ကြောင်း သေချာပါစေ။', 'error');
                 } else {
-                    showToast('Failed to send: ' + err.message, 'error');
+                    showToast('စာပို့ရာတွင် အမှား: ' + err.message, 'error');
                 }
             } finally {
                 isSending = false;
                 sendBtn.disabled = false;
-                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ပို့မည်';
             }
         }
 
@@ -1491,45 +1646,40 @@
         });
 
         // ============================================================
-        // URL PARAMETER
+        // URL Parameter မှ user ကို ဖွင့်ခြင်း
         // ============================================================
         const urlParams = new URLSearchParams(window.location.search);
         const targetUserFromUrl = urlParams.get('user');
         if (targetUserFromUrl) {
             if (isAuthReady && currentUser) {
-                const chatId = getChatId(currentUser.uid, targetUserFromUrl);
                 if (allUsers[targetUserFromUrl]) {
-                    setTimeout(() => openChat(targetUserFromUrl, chatId), 500);
+                    setTimeout(() => openChat(targetUserFromUrl, getChatId(currentUser.uid, targetUserFromUrl)), 500);
                 } else {
                     pendingTargetUser = targetUserFromUrl;
-                    showToast('Loading user...', 'info');
+                    showToast('အသုံးပြုသူကို ရှာနေသည်...', 'info');
                 }
             } else {
                 pendingTargetUser = targetUserFromUrl;
             }
         }
 
-        console.log('💬 My Nook Chat loaded (fixed version)');
-        console.log('ℹ️ Make sure Firestore rules allow:');
-        console.log('   - read users collection for authenticated users');
-        console.log('   - read/write chats where user is a participant');
-        console.log('📌 See Firestore rules in the comments below.');
+        console.log('💬 My Nook ချတ် (မြန်မာလို + Online/Offline) စတင်ပါပြီ။');
     </script>
 
     <!-- 
     ============================================================
-    FIRESTORE SECURITY RULES (建议配置)
+    Firestore လုံခြုံရေး စည်းမျဉ်းများ (ဖိုင်ရယ်ထဲထည့်ရန်)
     ============================================================
     rules_version = '2';
     service cloud.firestore {
       match /databases/{database}/documents {
-        // Users collection - 所有认证用户可以读取，用户只能写入自己的文档
+        // users collection - အကောင့်ဝင်ထားသူတိုင်း ဖတ်ခွင့်ရှိပြီး ကိုယ်ပိုင် doc ကိုသာ ပြင်ခွင့်ရှိသည်။
         match /users/{userId} {
           allow read: if request.auth != null;
           allow write: if request.auth != null && request.auth.uid == userId;
         }
         
-        // Chats collection - 参与者可以读写
+        // chats collection - ပါဝင်သူများသာ ဖတ်/ရေး လုပ်ခွင့်ရှိသည်။
         match /chats/{chatId} {
           allow read: if request.auth != null && 
             request.auth.uid in resource.data.participants;
@@ -1549,4 +1699,4 @@
     -->
 
 </body>
-</html>လ
+</html>
