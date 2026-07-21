@@ -21,7 +21,6 @@
     </script>
 
     <style>
-        /* ===== CSS VARIABLES ===== */
         :root {
             --primary: #1a73e8;
             --primary-dark: #1557b0;
@@ -39,6 +38,7 @@
             --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             --header-height: 60px;
+            --danger: #ea4335;
         }
 
         [data-theme="dark"] {
@@ -160,7 +160,6 @@
             display: flex;
         }
 
-        /* Header */
         .chat-header {
             display: flex;
             align-items: center;
@@ -263,14 +262,12 @@
             color: var(--primary) !important;
         }
 
-        /* Main Layout */
         .chat-main {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
-        /* Contacts Sidebar */
         .contacts-sidebar {
             width: 320px;
             background: var(--card-bg);
@@ -319,7 +316,7 @@
             background: var(--bg);
         }
         .contact-item.active {
-            background: var(--primary-light, #e8f0fe);
+            background: rgba(26, 115, 232, 0.08);
             border-left: 3px solid var(--primary);
         }
         [data-theme="dark"] .contact-item.active {
@@ -402,7 +399,6 @@
             margin-left: auto;
         }
 
-        /* Messages Area */
         .messages-area {
             flex: 1;
             display: flex;
@@ -614,7 +610,6 @@
             }
         }
 
-        /* Scrollbar */
         .contacts-list::-webkit-scrollbar,
         .messages-list::-webkit-scrollbar {
             width: 4px;
@@ -628,15 +623,83 @@
         .messages-list::-webkit-scrollbar-track {
             background: transparent;
         }
+
+        /* Toast */
+        #toast-container {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            max-width: 92%;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--text-primary);
+            color: #fff;
+        }
+        .toast.error {
+            background: #ea4335;
+        }
+        .toast.success {
+            background: #0f9d58;
+        }
+        .toast.info {
+            background: var(--primary);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Loading spinner in contacts */
+        .contacts-loading {
+            text-align: center;
+            padding: 30px 16px;
+            color: var(--text-muted);
+        }
+        .contacts-loading i {
+            display: block;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 30px 16px;
+            color: var(--text-muted);
+        }
+        .empty-state i {
+            font-size: 28px;
+            opacity: 0.3;
+            display: block;
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
 
     <div id="app">
-        <!-- ===== TOAST CONTAINER ===== -->
-        <div id="toast-container" style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:10px;align-items:center;max-width:92%;pointer-events:none;"></div>
+        <!-- TOAST -->
+        <div id="toast-container"></div>
 
-        <!-- ===== AUTH ===== -->
+        <!-- AUTH -->
         <div id="auth-section" class="auth-section">
             <div class="logo"><i class="fas fa-comment-dots" style="margin-right:8px;"></i>My Nook Chat</div>
             <div class="sub">Connect with your friends</div>
@@ -655,8 +718,8 @@
             </div>
         </div>
 
-        <!-- ===== CHAT APP ===== -->
-        <div id="chat-app" class="show">
+        <!-- CHAT APP -->
+        <div id="chat-app">
             <!-- Header -->
             <div class="chat-header">
                 <div class="brand">
@@ -679,11 +742,12 @@
                 <!-- Contacts -->
                 <div class="contacts-sidebar">
                     <div class="search-box">
-                        <input type="text" id="search-contacts" placeholder="Search users..." />
+                        <input type="text" id="search-contacts" placeholder="Search by name..." />
                     </div>
                     <div class="contacts-list" id="contacts-list">
-                        <div style="text-align:center;padding:20px;color:var(--text-muted);">
-                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                        <div class="contacts-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Loading users...
                         </div>
                     </div>
                 </div>
@@ -720,7 +784,8 @@
             getAuth,
             signInWithEmailAndPassword,
             onAuthStateChanged,
-            signOut
+            signOut,
+            updateProfile
         } from 'firebase/auth';
         import {
             getFirestore,
@@ -736,7 +801,8 @@
             updateDoc,
             serverTimestamp,
             setDoc,
-            writeBatch
+            writeBatch,
+            deleteField
         } from 'firebase/firestore';
 
         // ============================================================
@@ -791,13 +857,14 @@
         // ============================================================
         let currentUser = null;
         let currentUserData = { displayName: 'User', photoURL: '', uid: '', verified: false };
-        let allUsers = {};
+        let allUsers = {}; // uid -> userData
         let activeChatId = null;
         let activeChatPartnerUid = null;
         let unsubscribeMessages = null;
         let unsubscribeContacts = null;
         let isAuthReady = false;
         let pendingTargetUser = null;
+        let isSending = false;
 
         // ============================================================
         // TOAST
@@ -807,24 +874,12 @@
             toast.className = `toast ${type}`;
             const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
             toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> ${msg}`;
-            toast.style.cssText = `
-                background: var(--text-primary); color: #fff; padding: 12px 24px;
-                border-radius: 50px; font-size: 14px; font-weight: 500;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.2); opacity: 0;
-                transform: translateY(20px) scale(0.95); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-                pointer-events: auto; display: flex; align-items: center; gap: 10px;
-                border: 1px solid rgba(255,255,255,0.1);
-            `;
-            if (type === 'error') toast.style.background = '#ea4335';
-            if (type === 'success') toast.style.background = '#0f9d58';
             toastContainer.appendChild(toast);
             requestAnimationFrame(() => {
-                toast.style.opacity = '1';
-                toast.style.transform = 'translateY(0) scale(1)';
+                toast.classList.add('show');
             });
             setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(20px) scale(0.95)';
+                toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 400);
             }, 3500);
         }
@@ -880,9 +935,11 @@
             const span = el.querySelector('span');
             const initial = (name || 'U').charAt(0).toUpperCase();
             if (photoURL) {
-                if (img) { img.src = photoURL;
+                if (img) {
+                    img.src = photoURL;
                     img.style.display = 'block';
-                    if (span) span.style.display = 'none'; } else {
+                    if (span) span.style.display = 'none';
+                } else {
                     el.innerHTML = `<img src="${photoURL}" alt="${escapeHtml(name)}" />`;
                 }
             } else {
@@ -935,38 +992,83 @@
         });
 
         // ============================================================
+        // ENSURE USER DOCUMENT EXISTS
+        // ============================================================
+        async function ensureUserDocument(user) {
+            if (!user) return null;
+            const userRef = doc(db, 'users', user.uid);
+            const snap = await getDoc(userRef);
+            if (snap.exists()) {
+                const data = snap.data();
+                return {
+                    uid: user.uid,
+                    displayName: data.displayName || user.displayName || user.email?.split('@')[0] || 'User',
+                    photoURL: data.photoURL || user.photoURL || '',
+                    verified: data.verified || false,
+                    email: data.email || user.email || ''
+                };
+            } else {
+                // Create user document
+                const displayName = user.displayName || user.email?.split('@')[0] || 'User';
+                const newUser = {
+                    displayName: displayName,
+                    photoURL: user.photoURL || '',
+                    email: user.email || '',
+                    verified: false,
+                    createdAt: serverTimestamp()
+                };
+                await setDoc(userRef, newUser);
+                return {
+                    uid: user.uid,
+                    displayName: displayName,
+                    photoURL: user.photoURL || '',
+                    verified: false,
+                    email: user.email || ''
+                };
+            }
+        }
+
+        // ============================================================
         // AUTH STATE
         // ============================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    const snap = await getDoc(doc(db, 'users', user.uid));
-                    if (snap.exists()) {
-                        const data = snap.data();
-                        currentUserData = {
-                            uid: user.uid,
-                            displayName: data.displayName || user.displayName || user.email?.split('@')[0] || 'User',
-                            photoURL: data.photoURL || user.photoURL || '',
-                            verified: data.verified || false
-                        };
+                    const userData = await ensureUserDocument(user);
+                    if (userData) {
+                        currentUserData = userData;
+                        currentUser = user;
+                        isAuthReady = true;
+                        authSection.style.display = 'none';
+                        chatApp.classList.add('show');
+                        navUsername.textContent = currentUserData.displayName;
+                        setAvatarElement(navAvatar, currentUserData.photoURL, currentUserData.displayName);
+                        loadContacts();
+
+                        // If there's a pending user from URL, open chat
+                        if (pendingTargetUser) {
+                            const targetUid = pendingTargetUser;
+                            const chatId = getChatId(currentUser.uid, targetUid);
+                            if (allUsers[targetUid]) {
+                                setTimeout(() => openChat(targetUid, chatId), 500);
+                            } else {
+                                // Wait a bit for contacts to load
+                                const waitForUser = setInterval(() => {
+                                    if (allUsers[targetUid]) {
+                                        clearInterval(waitForUser);
+                                        openChat(targetUid, getChatId(currentUser.uid, targetUid));
+                                    }
+                                }, 300);
+                                setTimeout(() => clearInterval(waitForUser), 8000);
+                            }
+                            pendingTargetUser = null;
+                        }
                     } else {
-                        currentUserData = {
-                            uid: user.uid,
-                            displayName: user.displayName || user.email?.split('@')[0] || 'User',
-                            photoURL: user.photoURL || '',
-                            verified: false
-                        };
+                        throw new Error('Failed to load user data');
                     }
-                    currentUser = user;
-                    isAuthReady = true;
-                    authSection.style.display = 'none';
-                    chatApp.classList.add('show');
-                    navUsername.textContent = currentUserData.displayName;
-                    setAvatarElement(navAvatar, currentUserData.photoURL, currentUserData.displayName);
-                    loadContacts();
                 } catch (err) {
                     console.error('Auth load error:', err);
-                    showToast('Error loading profile.', 'error');
+                    showToast('Error loading profile: ' + err.message, 'error');
                 }
             } else {
                 currentUser = null;
@@ -980,6 +1082,13 @@
                     unsubscribeMessages = null; }
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                allUsers = {};
+                contactsList.innerHTML = `
+                    <div class="contacts-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Loading users...
+                    </div>
+                `;
             }
         });
 
@@ -994,7 +1103,7 @@
 
             const q = query(collection(db, 'users'));
 
-            unsubscribeContacts = onSnapshot(q, async (snapshot) => {
+            unsubscribeContacts = onSnapshot(q, (snapshot) => {
                 const users = {};
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
@@ -1009,65 +1118,78 @@
                     }
                 });
                 allUsers = users;
-
-                const contactList = [];
-                for (const [uid, user] of Object.entries(users)) {
-                    const chatId = getChatId(currentUser.uid, uid);
-                    let lastMsg = '';
-                    let lastTime = null;
-                    let unread = 0;
-                    
-                    try {
-                        const chatRef = doc(db, 'chats', chatId);
-                        const chatSnap = await getDoc(chatRef);
-                        if (chatSnap.exists()) {
-                            const data = chatSnap.data();
-                            lastMsg = data.lastMessage || '';
-                            lastTime = data.lastUpdated?.toDate?.() || null;
-                            try {
-                                const msgsSnap = await getDocs(query(collection(db, 'chats', chatId, 'messages'),
-                                    where('receiverId', '==', currentUser.uid),
-                                    where('read', '==', false)
-                                ));
-                                unread = msgsSnap.size;
-                            } catch (msgErr) {}
-                        }
-                    } catch (err) {}
-                    
-                    contactList.push({
-                        ...user,
-                        lastMsg,
-                        lastTime,
-                        unread,
-                        chatId
-                    });
-                }
-
-                contactList.sort((a, b) => {
-                    if (!a.lastTime && !b.lastTime) return 0;
-                    if (!a.lastTime) return 1;
-                    if (!b.lastTime) return -1;
-                    return b.lastTime - a.lastTime;
-                });
-
-                renderContacts(contactList);
-
-                if (isAuthReady && pendingTargetUser) {
-                    const targetUid = pendingTargetUser;
-                    const chatId = getChatId(currentUser.uid, targetUid);
-                    if (allUsers[targetUid]) {
-                        setTimeout(() => {
-                            openChat(targetUid, chatId);
-                        }, 500);
-                    } else {
-                        showToast('User not found.', 'error');
-                    }
-                    pendingTargetUser = null;
-                }
+                renderContactsWithLastMessages(users);
             }, (err) => {
                 console.error('Contacts error:', err);
-                showToast('Error loading contacts.', 'error');
+                if (err.code === 'permission-denied') {
+                    contactsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-lock"></i>
+                            <p>Permission denied. Please check Firestore rules.</p>
+                            <p style="font-size:12px;margin-top:6px;">Make sure rules allow reading users collection.</p>
+                        </div>
+                    `;
+                    showToast('Cannot load users: permission denied. Check Firestore rules.', 'error');
+                } else {
+                    contactsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Failed to load users: ${err.message}</p>
+                        </div>
+                    `;
+                    showToast('Error loading contacts: ' + err.message, 'error');
+                }
             });
+        }
+
+        // ============================================================
+        // RENDER CONTACTS WITH LAST MESSAGE
+        // ============================================================
+        async function renderContactsWithLastMessages(users) {
+            const contactList = [];
+            for (const [uid, user] of Object.entries(users)) {
+                const chatId = getChatId(currentUser.uid, uid);
+                let lastMsg = '';
+                let lastTime = null;
+                let unread = 0;
+
+                try {
+                    const chatRef = doc(db, 'chats', chatId);
+                    const chatSnap = await getDoc(chatRef);
+                    if (chatSnap.exists()) {
+                        const data = chatSnap.data();
+                        lastMsg = data.lastMessage || '';
+                        lastTime = data.lastUpdated?.toDate?.() || null;
+                    }
+                    // Count unread messages
+                    try {
+                        const msgsRef = collection(db, 'chats', chatId, 'messages');
+                        const qUnread = query(msgsRef,
+                            where('receiverId', '==', currentUser.uid),
+                            where('read', '==', false)
+                        );
+                        const unreadSnap = await getDocs(qUnread);
+                        unread = unreadSnap.size;
+                    } catch (e) { /* ignore */ }
+                } catch (err) { /* ignore */ }
+
+                contactList.push({
+                    ...user,
+                    lastMsg,
+                    lastTime,
+                    unread,
+                    chatId
+                });
+            }
+
+            contactList.sort((a, b) => {
+                if (!a.lastTime && !b.lastTime) return 0;
+                if (!a.lastTime) return 1;
+                if (!b.lastTime) return -1;
+                return b.lastTime - a.lastTime;
+            });
+
+            renderContacts(contactList);
         }
 
         function renderContacts(contacts) {
@@ -1078,9 +1200,9 @@
 
             if (filtered.length === 0) {
                 contactsList.innerHTML = `
-                    <div style="text-align:center;padding:30px 16px;color:var(--text-muted);">
-                        <i class="fas fa-user-slash" style="font-size:24px;opacity:0.3;display:block;margin-bottom:8px;"></i>
-                        <p>No users found</p>
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                        <p>${searchTerm ? 'No users match "' + escapeHtml(searchTerm) + '"' : 'No users found'}</p>
                     </div>
                 `;
                 return;
@@ -1120,7 +1242,7 @@
             });
         }
 
-        // Search filter - name only
+        // Search filter
         searchInput.addEventListener('input', () => {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const items = contactsList.querySelectorAll('.contact-item');
@@ -1134,18 +1256,18 @@
                     item.style.display = 'none';
                 }
             });
-            
-            let empty = contactsList.querySelector('.empty-search');
-            if (!hasVisible) {
-                if (!empty) {
-                    empty = document.createElement('div');
-                    empty.className = 'empty-search';
-                    empty.style.cssText = 'text-align:center;padding:30px 16px;color:var(--text-muted);';
-                    empty.innerHTML = `<i class="fas fa-user-slash" style="font-size:24px;opacity:0.3;display:block;margin-bottom:8px;"></i><p>No users found</p>`;
+
+            // Remove any existing empty state from previous renders
+            const existingEmpty = contactsList.querySelector('.empty-state');
+            if (!hasVisible && items.length > 0) {
+                if (!existingEmpty) {
+                    const empty = document.createElement('div');
+                    empty.className = 'empty-state';
+                    empty.innerHTML = `<i class="fas fa-user-slash"></i><p>No users match "${escapeHtml(searchTerm)}"</p>`;
                     contactsList.appendChild(empty);
                 }
-            } else if (empty) {
-                empty.remove();
+            } else if (existingEmpty) {
+                existingEmpty.remove();
             }
         });
 
@@ -1176,8 +1298,41 @@
             if (partner) {
                 chatUserName.innerHTML = `${escapeHtml(partner.displayName)} ${renderVerifiedBadge(partner.verified)}`;
                 setAvatarElement(chatUserAvatar, partner.photoURL, partner.displayName);
+            } else {
+                chatUserName.textContent = 'User';
+                setAvatarElement(chatUserAvatar, '', 'User');
             }
 
+            // Ensure chat document exists with participants
+            try {
+                const chatRef = doc(db, 'chats', chatId);
+                const chatSnap = await getDoc(chatRef);
+                if (!chatSnap.exists()) {
+                    await setDoc(chatRef, {
+                        participants: [currentUser.uid, partnerUid],
+                        lastMessage: '',
+                        lastUpdated: serverTimestamp(),
+                        createdAt: serverTimestamp()
+                    });
+                } else {
+                    const data = chatSnap.data();
+                    const participants = data.participants || [];
+                    if (!participants.includes(currentUser.uid) || !participants.includes(partnerUid)) {
+                        const newParticipants = [...new Set([...participants, currentUser.uid, partnerUid])];
+                        await updateDoc(chatRef, { participants: newParticipants });
+                    }
+                }
+            } catch (err) {
+                console.warn('Chat doc setup error:', err);
+                if (err.code === 'permission-denied') {
+                    showToast('Permission denied to create chat. Check Firestore rules.', 'error');
+                } else {
+                    showToast('Error setting up chat: ' + err.message, 'error');
+                }
+                return;
+            }
+
+            // Subscribe to messages
             if (unsubscribeMessages) {
                 unsubscribeMessages();
                 unsubscribeMessages = null;
@@ -1188,7 +1343,9 @@
 
             unsubscribeMessages = onSnapshot(q, (snapshot) => {
                 let html = '';
+                let hasMessages = false;
                 snapshot.forEach(docSnap => {
+                    hasMessages = true;
                     const data = docSnap.data();
                     const isSent = data.senderId === currentUser.uid;
                     const time = data.createdAt?.toDate?.() || new Date();
@@ -1205,11 +1362,16 @@
                 markMessagesAsRead(chatId, partnerUid);
             }, (err) => {
                 console.error('Messages error:', err);
-                // ပိုမိုတိကျတဲ့ error message
                 if (err.code === 'permission-denied') {
-                    showToast('You need to be a participant to view messages.', 'error');
+                    showToast('Cannot read messages: permission denied.', 'error');
+                    messagesList.innerHTML = `
+                        <div style="text-align:center;color:var(--text-muted);padding:20px;">
+                            <i class="fas fa-lock" style="font-size:24px;display:block;margin-bottom:8px;"></i>
+                            Permission denied. Make sure you are a participant.
+                        </div>
+                    `;
                 } else {
-                    showToast('Error loading messages.', 'error');
+                    showToast('Error loading messages: ' + err.message, 'error');
                 }
             });
 
@@ -1234,6 +1396,7 @@
                     batch.update(d.ref, { read: true });
                 });
                 await batch.commit();
+                // Update UI badge
                 const contactItems = contactsList.querySelectorAll('.contact-item');
                 contactItems.forEach(el => {
                     if (el.dataset.uid === partnerUid) {
@@ -1251,15 +1414,42 @@
         // ============================================================
         async function sendMessage() {
             const text = messageInput.value.trim();
-            if (!text || !activeChatId || !activeChatPartnerUid) {
+            if (!text) {
+                showToast('Please type a message.', 'info');
+                return;
+            }
+            if (!activeChatId || !activeChatPartnerUid) {
                 showToast('Please select a conversation first.', 'info');
                 return;
             }
+            if (isSending) return;
 
+            isSending = true;
             sendBtn.disabled = true;
             sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
             try {
+                // Double-check chat document exists
+                const chatRef = doc(db, 'chats', activeChatId);
+                const chatSnap = await getDoc(chatRef);
+                if (!chatSnap.exists()) {
+                    await setDoc(chatRef, {
+                        participants: [currentUser.uid, activeChatPartnerUid],
+                        lastMessage: text,
+                        lastUpdated: serverTimestamp(),
+                        createdAt: serverTimestamp()
+                    });
+                } else {
+                    // Ensure participants include both users
+                    const data = chatSnap.data();
+                    const participants = data.participants || [];
+                    if (!participants.includes(currentUser.uid) || !participants.includes(activeChatPartnerUid)) {
+                        const newParticipants = [...new Set([...participants, currentUser.uid, activeChatPartnerUid])];
+                        await updateDoc(chatRef, { participants: newParticipants });
+                    }
+                }
+
+                // Add message
                 const msgData = {
                     senderId: currentUser.uid,
                     receiverId: activeChatPartnerUid,
@@ -1267,27 +1457,26 @@
                     read: false,
                     createdAt: serverTimestamp()
                 };
-
                 await addDoc(collection(db, 'chats', activeChatId, 'messages'), msgData);
 
-                const chatRef = doc(db, 'chats', activeChatId);
-                await setDoc(chatRef, {
-                    participants: [currentUser.uid, activeChatPartnerUid],
+                // Update last message
+                await updateDoc(chatRef, {
                     lastMessage: text,
-                    lastUpdated: serverTimestamp(),
-                }, { merge: true });
+                    lastUpdated: serverTimestamp()
+                });
 
                 messageInput.value = '';
                 messageInput.focus();
-                showToast('Message sent!', 'success');
+                // Let the onSnapshot update the UI
             } catch (err) {
                 console.error('Send error:', err);
                 if (err.code === 'permission-denied') {
-                    showToast('You need to be a participant to send messages.', 'error');
+                    showToast('Permission denied. Make sure you are a participant in this chat.', 'error');
                 } else {
                     showToast('Failed to send: ' + err.message, 'error');
                 }
             } finally {
+                isSending = false;
                 sendBtn.disabled = false;
                 sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
             }
@@ -1310,21 +1499,54 @@
             if (isAuthReady && currentUser) {
                 const chatId = getChatId(currentUser.uid, targetUserFromUrl);
                 if (allUsers[targetUserFromUrl]) {
-                    setTimeout(() => {
-                        openChat(targetUserFromUrl, chatId);
-                    }, 500);
+                    setTimeout(() => openChat(targetUserFromUrl, chatId), 500);
                 } else {
-                    showToast('User not found.', 'error');
+                    pendingTargetUser = targetUserFromUrl;
+                    showToast('Loading user...', 'info');
                 }
             } else {
                 pendingTargetUser = targetUserFromUrl;
             }
         }
 
-        console.log('💬 My Nook Chat loaded.');
-        console.log('ℹ️ Chat uses Firestore subcollections: chats/{chatId}/messages/{msgId}');
-        console.log('ℹ️ Chat ID format: uid1_uid2 (sorted)');
+        console.log('💬 My Nook Chat loaded (fixed version)');
+        console.log('ℹ️ Make sure Firestore rules allow:');
+        console.log('   - read users collection for authenticated users');
+        console.log('   - read/write chats where user is a participant');
+        console.log('📌 See Firestore rules in the comments below.');
     </script>
 
+    <!-- 
+    ============================================================
+    FIRESTORE SECURITY RULES (建议配置)
+    ============================================================
+    rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+        // Users collection - 所有认证用户可以读取，用户只能写入自己的文档
+        match /users/{userId} {
+          allow read: if request.auth != null;
+          allow write: if request.auth != null && request.auth.uid == userId;
+        }
+        
+        // Chats collection - 参与者可以读写
+        match /chats/{chatId} {
+          allow read: if request.auth != null && 
+            request.auth.uid in resource.data.participants;
+          allow write: if request.auth != null && 
+            (request.auth.uid in resource.data.participants || 
+             request.auth.uid in request.resource.data.participants);
+            
+          match /messages/{messageId} {
+            allow read: if request.auth != null && 
+              request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+            allow write: if request.auth != null && 
+              request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+          }
+        }
+      }
+    }
+    -->
+
 </body>
-</html>
+</html>လ
