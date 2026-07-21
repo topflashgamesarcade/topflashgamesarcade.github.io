@@ -1017,31 +1017,38 @@
                 // Get last messages for each contact
                 const contactList = [];
                 for (const [uid, user] of Object.entries(users)) {
-                    const chatId = getChatId(currentUser.uid, uid);
-                    const chatRef = doc(db, 'chats', chatId);
-                    const chatSnap = await getDoc(chatRef);
-                    let lastMsg = '';
-                    let lastTime = null;
-                    let unread = 0;
-                    if (chatSnap.exists()) {
-                        const data = chatSnap.data();
-                        lastMsg = data.lastMessage || '';
-                        lastTime = data.lastUpdated?.toDate?.() || null;
-                        // Count unread (messages where receiver is current user and read = false)
-                        const msgsSnap = await getDocs(query(collection(db, 'chats', chatId, 'messages'),
-                            where('receiverId', '==', currentUser.uid),
-                            where('read', '==', false)
-                        ));
-                        unread = msgsSnap.size;
-                    }
-                    contactList.push({
-                        ...user,
-                        lastMsg,
-                        lastTime,
-                        unread,
-                        chatId
-                    });
-                }
+    const chatId = getChatId(currentUser.uid, uid);
+    let lastMsg = '';
+    let lastTime = null;
+    let unread = 0;
+    
+    // Chat document ကို try-catch နဲ့ ထုပ်မယ်
+    try {
+        const chatRef = doc(db, 'chats', chatId);
+        const chatSnap = await getDoc(chatRef);
+        if (chatSnap.exists()) {
+            const data = chatSnap.data();
+            lastMsg = data.lastMessage || '';
+            lastTime = data.lastUpdated?.toDate?.() || null;
+            const msgsSnap = await getDocs(query(collection(db, 'chats', chatId, 'messages'),
+                where('receiverId', '==', currentUser.uid),
+                where('read', '==', false)
+            ));
+            unread = msgsSnap.size;
+        }
+    } catch (err) {
+        // Chat document မရှိသေးရင် ကျော်သွားမယ်
+        console.log('No chat yet for:', user.displayName);
+    }
+    
+    contactList.push({
+        ...user,
+        lastMsg,
+        lastTime,
+        unread,
+        chatId
+    });
+}
 
                 // Sort by lastTime descending
                 contactList.sort((a, b) => {
