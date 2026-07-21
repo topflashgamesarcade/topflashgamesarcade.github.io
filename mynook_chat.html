@@ -1285,12 +1285,13 @@
                 // Add message to subcollection
 await addDoc(collection(db, 'chats', activeChatId, 'messages'), msgData);
 
-// Update chat document
+// Update chat document (သို့မဟုတ် အသစ်ဖန်တီး)
 const chatRef = doc(db, 'chats', activeChatId);
 await setDoc(chatRef, {
     participants: [currentUser.uid, activeChatPartnerUid],
     lastMessage: text,
     lastUpdated: serverTimestamp(),
+    createdAt: serverTimestamp()
 }, { merge: true });
 
 // Chat document ကို ဖန်တီးဖို့ သေချာအောင် (ပထမဆုံး message အတွက်)
