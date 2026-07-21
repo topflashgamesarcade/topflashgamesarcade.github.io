@@ -3308,6 +3308,48 @@
             return /\.(jpg|jpeg|png|gif|webp|bmp|svg|tiff?|ico)(\?.*)?$/i.test(url);
         }
 
+        // ===== USER VERIFIED STATUS ကို Real-time ယူမယ် =====
+async function getUserVerified(uid) {
+    if (!uid) return false;
+    
+    // ကိုယ်တိုင်ဆိုရင် currentUserData ကနေ ယူမယ်
+    if (uid === currentUser?.uid) {
+        return currentUserData.verified || false;
+    }
+    
+    // Cache ထဲမှာရှိရင် အဲဒီကနေ ယူမယ်
+    if (allUsersCache[uid]) {
+        return allUsersCache[uid].verified || false;
+    }
+    
+    // မရှိရင် Firestore ကနေ ယူမယ် (ပြီးရင် Cache ထဲထည့်မယ်)
+    try {
+        const snap = await getDoc(doc(db, 'users', uid));
+        if (snap.exists()) {
+            const data = snap.data();
+            const verified = data.verified || false;
+            // Cache ထဲထည့်မယ်
+            if (allUsersCache[uid]) {
+                allUsersCache[uid].verified = verified;
+            } else {
+                allUsersCache[uid] = {
+                    uid: uid,
+                    displayName: data.displayName || 'User',
+                    email: data.email || '',
+                    bio: data.bio || '',
+                    followers: data.followers || [],
+                    photoURL: data.photoURL || '',
+                    verified: verified
+                };
+            }
+            return verified;
+        }
+    } catch (err) {
+        console.warn('Get user verified error:', err);
+    }
+    return false;
+}
+
         // ============================================================
         // YOUTUBE DETECTION
         // ============================================================
@@ -4263,12 +4305,15 @@ function renderVerifiedBadge(isVerified) {
                         `<img src="${authorPhotoURL}" alt="${escapeHtml(author)}" />` :
                         `<span>${initial}</span>`;
 
-                    html += `
-                <div class="post-card" data-id="${id}" data-uid="${data.uid || ''}">
-                  <div class="post-header">
-                    <div class="avatar" data-uid="${data.uid || ''}">${avatarHtml}</div>
-                    <span class="post-user" data-uid="${data.uid || ''}">${escapeHtml(author)}${renderVerifiedBadge(data.authorVerified || false)}</span>
-                    <span class="post-time">${timeStr}</span>
+                    // Post ကို ပြသခါနီးမှာ User ရဲ့ လက်ရှိ verified status ကို ယူမယ်
+const userVerified = await getUserVerified(data.uid);
+
+html += `
+<div class="post-card" data-id="${id}" data-uid="${data.uid || ''}">
+  <div class="post-header">
+    <div class="avatar" data-uid="${data.uid || ''}">${avatarHtml}</div>
+    <span class="post-user" data-uid="${data.uid || ''}">${escapeHtml(author)}${renderVerifiedBadge(userVerified)}</span>
+    <span class="post-time">${timeStr}</span>
                     ${isOwner ? `
                       <div class="post-menu-wrapper">
                         <button class="post-menu-btn" data-id="${id}"><i class="fas fa-ellipsis-v"></i></button>
