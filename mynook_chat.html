@@ -382,10 +382,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .contact-item .info .last-msg .sender-name {
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
         .contact-item .time {
             font-size: 11px;
             color: var(--text-muted);
@@ -1034,13 +1030,9 @@
                                     where('read', '==', false)
                                 ));
                                 unread = msgsSnap.size;
-                            } catch (msgErr) {
-                                // unread count error ဖြစ်ရင် ကျော်သွားမယ်
-                            }
+                            } catch (msgErr) {}
                         }
-                    } catch (err) {
-                        // Chat doesn't exist yet
-                    }
+                    } catch (err) {}
                     
                     contactList.push({
                         ...user,
@@ -1081,8 +1073,7 @@
         function renderContacts(contacts) {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const filtered = contacts.filter(c =>
-                c.displayName.toLowerCase().includes(searchTerm) ||
-                (c.email && c.email.toLowerCase().includes(searchTerm))
+                c.displayName.toLowerCase().includes(searchTerm)
             );
 
             if (filtered.length === 0) {
@@ -1129,7 +1120,7 @@
             });
         }
 
-        // Search filter - နာမည်နဲ့ပဲ ရှာမယ် (email ဖျောက်ထား)
+        // Search filter - name only
         searchInput.addEventListener('input', () => {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const items = contactsList.querySelectorAll('.contact-item');
@@ -1214,6 +1205,7 @@
                 markMessagesAsRead(chatId, partnerUid);
             }, (err) => {
                 console.error('Messages error:', err);
+                // ပိုမိုတိကျတဲ့ error message
                 if (err.code === 'permission-denied') {
                     showToast('You need to be a participant to view messages.', 'error');
                 } else {
@@ -1259,26 +1251,15 @@
         // ============================================================
         async function sendMessage() {
             const text = messageInput.value.trim();
-            if (!text || !activeChatId || !activeChatPartnerUid) return;
+            if (!text || !activeChatId || !activeChatPartnerUid) {
+                showToast('Please select a conversation first.', 'info');
+                return;
+            }
 
             sendBtn.disabled = true;
             sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
             try {
-                // Chat document ရှိမရှိ စစ်မယ်
-                const chatRef = doc(db, 'chats', activeChatId);
-                const chatSnap = await getDoc(chatRef);
-                
-                // Chat document မရှိရင် အရင်ဖန်တီးမယ်
-                if (!chatSnap.exists()) {
-                    await setDoc(chatRef, {
-                        participants: [currentUser.uid, activeChatPartnerUid],
-                        lastMessage: text,
-                        lastUpdated: serverTimestamp(),
-                        createdAt: serverTimestamp()
-                    });
-                }
-
                 const msgData = {
                     senderId: currentUser.uid,
                     receiverId: activeChatPartnerUid,
@@ -1289,17 +1270,23 @@
 
                 await addDoc(collection(db, 'chats', activeChatId, 'messages'), msgData);
 
-                await updateDoc(chatRef, {
+                const chatRef = doc(db, 'chats', activeChatId);
+                await setDoc(chatRef, {
+                    participants: [currentUser.uid, activeChatPartnerUid],
                     lastMessage: text,
-                    lastUpdated: serverTimestamp()
-                });
+                    lastUpdated: serverTimestamp(),
+                }, { merge: true });
 
                 messageInput.value = '';
                 messageInput.focus();
                 showToast('Message sent!', 'success');
             } catch (err) {
                 console.error('Send error:', err);
-                showToast('Failed to send: ' + err.message, 'error');
+                if (err.code === 'permission-denied') {
+                    showToast('You need to be a participant to send messages.', 'error');
+                } else {
+                    showToast('Failed to send: ' + err.message, 'error');
+                }
             } finally {
                 sendBtn.disabled = false;
                 sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
@@ -1336,6 +1323,7 @@
 
         console.log('💬 My Nook Chat loaded.');
         console.log('ℹ️ Chat uses Firestore subcollections: chats/{chatId}/messages/{msgId}');
+        console.log('ℹ️ Chat ID format: uid1_uid2 (sorted)');
     </script>
 
 </body>
