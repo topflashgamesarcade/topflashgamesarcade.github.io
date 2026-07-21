@@ -803,6 +803,8 @@
         let activeChatPartnerUid = null;
         let unsubscribeMessages = null;
         let unsubscribeContacts = null;
+        let isAuthReady = false;
+        let pendingTargetUser = null;
 
         // ============================================================
         // TOAST
@@ -963,6 +965,7 @@
                         };
                     }
                     currentUser = user;
+                    isAuthReady = true;
                     authSection.style.display = 'none';
                     chatApp.classList.add('show');
                     navUsername.textContent = currentUserData.displayName;
@@ -975,6 +978,7 @@
             } else {
                 currentUser = null;
                 currentUserData = { displayName: 'User', photoURL: '', uid: '', verified: false };
+                isAuthReady = false;
                 authSection.style.display = 'block';
                 chatApp.classList.remove('show');
                 if (unsubscribeContacts) { unsubscribeContacts();
@@ -1017,38 +1021,37 @@
                 // Get last messages for each contact
                 const contactList = [];
                 for (const [uid, user] of Object.entries(users)) {
-    const chatId = getChatId(currentUser.uid, uid);
-    let lastMsg = '';
-    let lastTime = null;
-    let unread = 0;
-    
-    // Chat document ကို try-catch နဲ့ ထုပ်မယ်
-    try {
-        const chatRef = doc(db, 'chats', chatId);
-        const chatSnap = await getDoc(chatRef);
-        if (chatSnap.exists()) {
-            const data = chatSnap.data();
-            lastMsg = data.lastMessage || '';
-            lastTime = data.lastUpdated?.toDate?.() || null;
-            const msgsSnap = await getDocs(query(collection(db, 'chats', chatId, 'messages'),
-                where('receiverId', '==', currentUser.uid),
-                where('read', '==', false)
-            ));
-            unread = msgsSnap.size;
-        }
-    } catch (err) {
-        // Chat document မရှိသေးရင် ကျော်သွားမယ်
-        console.log('No chat yet for:', user.displayName);
-    }
-    
-    contactList.push({
-        ...user,
-        lastMsg,
-        lastTime,
-        unread,
-        chatId
-    });
-}
+                    const chatId = getChatId(currentUser.uid, uid);
+                    let lastMsg = '';
+                    let lastTime = null;
+                    let unread = 0;
+                    
+                    try {
+                        const chatRef = doc(db, 'chats', chatId);
+                        const chatSnap = await getDoc(chatRef);
+                        if (chatSnap.exists()) {
+                            const data = chatSnap.data();
+                            lastMsg = data.lastMessage || '';
+                            lastTime = data.lastUpdated?.toDate?.() || null;
+                            const msgsSnap = await getDocs(query(collection(db, 'chats', chatId, 'messages'),
+                                where('receiverId', '==', currentUser.uid),
+                                where('read', '==', false)
+                            ));
+                            unread = msgsSnap.size;
+                        }
+                    } catch (err) {
+                        // Chat document doesn't exist yet, skip
+                        console.log('No chat yet for:', user.displayName);
+                    }
+                    
+                    contactList.push({
+                        ...user,
+                        lastMsg,
+                        lastTime,
+                        unread,
+                        chatId
+                    });
+                }
 
                 // Sort by lastTime descending
                 contactList.sort((a, b) => {
@@ -1059,6 +1062,20 @@
                 });
 
                 renderContacts(contactList);
+
+                // URL parameter ကနေ user ကိုဖတ်ပြီး Chat ဖွင့်မယ် (Auth ready ဖြစ်ပြီးမှ)
+                if (isAuthReady && pendingTargetUser) {
+                    const targetUid = pendingTargetUser;
+                    const chatId = getChatId(currentUser.uid, targetUid);
+                    if (allUsers[targetUid]) {
+                        setTimeout(() => {
+                            openChat(targetUid, chatId);
+                        }, 500);
+                    } else {
+                        showToast('User not found.', 'error');
+                    }
+                    pendingTargetUser = null;
+                }
             }, (err) => {
                 console.error('Contacts error:', err);
                 showToast('Error loading contacts.', 'error');
@@ -1068,8 +1085,9 @@
         function renderContacts(contacts) {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const filtered = contacts.filter(c =>
-    c.displayName.toLowerCase().includes(searchTerm)
-);
+                c.displayName.toLowerCase().includes(searchTerm) ||
+                (c.email && c.email.toLowerCase().includes(searchTerm))
+            );
 
             if (filtered.length === 0) {
                 contactsList.innerHTML = `
@@ -1091,7 +1109,7 @@
                 const timeStr = c.lastTime ? formatTime(c.lastTime) : '';
 
                 html += `
-                    <div class="contact-item ${isActive ? 'active' : ''}" data-uid="${c.uid}" data-chatid="${c.chatId}">
+                    <div class="contact-item ${isActive ? 'active' : ''}" data-uid="${c.uid}" data-chatid="${c.chatId}" data-email="${escapeHtml(c.email || '')}">
                         <div class="avatar">${avatarHtml}</div>
                         <div class="info">
                             <div class="name">${escapeHtml(c.displayName)} ${renderVerifiedBadge(c.verified)}</div>
@@ -1116,52 +1134,34 @@
             });
         }
 
-        // Search filter
+        // Search filter - improved
         searchInput.addEventListener('input', () => {
-            // Re-render contacts with filter (data is in allUsers)
-            if (Object.keys(allUsers).length > 0) {
-                const contactList = [];
-                for (const [uid, user] of Object.entries(allUsers)) {
-                    const chatId = getChatId(currentUser.uid, uid);
-                    // We need lastMsg, lastTime, unread - we can fetch from cache or just render with empty
-                    // For simplicity, we'll just re-render with available data
-                    contactList.push({
-                        ...user,
-                        lastMsg: '',
-                        lastTime: null,
-                        unread: 0,
-                        chatId
-                    });
-                }
-                // We need to preserve last messages - better to just filter the DOM.
-                // Simpler: re-run loadContacts? No, that's heavy.
-                // Let's just filter the existing DOM elements.
-                const searchTerm = searchInput.value.toLowerCase().trim();
-                const items = contactsList.querySelectorAll('.contact-item');
-                let hasVisible = false;
-                items.forEach(item => {
-                    const name = item.querySelector('.info .name')?.textContent?.toLowerCase() || '';
-// Email ကို မစစ်တော့ဘူး
-if (name.includes(searchTerm)) {
-                        item.style.display = 'flex';
-                        hasVisible = true;
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-                if (!hasVisible) {
-                    // Show empty state if nothing visible
-                    if (!contactsList.querySelector('.empty-search')) {
-                        const empty = document.createElement('div');
-                        empty.className = 'empty-search';
-                        empty.style.cssText = 'text-align:center;padding:30px 16px;color:var(--text-muted);';
-                        empty.innerHTML = `<i class="fas fa-user-slash" style="font-size:24px;opacity:0.3;display:block;margin-bottom:8px;"></i><p>No users found</p>`;
-                        contactsList.appendChild(empty);
-                    }
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const items = contactsList.querySelectorAll('.contact-item');
+            let hasVisible = false;
+            items.forEach(item => {
+                const name = item.querySelector('.info .name')?.textContent?.toLowerCase() || '';
+                const email = item.dataset.email || '';
+                if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                    hasVisible = true;
                 } else {
-                    const empty = contactsList.querySelector('.empty-search');
-                    if (empty) empty.remove();
+                    item.style.display = 'none';
                 }
+            });
+            
+            // Show/hide empty state
+            let empty = contactsList.querySelector('.empty-search');
+            if (!hasVisible) {
+                if (!empty) {
+                    empty = document.createElement('div');
+                    empty.className = 'empty-search';
+                    empty.style.cssText = 'text-align:center;padding:30px 16px;color:var(--text-muted);';
+                    empty.innerHTML = `<i class="fas fa-user-slash" style="font-size:24px;opacity:0.3;display:block;margin-bottom:8px;"></i><p>No users found</p>`;
+                    contactsList.appendChild(empty);
+                }
+            } else if (empty) {
+                empty.remove();
             }
         });
 
@@ -1169,6 +1169,10 @@ if (name.includes(searchTerm)) {
         // OPEN CHAT
         // ============================================================
         async function openChat(partnerUid, chatId) {
+            if (!currentUser) {
+                showToast('Please sign in first.', 'info');
+                return;
+            }
             if (partnerUid === currentUser.uid) {
                 showToast("You can't chat with yourself.", 'info');
                 return;
@@ -1248,7 +1252,6 @@ if (name.includes(searchTerm)) {
                     batch.update(d.ref, { read: true });
                 });
                 await batch.commit();
-                // Update chat document unread count (optional, but we just rely on query)
                 // Update contact list unread count visually
                 const contactItems = contactsList.querySelectorAll('.contact-item');
                 contactItems.forEach(el => {
@@ -1282,19 +1285,15 @@ if (name.includes(searchTerm)) {
                 };
 
                 // Add message to subcollection
-await addDoc(collection(db, 'chats', activeChatId, 'messages'), msgData);
+                await addDoc(collection(db, 'chats', activeChatId, 'messages'), msgData);
 
-// Update chat document (သို့မဟုတ် အသစ်ဖန်တီး)
-const chatRef = doc(db, 'chats', activeChatId);
-await setDoc(chatRef, {
-    participants: [currentUser.uid, activeChatPartnerUid],
-    lastMessage: text,
-    lastUpdated: serverTimestamp(),
-    createdAt: serverTimestamp()
-}, { merge: true });
-
-// Chat document ကို ဖန်တီးဖို့ သေချာအောင် (ပထမဆုံး message အတွက်)
-// setDoc က merge: true နဲ့ သုံးထားတာမို့ အလိုအလျောက် ဖန်တီးပေးမှာပါ
+                // Update chat document (last message, last updated)
+                const chatRef = doc(db, 'chats', activeChatId);
+                await setDoc(chatRef, {
+                    participants: [currentUser.uid, activeChatPartnerUid],
+                    lastMessage: text,
+                    lastUpdated: serverTimestamp(),
+                }, { merge: true });
 
                 messageInput.value = '';
                 messageInput.focus();
@@ -1317,28 +1316,33 @@ await setDoc(chatRef, {
         });
 
         // ============================================================
-        // BACKUP: Enter key in login
+        // URL PARAMETER - USER ကိုဖတ်မယ် (Auth ready ဖြစ်ပြီးမှ)
+        // ============================================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUserFromUrl = urlParams.get('user');
+        if (targetUserFromUrl) {
+            if (isAuthReady && currentUser) {
+                // Auth ready ဖြစ်ပြီးသားဆိုရင် ချက်ချင်းဖွင့်မယ်
+                const chatId = getChatId(currentUser.uid, targetUserFromUrl);
+                if (allUsers[targetUserFromUrl]) {
+                    setTimeout(() => {
+                        openChat(targetUserFromUrl, chatId);
+                    }, 500);
+                } else {
+                    showToast('User not found.', 'error');
+                }
+            } else {
+                // Auth မရှိသေးရင် သိမ်းထားပြီး loadContacts ပြီးမှ ဖွင့်မယ်
+                pendingTargetUser = targetUserFromUrl;
+            }
+        }
+
+        // ============================================================
+        // ENTER KEY IN LOGIN
         // ============================================================
         console.log('💬 My Nook Chat loaded.');
         console.log('ℹ️ Chat uses Firestore subcollections: chats/{chatId}/messages/{msgId}');
         console.log('ℹ️ Chat ID format: uid1_uid2 (sorted)');
-
-
-        // URL parameter ကနေ user ကိုဖတ်ပြီး Chat ဖွင့်မယ်
-const urlParams = new URLSearchParams(window.location.search);
-const targetUser = urlParams.get('user');
-if (targetUser) {
-    // Chat ID ကိုတွက်ပြီး ချက်ချင်းဖွင့်မယ်
-    setTimeout(() => {
-        const chatId = getChatId(currentUser.uid, targetUser);
-        // User က contact list ထဲမှာ ရှိမှ openChat လုပ်မယ်
-        if (allUsers[targetUser]) {
-            openChat(targetUser, chatId);
-        } else {
-            showToast('User not found.', 'error');
-        }
-    }, 1000); // Contact list load ဖြစ်ဖို့ ခဏစောင့်မယ်
-}
     </script>
 
 </body>
