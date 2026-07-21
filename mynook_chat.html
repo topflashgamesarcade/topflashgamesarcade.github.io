@@ -1068,9 +1068,8 @@
         function renderContacts(contacts) {
             const searchTerm = searchInput.value.toLowerCase().trim();
             const filtered = contacts.filter(c =>
-                c.displayName.toLowerCase().includes(searchTerm) ||
-                (c.email && c.email.toLowerCase().includes(searchTerm))
-            );
+    c.displayName.toLowerCase().includes(searchTerm)
+);
 
             if (filtered.length === 0) {
                 contactsList.innerHTML = `
@@ -1142,8 +1141,8 @@
                 let hasVisible = false;
                 items.forEach(item => {
                     const name = item.querySelector('.info .name')?.textContent?.toLowerCase() || '';
-                    const email = item.dataset.email || '';
-                    if (name.includes(searchTerm) || email.includes(searchTerm)) {
+// Email ကို မစစ်တော့ဘူး
+if (name.includes(searchTerm)) {
                         item.style.display = 'flex';
                         hasVisible = true;
                     } else {
